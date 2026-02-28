@@ -12,18 +12,14 @@
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         body{background:#0a0a1a;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom)}
         :root{--p:#00ff88;--d:#e94560;--w:#ffaa00;--i:#6666ff;--bg:#0a0a1a;--card:#16213e;--cl:#1a1a3e;--cd:#0d1b2a;--tm:#666;--br:#1a1a3e}
-
         .nav-bar{display:flex;justify-content:space-around;background:#111122;border-top:1px solid var(--br);position:fixed;bottom:0;left:0;right:0;z-index:1000;padding:6px 0;padding-bottom:max(6px,env(safe-area-inset-bottom))}
         .nav-item{display:flex;flex-direction:column;align-items:center;padding:4px 12px;cursor:pointer;color:var(--tm);font-size:10px;font-weight:600;border:none;background:none}
         .nav-item.active{color:var(--p)}
         .nav-item .ni{font-size:20px;margin-bottom:2px}
-
         .page{display:none;padding:12px;padding-bottom:80px;min-height:100vh}
         .page.active{display:block}
-
         .header{display:flex;justify-content:space-between;align-items:center;padding:8px 0 12px;border-bottom:1px solid var(--br);margin-bottom:12px}
         .logo{font-size:16px;font-weight:800;color:var(--p)}
-
         .sb{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:700}
         .sb.listening{background:rgba(0,255,136,.12);color:var(--p);animation:pu 2s infinite}
         .sb.recording{background:rgba(233,69,96,.2);color:var(--d);animation:pu .6s infinite}
@@ -33,7 +29,6 @@
         .sb.error{background:rgba(255,0,0,.12);color:#f44}
         .sb.waiting{background:rgba(255,170,0,.12);color:var(--w);animation:pu 1.5s infinite}
         @keyframes pu{0%,100%{opacity:1}50%{opacity:.4}}
-
         .card{border-radius:10px;padding:14px;margin-bottom:10px}
         .cl{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;margin-bottom:6px}
         .qc{background:linear-gradient(135deg,var(--cl),var(--card));border-left:4px solid var(--d)}
@@ -44,13 +39,11 @@
         .ac .cc{color:#fff;font-size:19px;line-height:1.7;white-space:pre-wrap;word-wrap:break-word}
         .ac .cc b,.ac .cc strong{color:var(--p);font-weight:700}
         .tb{display:inline-block;font-size:8px;padding:2px 6px;border-radius:4px;background:rgba(102,102,255,.15);color:var(--tm);text-transform:uppercase;margin-left:8px;font-weight:600}
-
         .stb{display:flex;justify-content:space-around;align-items:center;padding:8px 0;border-top:1px solid var(--br);margin-top:8px}
         .st{text-align:center}
         .sv{font-size:17px;font-weight:700;color:var(--p)}
         .sl{font-size:9px;color:var(--tm);margin-top:1px}
         .sd{width:1px;height:28px;background:var(--br)}
-
         .btn{display:flex;align-items:center;justify-content:center;padding:12px 20px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;width:100%;gap:6px}
         .btn:active{transform:scale(.97);opacity:.9}
         .bp{background:var(--p);color:#0a0a1a}
@@ -61,10 +54,8 @@
         .bsm{padding:8px 14px;font-size:12px;border-radius:8px}
         .br{display:flex;gap:8px;margin-top:8px}
         .br .btn{flex:1}
-
         .fc{position:fixed;top:12px;right:12px;display:flex;gap:4px;z-index:100}
         .fb{width:30px;height:30px;border-radius:50%;border:1px solid #333;background:var(--card);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-
         .ss{background:var(--card);border-radius:12px;padding:16px;margin-bottom:12px}
         .sst{font-size:13px;font-weight:700;color:var(--p);margin-bottom:10px}
         .il{font-size:11px;color:var(--tm);margin-bottom:4px;font-weight:600}
@@ -73,14 +64,12 @@
         textarea.input{min-height:100px;resize:vertical;font-family:'SF Mono','Fira Code',monospace;font-size:12px;line-height:1.5}
         .ih{font-size:10px;color:var(--tm);margin-top:-4px;margin-bottom:8px}
         .ih a{color:var(--p)}
-
         .vc{display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 0;margin-top:4px}
         .vt{padding:6px 16px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer}
         .vt.off{background:rgba(102,102,255,.12);color:var(--i)}
         .vt.on{background:rgba(0,255,136,.15);color:var(--p);border:1px solid var(--p)}
         .spb{width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,.05);font-size:16px;cursor:pointer}
         .spd{color:var(--p);font-size:13px;font-weight:600;min-width:35px;text-align:center}
-
         .cc-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
         .chip{padding:6px 14px;border-radius:20px;border:1px solid #333;background:transparent;color:#aaa;font-size:12px;font-weight:600;cursor:pointer}
         .chip.active{border-color:var(--p);color:var(--p);background:rgba(0,255,136,.08)}
@@ -88,7 +77,6 @@
         .pi:focus{outline:none;border-color:var(--p)}
         .fbc{background:var(--card);border-left:4px solid var(--p);border-radius:10px;padding:16px;margin-top:12px;white-space:pre-wrap;line-height:1.6;font-size:14px;color:#aaa}
         .pr{background:var(--card);border-radius:10px;padding:16px;margin-top:12px;white-space:pre-wrap;line-height:1.7;font-size:14px}
-
         .sr{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--br)}
         .si{flex:1}
         .sn{font-size:14px;font-weight:600}
@@ -97,7 +85,6 @@
         .toggle.on{background:var(--p)}
         .toggle::after{content:'';width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:transform .3s}
         .toggle.on::after{transform:translateX(22px)}
-
         .pt{font-size:22px;font-weight:800;color:var(--p);margin-bottom:4px}
         .ps{font-size:12px;color:var(--tm);margin-bottom:16px}
         .divider{border:none;border-top:1px solid var(--br);margin:16px 0}
@@ -116,89 +103,60 @@
         .key-status{font-size:10px;margin-top:4px;padding:4px 8px;border-radius:4px;display:inline-block}
         .key-status.active{background:rgba(0,255,136,.1);color:var(--p)}
         .key-status.empty{background:rgba(255,170,0,.1);color:var(--w)}
+        .mic-bar-wrap{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;background:var(--cd);border-radius:8px}
+        .mic-bar{width:100px;height:8px;background:#1a1a3e;border-radius:4px;overflow:hidden}
+        .mic-bar-inner{width:0%;height:100%;background:var(--p);border-radius:4px;transition:width .1s}
     </style>
 </head>
 <body>
 
 <div class="toast" id="toast">✅ Saved!</div>
+<div class="fc" id="fontControls"><button class="fb" onclick="NH.changeFontSize(-2)">A-</button><button class="fb" onclick="NH.changeFontSize(2)">A+</button></div>
 
-<div class="fc" id="fontControls">
-    <button class="fb" onclick="NH.changeFontSize(-2)">A-</button>
-    <button class="fb" onclick="NH.changeFontSize(2)">A+</button>
-</div>
-
-<!-- ===== SETUP PAGE ===== -->
+<!-- ===== SETUP ===== -->
 <div class="page active" id="pageSetup">
-    <div class="header">
-        <div class="logo">🎯 NeuralHire</div>
-        <span style="font-size:11px;color:var(--tm)">v3.1</span>
-    </div>
+    <div class="header"><div class="logo">🎯 NeuralHire</div><span style="font-size:11px;color:var(--tm)">v3.2</span></div>
     <div style="text-align:center;margin:16px 0">
         <div style="font-size:48px;margin-bottom:8px">🎯</div>
         <h1 style="font-size:24px;color:var(--p);margin-bottom:4px">NeuralHire</h1>
         <p style="color:var(--tm);font-size:13px">AI-Powered Interview Copilot</p>
     </div>
-
-    <!-- API Keys Section - Multiple Providers -->
     <div class="ss">
-        <div class="sst">🔑 Step 1: API Keys (Add one or more - all FREE)</div>
-        <p style="font-size:11px;color:var(--tm);margin-bottom:12px">Add multiple keys for auto-fallback. If one provider hits rate limit, it automatically switches to another.</p>
-
-        <div class="il">Google Gemini Key ⭐ (Recommended)</div>
+        <div class="sst">🔑 Step 1: API Keys (Add one or more — all FREE)</div>
+        <p style="font-size:11px;color:var(--tm);margin-bottom:12px">Add multiple keys for auto-fallback. If one hits rate limit, it switches automatically.</p>
+        <div class="il">Google Gemini Key ⭐</div>
         <input class="input" type="password" id="inputGeminiKey" placeholder="AIzaxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off">
-        <div class="ih">Get free: <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> → Google login → Create API Key</div>
-
-        <div class="il">Groq Key ⚡ (Fastest - 30 req/min)</div>
+        <div class="ih">Get free: <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> → Google login → Create</div>
+        <div class="il">Groq Key ⚡ (Best for audio — 30 req/min)</div>
         <input class="input" type="password" id="inputGroqKey" placeholder="gsk_xxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off">
         <div class="ih">Get free: <a href="https://console.groq.com" target="_blank">console.groq.com</a> → API Keys → Create</div>
-
-        <div class="il">OpenRouter Key 🌐 (Most models)</div>
+        <div class="il">OpenRouter Key 🌐</div>
         <input class="input" type="password" id="inputOpenRouterKey" placeholder="sk-or-xxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off">
-        <div class="ih">Get free: <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a> → Sign up → Create Key</div>
+        <div class="ih">Get free: <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a> → Create Key</div>
     </div>
-
     <div class="ss">
         <div class="sst">📄 Step 2: Your Resume</div>
-        <div class="il">Paste key achievements & skills</div>
-        <textarea class="input" id="inputResume" placeholder="Example:
-Software Engineer, 5 years experience
-
-- Senior Dev at TechCorp (2022-Present)
-  Led team of 5, reduced API latency 40%
-  Serving 1M+ daily active users
-
-Skills: Python, JavaScript, React, AWS, Docker"></textarea>
+        <textarea class="input" id="inputResume" placeholder="Software Engineer, 5 years experience&#10;&#10;- Senior Dev at TechCorp&#10;  Led team of 5, reduced latency 40%&#10;  Serving 1M+ users&#10;&#10;Skills: Python, React, AWS, Docker"></textarea>
     </div>
-
     <div class="ss">
         <div class="sst">💼 Step 3: Target Job</div>
-        <textarea class="input" id="inputJobDesc" placeholder="Senior Software Engineer at Google
-Requirements: Python, distributed systems, 5+ years..." style="min-height:80px"></textarea>
+        <textarea class="input" id="inputJobDesc" placeholder="Senior Software Engineer at Google&#10;Python, distributed systems, 5+ years" style="min-height:80px"></textarea>
     </div>
-
     <button class="btn bp" onclick="NH.saveSetup()" style="font-size:16px;padding:14px">🚀 Start Interview Mode</button>
-    <p style="text-align:center;margin-top:12px;font-size:11px;color:var(--tm)">Add at least ONE API key. More keys = never get rate limited.</p>
+    <p style="text-align:center;margin-top:12px;font-size:11px;color:var(--tm)">Add at least ONE key. More keys = never rate limited.</p>
 </div>
 
-<!-- ===== LIVE PAGE ===== -->
+<!-- ===== LIVE ===== -->
 <div class="page" id="pageLive">
     <div class="header">
         <div class="logo">🎯 NeuralHire</div>
-        <div>
-            <span class="provider-badge" id="activeProvider">gemini</span>
-            <span class="sb listening" id="statusBadge">● LISTENING</span>
-        </div>
+        <div><span class="provider-badge" id="activeProvider">--</span> <span class="sb listening" id="statusBadge">● LISTENING</span></div>
     </div>
-    <div class="card qc">
-        <div class="cl">❓ INTERVIEWER ASKED <span class="tb" id="questionType"></span></div>
-        <div class="cc" id="questionText">Tap 🎤 when interviewer asks a question</div>
-    </div>
-    <div class="card ac">
-        <div class="cl">✅ YOUR ANSWER</div>
-        <div class="cc" id="answerText">Ready! Place phone behind monitor near webcam.
+    <div class="card qc"><div class="cl">❓ INTERVIEWER ASKED <span class="tb" id="questionType"></span></div><div class="cc" id="questionText">Tap 🎤 when interviewer asks a question</div></div>
+    <div class="card ac"><div class="cl">✅ YOUR ANSWER</div><div class="cc" id="answerText">Ready! Place phone behind monitor.
 
-Tap 🎤 below when interviewer speaks.</div>
-    </div>
+Tap 🎤 below when interviewer speaks.
+Or use ⌨️ Type Question for fastest results.</div></div>
     <div class="vc">
         <button class="vt off" id="voiceToggle" onclick="NH.toggleVoice()">🔇 Voice OFF</button>
         <button class="spb" onclick="NH.adjustSpeed(-0.1)">🐌</button>
@@ -206,24 +164,33 @@ Tap 🎤 below when interviewer speaks.</div>
         <button class="spb" onclick="NH.adjustSpeed(0.1)">🐇</button>
     </div>
     <div class="stb">
-        <div class="st"><div class="sv" id="statQuestions">0</div><div class="sl">Questions</div></div>
-        <div class="sd"></div>
-        <div class="st"><div class="sv" id="statSpeed">-</div><div class="sl">Speed</div></div>
-        <div class="sd"></div>
+        <div class="st"><div class="sv" id="statQuestions">0</div><div class="sl">Questions</div></div><div class="sd"></div>
+        <div class="st"><div class="sv" id="statSpeed">-</div><div class="sl">Speed</div></div><div class="sd"></div>
         <div class="st"><div class="sv" id="statSession">0:00</div><div class="sl">Session</div></div>
     </div>
+
+    <!-- Mic Level -->
+    <div style="margin-top:8px;text-align:center">
+        <div class="mic-bar-wrap">
+            <span style="font-size:11px;color:var(--tm)">MIC:</span>
+            <div class="mic-bar"><div class="mic-bar-inner" id="micLevelBar"></div></div>
+            <span id="micStatus" style="font-size:10px;color:var(--tm)">--</span>
+        </div>
+    </div>
+
     <div class="br mt-8">
         <button class="btn bp" id="recordBtn" onclick="NH.toggleRecording()" style="flex:2">🎤 Tap to Listen</button>
         <button class="btn bd" onclick="NH.clearDisplay()" style="flex:1">🗑</button>
     </div>
     <div class="br" style="margin-top:6px">
-        <button class="btn bo bsm" id="autoListenBtn" onclick="NH.toggleAutoListen()">🔄 Auto-Listen: OFF</button>
+        <button class="btn bo bsm" id="autoListenBtn" onclick="NH.toggleAutoListen()">🔄 Auto: OFF</button>
         <button class="btn bs bsm" onclick="NH.manualInput()">⌨️ Type Question</button>
+        <button class="btn bw bsm" onclick="NH.testMic()">🎤 Test</button>
     </div>
-    <div class="ai" id="autoIndicator"><div class="ado"></div><span>Auto-listen inactive</span></div>
+    <div class="ai" id="autoIndicator"><div class="ado"></div><span>Auto-listen off</span></div>
 </div>
 
-<!-- ===== PRACTICE PAGE ===== -->
+<!-- ===== PRACTICE ===== -->
 <div class="page" id="pagePractice">
     <div class="header"><div class="logo">🎯 Practice</div></div>
     <div class="pt">🎯 Practice Mode</div>
@@ -237,7 +204,7 @@ Tap 🎤 below when interviewer speaks.</div>
         <button class="chip" onclick="NH.selectCompany('apple',this)">Apple</button>
         <button class="chip" onclick="NH.selectCompany('startup',this)">Startup</button>
     </div>
-    <div class="card qc"><div class="cl">❓ PRACTICE QUESTION</div><div class="cc" id="practiceQuestion">Select a company and tap "Next Question"!</div></div>
+    <div class="card qc"><div class="cl">❓ PRACTICE QUESTION</div><div class="cc" id="practiceQuestion">Select company and tap "Next Question"!</div></div>
     <textarea class="pi" id="practiceAnswer" placeholder="Type your answer here..."></textarea>
     <div class="br">
         <button class="btn bp" onclick="NH.nextPracticeQuestion()">Next Question ➜</button>
@@ -246,51 +213,43 @@ Tap 🎤 below when interviewer speaks.</div>
     <button class="btn bo bsm mt-8" onclick="NH.showIdealAnswer()">💡 Show Ideal Answer</button>
     <div class="fbc hidden" id="practiceFeedback"></div>
     <hr class="divider" style="margin-top:24px">
-    <div class="pt" style="font-size:18px">📋 Interview Prep Sheet</div>
-    <div class="br">
-        <input class="input" id="prepCompany" placeholder="Company name" style="margin:0;flex:1">
-        <input class="input" id="prepRole" placeholder="Role" style="margin:0;flex:1">
-    </div>
-    <button class="btn bp mt-8" onclick="NH.generatePrepSheet()">📋 Generate Prep Sheet</button>
+    <div class="pt" style="font-size:18px">📋 Prep Sheet</div>
+    <div class="br"><input class="input" id="prepCompany" placeholder="Company" style="margin:0;flex:1"><input class="input" id="prepRole" placeholder="Role" style="margin:0;flex:1"></div>
+    <button class="btn bp mt-8" onclick="NH.generatePrepSheet()">📋 Generate</button>
     <div class="pr hidden" id="prepResult"></div>
 </div>
 
-<!-- ===== SETTINGS PAGE ===== -->
+<!-- ===== SETTINGS ===== -->
 <div class="page" id="pageSettings">
     <div class="header"><div class="logo">⚙️ Settings</div></div>
     <div class="pt">⚙️ Settings</div>
-
     <div class="ss">
         <div class="sst">🔑 API Keys</div>
         <div class="il">Gemini <span class="key-status empty" id="ksGemini">No key</span></div>
         <input class="input" type="password" id="settingsGeminiKey">
         <div class="il">Groq <span class="key-status empty" id="ksGroq">No key</span></div>
         <input class="input" type="password" id="settingsGroqKey">
-        <div class="il">OpenRouter <span class="key-status empty" id="ksOpenRouter">No key</span></div>
-        <input class="input" type="password" id="settingsOpenRouterKey">
-        <button class="btn bo bsm mt-8" onclick="NH.saveSettings()">💾 Save Keys</button>
-        <button class="btn bs bsm mt-8" onclick="NH.testAllKeys()">🔌 Test All Keys</button>
+        <div class="il">OpenRouter <span class="key-status empty" id="ksOR">No key</span></div>
+        <input class="input" type="password" id="settingsORKey">
+        <button class="btn bo bsm mt-8" onclick="NH.saveSettings()">💾 Save</button>
+        <button class="btn bs bsm mt-8" onclick="NH.testAllKeys()">🔌 Test All</button>
     </div>
-
     <div class="ss">
         <div class="sst">📄 Resume</div>
         <textarea class="input" id="settingsResume" style="min-height:120px"></textarea>
         <button class="btn bo bsm" onclick="NH.saveSettings()">Save</button>
     </div>
-
     <div class="ss">
         <div class="sst">💼 Job Description</div>
         <textarea class="input" id="settingsJobDesc" style="min-height:80px"></textarea>
         <button class="btn bo bsm" onclick="NH.saveSettings()">Save</button>
     </div>
-
     <div class="ss">
         <div class="sst">🎛️ Features</div>
-        <div class="sr"><div class="si"><div class="sn">🔊 Voice Mode</div><div class="sde">Read answers through earphone</div></div><button class="toggle" id="toggleVoice2" onclick="NH.toggleSetting('voice',this)"></button></div>
-        <div class="sr"><div class="si"><div class="sn">📳 Vibration</div><div class="sde">Vibrate on new answer</div></div><button class="toggle on" onclick="NH.toggleSetting('vibration',this)"></button></div>
+        <div class="sr"><div class="si"><div class="sn">🔊 Voice Mode</div><div class="sde">Read through earphone</div></div><button class="toggle" onclick="NH.toggleSetting('voice',this)"></button></div>
+        <div class="sr"><div class="si"><div class="sn">📳 Vibration</div><div class="sde">Vibrate on answer</div></div><button class="toggle on" onclick="NH.toggleSetting('vibration',this)"></button></div>
         <div class="sr"><div class="si"><div class="sn">☀️ Keep Awake</div><div class="sde">Prevent sleep</div></div><button class="toggle on" onclick="NH.toggleSetting('wake',this)"></button></div>
     </div>
-
     <div class="ss">
         <div class="sst">💾 Data</div>
         <button class="btn bo bsm mb-12" onclick="NH.exportData()">📤 Export</button>
@@ -298,7 +257,7 @@ Tap 🎤 below when interviewer speaks.</div>
     </div>
 </div>
 
-<!-- ===== NAV ===== -->
+<!-- NAV -->
 <nav class="nav-bar" id="navBar">
     <button class="nav-item" onclick="NH.navigate('pageLive',this)" id="navLive"><span class="ni">🎯</span>Live</button>
     <button class="nav-item" onclick="NH.navigate('pagePractice',this)"><span class="ni">🏋️</span>Practice</button>
@@ -307,24 +266,23 @@ Tap 🎤 below when interviewer speaks.</div>
 
 <script>
 const NH={
-    // ===== STATE =====
     keys:{gemini:'',groq:'',openrouter:''},
     resume:'',jobDesc:'',conversationHistory:[],questionCount:0,sessionStart:null,fontSize:19,
     mediaRecorder:null,audioChunks:[],isRecording:false,audioStream:null,
     autoListening:false,autoListenTimer:null,recordTimeout:null,
     voiceEnabled:false,voiceSpeed:1.1,vibrationEnabled:true,
-    selectedCompany:'general',currentPracticeQ:'',
-    currentProvider:'',
+    selectedCompany:'general',currentPracticeQ:'',currentProvider:'',
     requestCounts:{gemini:0,groq:0,openrouter:0},
     lastRequestTimes:{gemini:0,groq:0,openrouter:0},
+    audioContext:null,analyser:null,micMonitorInterval:null,
 
     questionBank:{
         general:["Tell me about yourself.","Why are you interested in this position?","What are your greatest strengths?","What is your biggest weakness?","Where do you see yourself in 5 years?","Tell me about a challenging project.","How do you handle conflict?","Why are you leaving your current job?","What makes you unique?","Do you have any questions for us?","Describe a time you showed leadership.","Tell me about a time you failed.","How do you handle pressure?","Why should we hire you?"],
-        google:["Why Google?","Tell me about a time you dealt with ambiguity.","Describe your most impactful project.","How would you improve Google Search?","How do you handle disagreements with teammates?"],
-        amazon:["Tell me about a time you took ownership.","Describe making a decision with incomplete data.","How do you ensure customer comes first?","Tell me about simplifying a complex process.","Tell me about a time you disagreed with your manager."],
+        google:["Why Google?","Tell me about a time you dealt with ambiguity.","Describe your most impactful project.","How would you improve Google Search?","How do you handle disagreements?"],
+        amazon:["Tell me about a time you took ownership.","Describe making a decision with incomplete data.","How do you ensure customer comes first?","Tell me about simplifying a complex process.","Tell me about disagreeing with your manager."],
         meta:["Why Meta?","How do you balance speed with quality?","Tell me about your most complex project.","How do you handle feedback?","Describe building something from 0 to 1."],
         microsoft:["Why Microsoft?","Give an example of growth mindset.","How would you improve a Microsoft product?","Describe a technical challenge you overcame."],
-        apple:["Why Apple?","Tell me about a product you designed.","How do you balance UX with technical constraints?","Describe your attention to detail."],
+        apple:["Why Apple?","Tell me about a product you designed.","How do you balance UX with technical constraints?"],
         startup:["Why join a startup?","How do you handle wearing multiple hats?","Tell me about building from scratch.","How do you handle uncertainty?"]
     },
 
@@ -342,24 +300,19 @@ const NH={
         this.voiceSpeed=parseFloat(localStorage.getItem('nh_voiceSpeed')||'1.1');
         this.fontSize=parseInt(localStorage.getItem('nh_fontSize')||'19');
 
-        // Populate setup fields
         document.getElementById('inputGeminiKey').value=this.keys.gemini;
         document.getElementById('inputGroqKey').value=this.keys.groq;
         document.getElementById('inputOpenRouterKey').value=this.keys.openrouter;
         if(this.resume)document.getElementById('inputResume').value=this.resume;
         if(this.jobDesc)document.getElementById('inputJobDesc').value=this.jobDesc;
-
-        // Populate settings
         document.getElementById('settingsGeminiKey').value=this.keys.gemini;
         document.getElementById('settingsGroqKey').value=this.keys.groq;
-        document.getElementById('settingsOpenRouterKey').value=this.keys.openrouter;
+        document.getElementById('settingsORKey').value=this.keys.openrouter;
         document.getElementById('settingsResume').value=this.resume;
         document.getElementById('settingsJobDesc').value=this.jobDesc;
         document.getElementById('speedDisplay').textContent=this.voiceSpeed.toFixed(1)+'x';
-
         this.updateKeyStatus();
 
-        // If has any key + resume, go to live
         if(this.hasAnyKey()&&this.resume){
             this.navigate('pageLive',document.getElementById('navLive'));
             document.getElementById('navBar').classList.remove('hidden');
@@ -369,16 +322,11 @@ const NH={
         }
     },
 
-    hasAnyKey(){return this.keys.gemini||this.keys.groq||this.keys.openrouter},
+    hasAnyKey(){return!!(this.keys.gemini||this.keys.groq||this.keys.openrouter)},
 
     updateKeyStatus(){
-        const update=(id,key)=>{
-            const el=document.getElementById(id);
-            if(el){el.textContent=key?'✅ Active':'No key';el.className='key-status '+(key?'active':'empty')}
-        };
-        update('ksGemini',this.keys.gemini);
-        update('ksGroq',this.keys.groq);
-        update('ksOpenRouter',this.keys.openrouter);
+        const u=(id,k)=>{const e=document.getElementById(id);if(e){e.textContent=k?'✅ Active':'No key';e.className='key-status '+(k?'active':'empty')}};
+        u('ksGemini',this.keys.gemini);u('ksGroq',this.keys.groq);u('ksOR',this.keys.openrouter);
     },
 
     // ===== SETUP =====
@@ -388,40 +336,36 @@ const NH={
         this.keys.openrouter=document.getElementById('inputOpenRouterKey').value.trim();
         this.resume=document.getElementById('inputResume').value.trim();
         this.jobDesc=document.getElementById('inputJobDesc').value.trim();
-
-        if(!this.hasAnyKey()){alert('Please enter at least ONE API key!\n\nEasiest: Google Gemini\n→ aistudio.google.com/apikey');return}
-
+        if(!this.hasAnyKey()){alert('Enter at least ONE API key!\n\nEasiest: Google Gemini\naistudio.google.com/apikey');return}
         localStorage.setItem('nh_key_gemini',this.keys.gemini);
         localStorage.setItem('nh_key_groq',this.keys.groq);
         localStorage.setItem('nh_key_openrouter',this.keys.openrouter);
         localStorage.setItem('nh_resume',this.resume);
         localStorage.setItem('nh_jobDesc',this.jobDesc);
-
-        // Update settings page
         document.getElementById('settingsGeminiKey').value=this.keys.gemini;
         document.getElementById('settingsGroqKey').value=this.keys.groq;
-        document.getElementById('settingsOpenRouterKey').value=this.keys.openrouter;
+        document.getElementById('settingsORKey').value=this.keys.openrouter;
         document.getElementById('settingsResume').value=this.resume;
         document.getElementById('settingsJobDesc').value=this.jobDesc;
         this.updateKeyStatus();
-
         document.getElementById('navBar').classList.remove('hidden');
         document.getElementById('fontControls').classList.remove('hidden');
         this.navigate('pageLive',document.getElementById('navLive'));
         this.sessionStart=Date.now();
         this.requestMicrophone();
-        this.showToast('✅ Setup complete! '+this.getActiveProviders().length+' providers ready');
+        const count=this.getActiveProviders().length;
+        this.showToast('✅ Ready! '+count+' provider'+(count>1?'s':'')+' active');
     },
 
     getActiveProviders(){
         const p=[];
-        if(this.keys.gemini)p.push('gemini');
         if(this.keys.groq)p.push('groq');
+        if(this.keys.gemini)p.push('gemini');
         if(this.keys.openrouter)p.push('openrouter');
         return p;
     },
 
-    // ===== NAVIGATION =====
+    // ===== NAV =====
     navigate(pageId,navItem){
         document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -430,47 +374,125 @@ const NH={
         document.getElementById('fontControls').classList.toggle('hidden',pageId!=='pageLive');
     },
 
-    // ===== MICROPHONE =====
+    // ===== MIC =====
     async requestMicrophone(){
         try{
-            this.audioStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+            this.audioStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,sampleRate:16000}});
             this.setStatus('listening','● LISTENING');
-        }catch(e){alert('Microphone access needed!\n\n'+e.message);this.setStatus('error','● MIC ERROR')}
+            console.log('Mic ready');
+        }catch(e){
+            alert('Microphone access needed!\n\n'+e.message+'\n\nCheck browser settings and allow microphone for this site.');
+            this.setStatus('error','● MIC ERROR');
+        }
     },
 
+    // ===== MIC MONITOR =====
+    startMicMonitor(){
+        try{
+            this.audioContext=new(window.AudioContext||window.webkitAudioContext)();
+            this.analyser=this.audioContext.createAnalyser();
+            this.analyser.fftSize=256;
+            const source=this.audioContext.createMediaStreamSource(this.audioStream);
+            source.connect(this.analyser);
+            const data=new Uint8Array(this.analyser.frequencyBinCount);
+            const bar=document.getElementById('micLevelBar');
+            const st=document.getElementById('micStatus');
+            this.micMonitorInterval=setInterval(()=>{
+                this.analyser.getByteFrequencyData(data);
+                const avg=data.reduce((a,b)=>a+b,0)/data.length;
+                const pct=Math.min(100,avg*1.5);
+                if(bar)bar.style.width=pct+'%';
+                if(st){
+                    if(pct>50){bar.style.background='var(--p)';st.textContent='👍 Good';st.style.color='var(--p)'}
+                    else if(pct>15){bar.style.background='var(--w)';st.textContent='OK';st.style.color='var(--w)'}
+                    else{bar.style.background='var(--d)';st.textContent='Quiet';st.style.color='var(--d)'}
+                }
+            },100);
+        }catch(e){console.log('Monitor err:',e)}
+    },
+
+    stopMicMonitor(){
+        clearInterval(this.micMonitorInterval);
+        try{if(this.audioContext&&this.audioContext.state!=='closed')this.audioContext.close()}catch(e){}
+        this.audioContext=null;
+        const bar=document.getElementById('micLevelBar');
+        const st=document.getElementById('micStatus');
+        if(bar)bar.style.width='0%';
+        if(st){st.textContent='--';st.style.color='var(--tm)'}
+    },
+
+    // ===== TEST MIC =====
+    async testMic(){
+        if(!this.audioStream){await this.requestMicrophone();if(!this.audioStream)return}
+        this.showToast('🎤 Speak now! 3 sec test...');
+        this.startMicMonitor();
+        const chunks=[];
+        const fmts=['audio/webm;codecs=opus','audio/webm','audio/mp4',''];
+        let fmt='';for(const f of fmts){if(!f||(typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported(f))){fmt=f;break}}
+        let rec;try{rec=fmt?new MediaRecorder(this.audioStream,{mimeType:fmt}):new MediaRecorder(this.audioStream)}catch(e){rec=new MediaRecorder(this.audioStream)}
+        rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
+        rec.start(100);
+        await this.sleep(3000);
+        rec.stop();this.stopMicMonitor();
+        await this.sleep(500);
+        const blob=new Blob(chunks,{type:rec.mimeType||'audio/webm'});
+        let msg='🎤 Mic Test Results:\n\n';
+        msg+='Format: '+(rec.mimeType||'unknown')+'\n';
+        msg+='Size: '+blob.size+' bytes ('+(blob.size/1024).toFixed(1)+' KB)\n\n';
+        if(blob.size<500){msg+='❌ No audio captured!\n\n• Check browser mic permission\n• Close other apps using mic\n• Try different browser'}
+        else if(blob.size<2000){msg+='⚠️ Very quiet audio\n\n• Speak louder\n• Move phone closer\n• Turn up computer volume'}
+        else{
+            msg+='✅ Audio captured OK!\n\nTesting transcription...\n';
+            try{
+                const text=await this.transcribeAudio(blob);
+                if(text&&text.length>2)msg+='\n✅ Transcription works!\nHeard: "'+text+'"';
+                else msg+='\n⚠️ No speech detected.\nSpeak louder or closer next time.';
+            }catch(e){msg+='\n❌ Transcription error: '+e.message+'\n\nYou can always use ⌨️ Type Question instead!'}
+        }
+        alert(msg);
+    },
+
+    // ===== RECORDING =====
     toggleRecording(){this.isRecording?this.stopRecording():this.startRecording()},
 
     async startRecording(){
         if(!this.audioStream){await this.requestMicrophone();if(!this.audioStream)return}
+        this.startMicMonitor();
         this.audioChunks=[];
-        let mt='audio/webm;codecs=opus';
-        if(typeof MediaRecorder!=='undefined'){
-            if(!MediaRecorder.isTypeSupported(mt))mt='audio/webm';
-            if(!MediaRecorder.isTypeSupported(mt))mt='audio/mp4';
-            if(!MediaRecorder.isTypeSupported(mt))mt='';
-        }
-        try{this.mediaRecorder=mt?new MediaRecorder(this.audioStream,{mimeType:mt}):new MediaRecorder(this.audioStream)}
-        catch(e){this.mediaRecorder=new MediaRecorder(this.audioStream)}
+        const fmts=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus',''];
+        let fmt='';for(const f of fmts){if(!f||(typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported(f))){fmt=f;break}}
+        try{this.mediaRecorder=fmt?new MediaRecorder(this.audioStream,{mimeType:fmt}):new MediaRecorder(this.audioStream)}catch(e){this.mediaRecorder=new MediaRecorder(this.audioStream)}
+        console.log('Rec format:',this.mediaRecorder.mimeType);
         this.mediaRecorder.ondataavailable=e=>{if(e.data.size>0)this.audioChunks.push(e.data)};
-        this.mediaRecorder.onstop=()=>{const b=new Blob(this.audioChunks,{type:this.mediaRecorder.mimeType||'audio/webm'});this.processAudio(b)};
-        this.mediaRecorder.start(250);this.isRecording=true;
+        this.mediaRecorder.onstop=()=>{
+            this.stopMicMonitor();
+            const blob=new Blob(this.audioChunks,{type:this.mediaRecorder.mimeType||'audio/webm'});
+            console.log('Blob:',blob.size,'bytes',blob.type);
+            if(blob.size<1000){
+                document.getElementById('answerText').textContent='🔇 No audio detected.\n\n• Speak louder\n• Phone closer to speaker\n• Try 🎤 Test button\n• Or use ⌨️ Type Question';
+                this.setStatus('listening','● LISTENING');return;
+            }
+            this.processAudio(blob);
+        };
+        this.mediaRecorder.start(100);this.isRecording=true;
         const btn=document.getElementById('recordBtn');btn.textContent='⏹ Tap to Stop';btn.style.background='var(--d)';btn.style.color='#fff';
         this.setStatus('recording','🔴 RECORDING');
         this.recordTimeout=setTimeout(()=>{if(this.isRecording)this.stopRecording()},30000);
     },
 
     stopRecording(){
-        clearTimeout(this.recordTimeout);
+        clearTimeout(this.recordTimeout);this.stopMicMonitor();
         if(this.mediaRecorder&&this.mediaRecorder.state!=='inactive')this.mediaRecorder.stop();
         this.isRecording=false;
         const btn=document.getElementById('recordBtn');btn.textContent='🎤 Tap to Listen';btn.style.background='var(--p)';btn.style.color='#0a0a1a';
     },
 
+    // ===== AUTO LISTEN =====
     toggleAutoListen(){
         this.autoListening=!this.autoListening;
         const btn=document.getElementById('autoListenBtn'),ind=document.getElementById('autoIndicator');
-        if(this.autoListening){btn.textContent='🔄 Auto-Listen: ON';btn.style.borderColor='var(--p)';btn.style.color='var(--p)';ind.classList.add('active');ind.querySelector('span').textContent='Auto-listening active';this.autoListenLoop()}
-        else{btn.textContent='🔄 Auto-Listen: OFF';btn.style.borderColor='#333';btn.style.color='#aaa';ind.classList.remove('active');ind.querySelector('span').textContent='Auto-listen inactive';clearTimeout(this.autoListenTimer)}
+        if(this.autoListening){btn.textContent='🔄 Auto: ON';btn.style.borderColor='var(--p)';btn.style.color='var(--p)';ind.classList.add('active');ind.querySelector('span').textContent='Auto-listening';this.autoListenLoop()}
+        else{btn.textContent='🔄 Auto: OFF';btn.style.borderColor='#333';btn.style.color='#aaa';ind.classList.remove('active');ind.querySelector('span').textContent='Auto-listen off';clearTimeout(this.autoListenTimer)}
     },
 
     async autoListenLoop(){
@@ -479,157 +501,84 @@ const NH={
         this.autoListenTimer=setTimeout(()=>{if(this.isRecording)this.stopRecording();this.autoListenTimer=setTimeout(()=>{if(this.autoListening)this.autoListenLoop()},5000)},10000);
     },
 
-    // ===== CORE AI - MULTI PROVIDER =====
+    // ===== BASE64 =====
+    blobToBase64(blob){
+        return new Promise((resolve,reject)=>{
+            const reader=new FileReader();
+            reader.onloadend=()=>resolve(reader.result.split(',')[1]);
+            reader.onerror=reject;
+            reader.readAsDataURL(blob);
+        });
+    },
+
+    // ===== HELPERS =====
     sleep(ms){return new Promise(r=>setTimeout(r,ms))},
 
-    isRateLimited(provider){
+    isRateLimited(p){
         const now=Date.now();
-        const elapsed=now-this.lastRequestTimes[provider];
-        if(elapsed>60000){this.requestCounts[provider]=0;return false}
+        if(now-this.lastRequestTimes[p]>60000){this.requestCounts[p]=0;return false}
         const limits={gemini:13,groq:25,openrouter:15};
-        return this.requestCounts[provider]>=(limits[provider]||10);
+        return this.requestCounts[p]>=(limits[p]||10);
     },
 
-    trackRequest(provider){
+    trackRequest(p){
         const now=Date.now();
-        if(now-this.lastRequestTimes[provider]>60000)this.requestCounts[provider]=0;
-        this.requestCounts[provider]++;
-        this.lastRequestTimes[provider]=now;
-    },
-
-    async callGemini(prompt,model){
-        model=model||'gemini-1.5-flash-8b';
-        this.trackRequest('gemini');
-        const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.keys.gemini}`,{
-            method:'POST',headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:500}})
-        });
-        if(r.status===429)throw new Error('RATE_LIMIT');
-        if(!r.ok)throw new Error('Gemini error: '+r.status);
-        const d=await r.json();
-        return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
-    },
-
-    async callGroq(prompt){
-        this.trackRequest('groq');
-        const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-            method:'POST',headers:{'Authorization':`Bearer ${this.keys.groq}`,'Content-Type':'application/json'},
-            body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:500})
-        });
-        if(r.status===429)throw new Error('RATE_LIMIT');
-        if(!r.ok)throw new Error('Groq error: '+r.status);
-        const d=await r.json();return d.choices[0].message.content;
-    },
-
-    async callOpenRouter(prompt){
-        this.trackRequest('openrouter');
-        const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{
-            method:'POST',headers:{'Authorization':`Bearer ${this.keys.openrouter}`,'Content-Type':'application/json','HTTP-Referer':location.href},
-            body:JSON.stringify({model:'meta-llama/llama-3.1-8b-instruct:free',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:500})
-        });
-        if(r.status===429)throw new Error('RATE_LIMIT');
-        if(!r.ok)throw new Error('OpenRouter error: '+r.status);
-        const d=await r.json();return d.choices[0].message.content;
-    },
-
-    async callAI(prompt){
-        const providers=this.getActiveProviders();
-        if(providers.length===0)throw new Error('No API keys configured. Go to Settings.');
-
-        // Sort: prefer non-rate-limited providers
-        const sorted=providers.filter(p=>!this.isRateLimited(p)).concat(providers.filter(p=>this.isRateLimited(p)));
-        let lastError='';
-
-        for(const provider of sorted){
-            try{
-                this.currentProvider=provider;
-                document.getElementById('activeProvider').textContent=provider;
-                let result='';
-
-                if(provider==='gemini'){
-                    // Try fast model first, then fallback
-                    try{result=await this.callGemini(prompt,'gemini-1.5-flash-8b')}
-                    catch(e){
-                        if(e.message==='RATE_LIMIT'){
-                            try{result=await this.callGemini(prompt,'gemini-2.0-flash')}
-                            catch(e2){if(e2.message==='RATE_LIMIT')throw e2;throw e2}
-                        }else throw e;
-                    }
-                }else if(provider==='groq'){
-                    result=await this.callGroq(prompt);
-                }else if(provider==='openrouter'){
-                    result=await this.callOpenRouter(prompt);
-                }
-
-                if(result)return result;
-            }catch(e){
-                lastError=e.message;
-                if(e.message==='RATE_LIMIT'){
-                    console.log(`${provider} rate limited, trying next...`);
-                    continue;
-                }
-                console.log(`${provider} error: ${e.message}`);
-                continue;
-            }
-        }
-
-        // All providers failed - wait and retry once
-        if(lastError==='RATE_LIMIT'){
-            this.setStatus('waiting','⏳ RATE LIMITED - WAITING');
-            document.getElementById('answerText').innerHTML='⏳ All providers rate limited. Waiting 15 seconds...';
-            await this.sleep(15000);
-
-            // Retry with first available
-            for(const provider of providers){
-                try{
-                    this.currentProvider=provider;
-                    if(provider==='gemini')return await this.callGemini(prompt,'gemini-1.5-flash-8b');
-                    if(provider==='groq')return await this.callGroq(prompt);
-                    if(provider==='openrouter')return await this.callOpenRouter(prompt);
-                }catch(e){continue}
-            }
-        }
-
-        throw new Error('All providers failed. '+lastError+'\n\nTip: Add more API keys in Settings for auto-fallback.');
+        if(now-this.lastRequestTimes[p]>60000)this.requestCounts[p]=0;
+        this.requestCounts[p]++;this.lastRequestTimes[p]=now;
     },
 
     // ===== TRANSCRIPTION =====
     async transcribeAudio(audioBlob){
-        const providers=this.getActiveProviders();
-        let question='';
-
-        // Try Groq first for transcription (best audio support)
+        // Try Groq Whisper first (best for audio)
         if(this.keys.groq&&!this.isRateLimited('groq')){
             try{
+                console.log('Trying Groq Whisper...');
                 this.trackRequest('groq');
-                const fd=new FormData();fd.append('file',audioBlob,'recording.webm');fd.append('model','whisper-large-v3');fd.append('language','en');
-                const r=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{'Authorization':`Bearer ${this.keys.groq}`},body:fd});
-                if(r.ok){const d=await r.json();question=(d.text||'').trim();if(question)return question}
-            }catch(e){console.log('Groq transcription failed:',e)}
-        }
-
-        // Try Gemini for transcription
-        if(this.keys.gemini&&!this.isRateLimited('gemini')){
-            try{
-                this.trackRequest('gemini');
-                const ab=await audioBlob.arrayBuffer();
-                const bytes=new Uint8Array(ab);
-                let b64='';
-                const chunk=8192;
-                for(let i=0;i<bytes.length;i+=chunk){b64+=String.fromCharCode.apply(null,bytes.subarray(i,i+chunk))}
-                b64=btoa(b64);
-
-                const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${this.keys.gemini}`,{
-                    method:'POST',headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({contents:[{parts:[{text:"Transcribe this audio. Return ONLY the spoken words. If no speech, return empty."},{inline_data:{mime_type:audioBlob.type||'audio/webm',data:b64}}]}]})
+                const fd=new FormData();
+                fd.append('file',audioBlob,'recording.webm');
+                fd.append('model','whisper-large-v3');
+                fd.append('language','en');
+                const r=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{
+                    method:'POST',headers:{'Authorization':'Bearer '+this.keys.groq},body:fd
                 });
-                if(r.ok){const d=await r.json();question=(d.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();if(question)return question}
-            }catch(e){console.log('Gemini transcription failed:',e)}
+                if(r.ok){const d=await r.json();const t=(d.text||'').trim();console.log('Groq:',t);if(t.length>2)return t}
+                else console.log('Groq status:',r.status);
+            }catch(e){console.log('Groq err:',e.message)}
         }
 
-        // Fallback: ask user to type
-        question=prompt('Could not transcribe audio.\n\nType the interview question:');
-        return question||'';
+        // Try Gemini
+        if(this.keys.gemini&&!this.isRateLimited('gemini')){
+            const models=['gemini-1.5-flash','gemini-2.0-flash','gemini-1.5-flash-8b'];
+            for(const model of models){
+                try{
+                    console.log('Trying '+model+'...');
+                    this.trackRequest('gemini');
+                    const b64=await this.blobToBase64(audioBlob);
+                    const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+this.keys.gemini,{
+                        method:'POST',headers:{'Content-Type':'application/json'},
+                        body:JSON.stringify({
+                            contents:[{parts:[
+                                {text:"Listen carefully to this audio and transcribe exactly what is being said. Return ONLY the spoken words as plain text. If you hear no speech at all, respond with just the word EMPTY."},
+                                {inline_data:{mime_type:audioBlob.type||'audio/webm',data:b64}}
+                            ]}],
+                            generationConfig:{temperature:0.1,maxOutputTokens:300}
+                        })
+                    });
+                    if(r.ok){
+                        const d=await r.json();
+                        let t=(d.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
+                        t=t.replace(/^["']|["']$/g,'').trim();
+                        console.log(model+':',t);
+                        if(t&&t.length>2&&t!=='EMPTY'&&!t.toLowerCase().includes('no speech')&&!t.toLowerCase().includes('cannot hear')&&!t.toLowerCase().includes('no audio')&&!t.toLowerCase().includes('silence'))return t;
+                    }else{
+                        if(r.status===429){console.log(model+' rate limited');continue}
+                        console.log(model+' status:',r.status);
+                    }
+                }catch(e){console.log(model+' err:',e.message);continue}
+            }
+        }
+
+        return '';
     },
 
     // ===== PROCESS AUDIO =====
@@ -637,10 +586,16 @@ const NH={
         const startTime=Date.now();
         try{
             this.setStatus('transcribing','● TRANSCRIBING');
+            document.getElementById('answerText').innerHTML='🔄 Transcribing audio...';
+
             const question=await this.transcribeAudio(audioBlob);
 
-            if(!question||question.length<5){this.setStatus('listening','● LISTENING');return}
-            const noise=['thank you','thanks','okay','ok','um','uh','hmm','mhm','ah','right','sure','yes','no'];
+            if(!question||question.length<3){
+                document.getElementById('answerText').innerHTML='🔇 No speech detected.\n\n• Speak louder and closer to phone\n• Try 🎤 Test button to check mic\n• Or use ⌨️ Type Question\n\nReady to listen again.';
+                this.setStatus('listening','● LISTENING');return;
+            }
+
+            const noise=['thank you','thanks','okay','ok','um','uh','hmm','mhm','ah','right','sure','yes','no','you know','empty'];
             if(noise.includes(question.toLowerCase().trim())){this.setStatus('listening','● LISTENING');return}
 
             const qType=this.classifyQuestion(question);
@@ -659,29 +614,103 @@ const NH={
             if(this.voiceEnabled)this.speakAnswer(answer);
         }catch(e){
             console.error(e);
-            document.getElementById('answerText').textContent='❌ '+e.message+'\n\nTry ⌨️ Type Question button.';
+            document.getElementById('answerText').textContent='❌ '+e.message+'\n\n• Use ⌨️ Type Question\n• Check API keys in Settings\n• Add more providers for fallback';
             this.setStatus('error','● ERROR');
             setTimeout(()=>this.setStatus('listening','● LISTENING'),3000);
         }
+    },
+
+    // ===== AI PROVIDERS =====
+    async callGemini(prompt,model){
+        model=model||'gemini-1.5-flash-8b';
+        this.trackRequest('gemini');
+        const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+this.keys.gemini,{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:500}})
+        });
+        if(r.status===429)throw new Error('RATE_LIMIT');
+        if(!r.ok)throw new Error('Gemini '+r.status);
+        const d=await r.json();return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+    },
+
+    async callGroq(prompt){
+        this.trackRequest('groq');
+        const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+            method:'POST',headers:{'Authorization':'Bearer '+this.keys.groq,'Content-Type':'application/json'},
+            body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:500})
+        });
+        if(r.status===429)throw new Error('RATE_LIMIT');
+        if(!r.ok)throw new Error('Groq '+r.status);
+        const d=await r.json();return d.choices[0].message.content;
+    },
+
+    async callOpenRouter(prompt){
+        this.trackRequest('openrouter');
+        const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{
+            method:'POST',headers:{'Authorization':'Bearer '+this.keys.openrouter,'Content-Type':'application/json','HTTP-Referer':location.href},
+            body:JSON.stringify({model:'meta-llama/llama-3.1-8b-instruct:free',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:500})
+        });
+        if(r.status===429)throw new Error('RATE_LIMIT');
+        if(!r.ok)throw new Error('OpenRouter '+r.status);
+        const d=await r.json();return d.choices[0].message.content;
+    },
+
+    async callAI(prompt){
+        const providers=this.getActiveProviders();
+        if(!providers.length)throw new Error('No API keys! Go to Settings.');
+        const sorted=providers.filter(p=>!this.isRateLimited(p)).concat(providers.filter(p=>this.isRateLimited(p)));
+        let lastErr='';
+
+        for(const p of sorted){
+            try{
+                this.currentProvider=p;
+                document.getElementById('activeProvider').textContent=p;
+                if(p==='gemini'){
+                    try{return await this.callGemini(prompt,'gemini-1.5-flash-8b')}
+                    catch(e){if(e.message==='RATE_LIMIT'){try{return await this.callGemini(prompt,'gemini-2.0-flash')}catch(e2){throw e2}}throw e}
+                }
+                if(p==='groq')return await this.callGroq(prompt);
+                if(p==='openrouter')return await this.callOpenRouter(prompt);
+            }catch(e){
+                lastErr=e.message;
+                if(e.message==='RATE_LIMIT'){console.log(p+' rate limited');continue}
+                console.log(p+' error:',e.message);continue;
+            }
+        }
+
+        if(lastErr==='RATE_LIMIT'){
+            this.setStatus('waiting','⏳ WAITING');
+            document.getElementById('answerText').innerHTML='⏳ Rate limited. Waiting 15s...';
+            await this.sleep(15000);
+            for(const p of providers){
+                try{
+                    if(p==='gemini')return await this.callGemini(prompt);
+                    if(p==='groq')return await this.callGroq(prompt);
+                    if(p==='openrouter')return await this.callOpenRouter(prompt);
+                }catch(e){continue}
+            }
+        }
+
+        throw new Error('All providers failed. '+lastErr+'\n\nAdd more API keys in Settings.');
     },
 
     // ===== GENERATE ANSWER =====
     async generateAnswer(question,qType){
         this.conversationHistory.push('Q: '+question);
         const hist=this.conversationHistory.slice(-8).join('\n');
-        let sp='';
-        if(qType==='behavioral')sp=`Expert interview coach. LIVE interview.\nRESUME:\n${this.resume.substring(0,2500)}\nJOB:\n${this.jobDesc.substring(0,1000)}\nHISTORY:\n${hist}\nRULES: First person. STAR: **Situation**→**Task**→**Action**→**Result**. Metrics from resume. **key phrases**. 5-7 sentences. Natural.`;
-        else if(qType==='coding')sp=`Expert coding coach.\nRESUME: ${this.resume.substring(0,1500)}\nRULES: **Approach** (2 sent). Clean code. **Time O(?)** **Space O(?)**. **Edge cases**. Concise.`;
-        else sp=`Expert interview coach. LIVE interview.\nRESUME:\n${this.resume.substring(0,2500)}\nJOB:\n${this.jobDesc.substring(0,1000)}\nHISTORY:\n${hist}\nRULES: First person. 3-5 sent simple, 5-7 complex. Metrics. **key phrases**. Natural confident. End with impact.`;
-        const answer=await this.callAI(sp+'\n\nInterview question: '+question+'\n\nAnswer:');
+        let sp;
+        if(qType==='behavioral')sp='Expert interview coach. LIVE interview.\nRESUME:\n'+this.resume.substring(0,2500)+'\nJOB:\n'+this.jobDesc.substring(0,1000)+'\nHISTORY:\n'+hist+'\nRULES: First person. STAR: **Situation**→**Task**→**Action**→**Result**. Metrics. **key phrases**. 5-7 sentences. Natural.';
+        else if(qType==='coding')sp='Expert coding coach.\nRESUME: '+this.resume.substring(0,1500)+'\nRULES: **Approach** (2 sent). Code. **Time O(?)** **Space O(?)**. **Edge cases**. Concise.';
+        else sp='Expert interview coach. LIVE interview.\nRESUME:\n'+this.resume.substring(0,2500)+'\nJOB:\n'+this.jobDesc.substring(0,1000)+'\nHISTORY:\n'+hist+'\nRULES: First person. 3-5 sent simple, 5-7 complex. Metrics. **key phrases**. Natural. End with impact.';
+        const answer=await this.callAI(sp+'\n\nQuestion: '+question+'\n\nAnswer:');
         this.conversationHistory.push('A: '+answer);return answer;
     },
 
     classifyQuestion(t){
         t=t.toLowerCase();
         if(['tell me about a time','describe a situation','give me an example','how did you handle','challenge','conflict','failure','leadership','teamwork','disagree'].some(w=>t.includes(w)))return'behavioral';
-        if(['algorithm','function','array','string','tree','sort','search','code','implement','data structure','complexity','optimize','linked list','hash','stack','queue'].some(w=>t.includes(w)))return'coding';
-        if(['design a system','architecture','scale','millions of users','distributed','system design'].some(w=>t.includes(w)))return'system design';
+        if(['algorithm','array','string','tree','sort','search','code','implement','data structure','complexity','optimize','linked list','hash map','stack','queue'].some(w=>t.includes(w)))return'coding';
+        if(['design a system','architecture','scale','millions of users','system design'].some(w=>t.includes(w)))return'system design';
         return'general';
     },
 
@@ -702,8 +731,10 @@ const NH={
         const st=Date.now();
         try{
             const qt=this.classifyQuestion(question);
-            document.getElementById('questionText').textContent=question;document.getElementById('questionType').textContent=qt;
-            document.getElementById('answerText').innerHTML='<span class="ld">⏳ Generating</span>';this.setStatus('thinking','● THINKING');
+            document.getElementById('questionText').textContent=question;
+            document.getElementById('questionType').textContent=qt;
+            document.getElementById('answerText').innerHTML='<span class="ld">⏳ Generating</span>';
+            this.setStatus('thinking','● THINKING');
             const answer=await this.generateAnswer(question,qt);
             this.questionCount++;this.displayAnswer(answer);
             document.getElementById('statQuestions').textContent=this.questionCount;
@@ -718,7 +749,7 @@ const NH={
     toggleVoice(){
         this.voiceEnabled=!this.voiceEnabled;localStorage.setItem('nh_voice',this.voiceEnabled);
         const b=document.getElementById('voiceToggle');
-        b.textContent=this.voiceEnabled?'🔊 Voice ON':'🔇 Voice OFF';b.className='vt '+(this.voiceEnabled?'on':'off');
+        b.textContent=this.voiceEnabled?'🔊 ON':'🔇 OFF';b.className='vt '+(this.voiceEnabled?'on':'off');
         if(!this.voiceEnabled)speechSynthesis.cancel();
     },
     adjustSpeed(d){this.voiceSpeed=Math.max(0.5,Math.min(2.5,this.voiceSpeed+d));document.getElementById('speedDisplay').textContent=this.voiceSpeed.toFixed(1)+'x';localStorage.setItem('nh_voiceSpeed',this.voiceSpeed)},
@@ -730,11 +761,13 @@ const NH={
 
     // ===== PRACTICE =====
     selectCompany(c,b){this.selectedCompany=c;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));b.classList.add('active')},
+
     nextPracticeQuestion(){
         const qs=this.questionBank[this.selectedCompany]||this.questionBank.general;
         this.currentPracticeQ=qs[Math.floor(Math.random()*qs.length)];
         document.getElementById('practiceQuestion').textContent=this.currentPracticeQ;
-        document.getElementById('practiceAnswer').value='';document.getElementById('practiceFeedback').classList.add('hidden');
+        document.getElementById('practiceAnswer').value='';
+        document.getElementById('practiceFeedback').classList.add('hidden');
     },
 
     async evaluatePracticeAnswer(){
@@ -742,7 +775,7 @@ const NH={
         if(!a){alert('Write answer first!');return}
         const fb=document.getElementById('practiceFeedback');fb.classList.remove('hidden');fb.innerHTML='<span class="ld">🤖 Evaluating</span>';
         try{
-            const r=await this.callAI(`Interview coach. Resume: ${this.resume.substring(0,1500)}\nEvaluate:\n1. **Score**: X/10\n2. **Strengths**: 2 points\n3. **Improvements**: 2 points\n4. **Better Answer**: 4-5 sentences\n\nQuestion: ${this.currentPracticeQ}\nAnswer: ${a}`);
+            const r=await this.callAI('Interview coach.\nResume: '+this.resume.substring(0,1500)+'\n\n1. **Score**: X/10\n2. **Strengths**: 2 points\n3. **Improvements**: 2 points\n4. **Better Answer**: 4-5 sentences\n\nQuestion: '+this.currentPracticeQ+'\nAnswer: '+a);
             fb.innerHTML=r.replace(/\*\*(.*?)\*\*/g,'<b style="color:var(--p)">$1</b>');
         }catch(e){fb.textContent='❌ '+e.message}
     },
@@ -751,7 +784,7 @@ const NH={
         if(!this.currentPracticeQ){alert('Get question first!');return}
         const fb=document.getElementById('practiceFeedback');fb.classList.remove('hidden');fb.innerHTML='<span class="ld">💡 Generating</span>';
         try{
-            const r=await this.callAI(`Expert coach. Resume: ${this.resume.substring(0,2000)}\nJob: ${this.jobDesc.substring(0,800)}\nPERFECT answer. First person. Metrics. **key phrases**. STAR for behavioral. 4-6 sentences.\n\nQuestion: ${this.currentPracticeQ}`);
+            const r=await this.callAI('Expert coach.\nResume: '+this.resume.substring(0,2000)+'\nJob: '+this.jobDesc.substring(0,800)+'\nPERFECT answer. First person. Metrics. **key phrases**. STAR for behavioral. 4-6 sentences.\n\nQuestion: '+this.currentPracticeQ);
             fb.innerHTML='<div style="color:var(--p);font-weight:700;margin-bottom:8px;font-size:12px">💡 IDEAL ANSWER</div>'+r.replace(/\*\*(.*?)\*\*/g,'<b style="color:var(--p)">$1</b>');
         }catch(e){fb.textContent='❌ '+e.message}
     },
@@ -761,7 +794,7 @@ const NH={
         if(!c){alert('Enter company name');return}
         const re=document.getElementById('prepResult');re.classList.remove('hidden');re.innerHTML='<span class="ld">📋 Generating (10-15s)</span>';
         try{
-            const r=await this.callAI(`Prep sheet.\nCOMPANY: ${c}\nROLE: ${ro||'Software Engineer'}\nRESUME: ${this.resume.substring(0,2000)}\n\n1. **Company Overview** (2-3 sent)\n2. **Top 8 Questions** with answers\n3. **Technical Topics**\n4. **3 Questions to ASK**\n5. **Red Flags to Avoid**\n6. **Power Phrases**\n7. **Elevator Pitch**\nUse resume details.`);
+            const r=await this.callAI('Prep sheet.\nCOMPANY: '+c+'\nROLE: '+(ro||'Software Engineer')+'\nRESUME: '+this.resume.substring(0,2000)+'\n\n1. **Company Overview**\n2. **Top 8 Questions** with answers\n3. **Technical Topics**\n4. **3 Questions to ASK**\n5. **Avoid**\n6. **Power Phrases**\n7. **Elevator Pitch**\nUse resume.');
             re.innerHTML=r.replace(/\*\*(.*?)\*\*/g,'<b style="color:var(--p)">$1</b>').replace(/#{1,3}\s(.*?)(\n|$)/g,'<div style="color:var(--d);font-weight:700;margin-top:12px;font-size:15px">$1</div>').replace(/\n/g,'<br>');
         }catch(e){re.textContent='❌ '+e.message}
     },
@@ -770,7 +803,7 @@ const NH={
     saveSettings(){
         this.keys.gemini=document.getElementById('settingsGeminiKey').value.trim();
         this.keys.groq=document.getElementById('settingsGroqKey').value.trim();
-        this.keys.openrouter=document.getElementById('settingsOpenRouterKey').value.trim();
+        this.keys.openrouter=document.getElementById('settingsORKey').value.trim();
         this.resume=document.getElementById('settingsResume').value.trim();
         this.jobDesc=document.getElementById('settingsJobDesc').value.trim();
         localStorage.setItem('nh_key_gemini',this.keys.gemini);localStorage.setItem('nh_key_groq',this.keys.groq);
@@ -780,21 +813,12 @@ const NH={
     },
 
     async testAllKeys(){
-        let results=[];
-        if(this.keys.gemini){
-            try{const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${this.keys.gemini}`);results.push('Gemini: '+(r.ok?'✅ Valid':'❌ Invalid'))}
-            catch(e){results.push('Gemini: ❌ Failed')}
-        }
-        if(this.keys.groq){
-            try{const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{'Authorization':`Bearer ${this.keys.groq}`}});results.push('Groq: '+(r.ok?'✅ Valid':'❌ Invalid'))}
-            catch(e){results.push('Groq: ❌ Failed')}
-        }
-        if(this.keys.openrouter){
-            try{const r=await fetch('https://openrouter.ai/api/v1/models',{headers:{'Authorization':`Bearer ${this.keys.openrouter}`}});results.push('OpenRouter: '+(r.ok?'✅ Valid':'❌ Invalid'))}
-            catch(e){results.push('OpenRouter: ❌ Failed')}
-        }
-        if(results.length===0)results.push('No keys to test');
-        alert('API Key Test Results:\n\n'+results.join('\n'));
+        let res=[];
+        if(this.keys.gemini){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?key='+this.keys.gemini);res.push('Gemini: '+(r.ok?'✅':'❌ '+r.status))}catch(e){res.push('Gemini: ❌')}}
+        if(this.keys.groq){try{const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{'Authorization':'Bearer '+this.keys.groq}});res.push('Groq: '+(r.ok?'✅':'❌ '+r.status))}catch(e){res.push('Groq: ❌')}}
+        if(this.keys.openrouter){try{const r=await fetch('https://openrouter.ai/api/v1/models',{headers:{'Authorization':'Bearer '+this.keys.openrouter}});res.push('OpenRouter: '+(r.ok?'✅':'❌ '+r.status))}catch(e){res.push('OpenRouter: ❌')}}
+        if(!res.length)res.push('No keys configured');
+        alert('API Key Test:\n\n'+res.join('\n'));
     },
 
     toggleSetting(n,b){
@@ -805,14 +829,14 @@ const NH={
     },
 
     exportData(){
-        const d={keys:{gemini:this.keys.gemini?'[HIDDEN]':'',groq:this.keys.groq?'[HIDDEN]':'',openrouter:this.keys.openrouter?'[HIDDEN]':''},resume:this.resume,jobDesc:this.jobDesc,history:this.conversationHistory,questions:this.questionCount};
+        const d={resume:this.resume,jobDesc:this.jobDesc,history:this.conversationHistory,questions:this.questionCount};
         const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);
         const a=document.createElement('a');a.href=u;a.download='neuralhire_export.json';a.click();URL.revokeObjectURL(u);
         this.showToast('📤 Exported!');
     },
 
     clearAllData(){if(confirm('Delete ALL data?')){localStorage.clear();location.reload()}},
-    setupTimer(){setInterval(()=>{if(!this.sessionStart)return;const e=Math.floor((Date.now()-this.sessionStart)/1000);document.getElementById('statSession').textContent=`${Math.floor(e/60)}:${(e%60).toString().padStart(2,'0')}`},1000)},
+    setupTimer(){setInterval(()=>{if(!this.sessionStart)return;const e=Math.floor((Date.now()-this.sessionStart)/1000);document.getElementById('statSession').textContent=Math.floor(e/60)+':'+(e%60).toString().padStart(2,'0')},1000)},
     async requestWakeLock(){try{if('wakeLock' in navigator)await navigator.wakeLock.request('screen')}catch(e){}},
     showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
 };
@@ -821,6 +845,5 @@ document.addEventListener('DOMContentLoaded',()=>NH.init());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)NH.requestWakeLock()});
 if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
 </script>
-
 </body>
 </html>
