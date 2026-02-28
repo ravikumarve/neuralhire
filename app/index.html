@@ -1,23 +1,1835 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuralHire App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a1a">
+    <title>🎯 NeuralHire</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a0a1a; color: #fff; font-family: -apple-system, sans-serif; padding: 20px; min-height: 100vh; }
-        h1 { color: #00ff88; margin-bottom: 10px; }
-        p { color: #aaa; margin-bottom: 20px; }
-        .status { color: #00ff88; font-size: 14px; padding: 8px 16px; background: rgba(0,255,136,0.1); border-radius: 8px; display: inline-block; }
+        /* ============ RESET & BASE ============ */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background: #0a0a1a;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 0;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* ============ VARIABLES ============ */
+        :root {
+            --primary: #00ff88;
+            --danger: #e94560;
+            --warning: #ffaa00;
+            --info: #6666ff;
+            --bg: #0a0a1a;
+            --card: #16213e;
+            --card-light: #1a1a3e;
+            --card-dark: #0d1b2a;
+            --text: #ffffff;
+            --text-dim: #aaaaaa;
+            --text-muted: #666666;
+            --border: #1a1a3e;
+        }
+
+        /* ============ NAVIGATION ============ */
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #111122;
+            border-top: 1px solid var(--border);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 6px 0;
+            padding-bottom: max(6px, env(safe-area-inset-bottom));
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            transition: color 0.2s;
+            border: none;
+            background: none;
+        }
+
+        .nav-item.active { color: var(--primary); }
+        .nav-item .nav-icon { font-size: 20px; margin-bottom: 2px; }
+
+        /* ============ PAGES ============ */
+        .page {
+            display: none;
+            padding: 12px;
+            padding-bottom: 80px;
+            min-height: 100vh;
+        }
+        .page.active { display: block; }
+
+        /* ============ HEADER ============ */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 12px;
+        }
+
+        .logo { font-size: 16px; font-weight: 800; color: var(--primary); }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .status-badge.listening { background: rgba(0,255,136,0.12); color: var(--primary); animation: pulse 2s infinite; }
+        .status-badge.recording { background: rgba(233,69,96,0.2); color: var(--danger); animation: pulse 0.6s infinite; }
+        .status-badge.transcribing { background: rgba(255,170,0,0.12); color: var(--warning); animation: pulse 0.5s infinite; }
+        .status-badge.thinking { background: rgba(102,102,255,0.12); color: var(--info); animation: pulse 0.8s infinite; }
+        .status-badge.ready { background: rgba(0,255,136,0.12); color: var(--primary); }
+        .status-badge.error { background: rgba(255,0,0,0.12); color: #ff4444; }
+
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* ============ CARDS ============ */
+        .card {
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+
+        .card-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .question-card {
+            background: linear-gradient(135deg, var(--card-light), var(--card));
+            border-left: 4px solid var(--danger);
+        }
+        .question-card .card-label { color: var(--danger); }
+        .question-card .card-content { color: #ff6b81; font-size: 14px; line-height: 1.5; }
+
+        .answer-card {
+            background: linear-gradient(135deg, var(--card-dark), #1b2838);
+            border-left: 4px solid var(--primary);
+            min-height: 220px;
+        }
+        .answer-card .card-label { color: var(--primary); }
+        .answer-card .card-content {
+            color: var(--text);
+            font-size: 19px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .answer-card .card-content b,
+        .answer-card .card-content strong { color: var(--primary); font-weight: 700; }
+
+        /* ============ TYPE BADGE ============ */
+        .type-badge {
+            display: inline-block;
+            font-size: 8px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(102,102,255,0.15);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        /* ============ STATS BAR ============ */
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+        }
+
+        .stat { text-align: center; }
+        .stat-value { font-size: 17px; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 9px; color: var(--text-muted); margin-top: 1px; }
+        .stat-divider { width: 1px; height: 28px; background: var(--border); }
+
+        /* ============ BUTTONS ============ */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+            width: 100%;
+            gap: 6px;
+        }
+        .btn:active { transform: scale(0.97); opacity: 0.9; }
+
+        .btn-primary { background: var(--primary); color: #0a0a1a; }
+        .btn-danger { background: rgba(233,69,96,0.25); color: var(--danger); }
+        .btn-secondary { background: rgba(102,102,255,0.15); color: var(--info); }
+        .btn-outline { background: transparent; border: 1px solid #333; color: var(--text-dim); }
+        .btn-warning { background: rgba(255,170,0,0.15); color: var(--warning); }
+        .btn-sm { padding: 8px 14px; font-size: 12px; border-radius: 8px; }
+        .btn-icon { width: 44px; height: 44px; border-radius: 50%; padding: 0; font-size: 18px; }
+
+        .btn-row { display: flex; gap: 8px; margin-top: 8px; }
+        .btn-row .btn { flex: 1; }
+
+        /* ============ FONT CONTROLS ============ */
+        .font-controls {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 4px;
+            z-index: 100;
+        }
+
+        .font-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #333;
+            background: var(--card);
+            color: white;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* ============ SETUP PAGE ============ */
+        .setup-section {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .setup-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .input-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--card-dark);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 8px;
+            transition: border-color 0.2s;
+        }
+        .input:focus { outline: none; border-color: var(--primary); }
+        
+        textarea.input {
+            min-height: 100px;
+            resize: vertical;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .input-hint {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: -4px;
+            margin-bottom: 8px;
+        }
+
+        /* ============ VOICE MODE ============ */
+        .voice-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 8px 0;
+            margin-top: 4px;
+        }
+
+        .voice-toggle {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .voice-toggle.off { background: rgba(102,102,255,0.12); color: var(--info); }
+        .voice-toggle.on { background: rgba(0,255,136,0.15); color: var(--primary); border: 1px solid var(--primary); }
+
+        .speed-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.05);
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .speed-display { color: var(--primary); font-size: 13px; font-weight: 600; min-width: 35px; text-align: center; }
+
+        /* ============ PRACTICE PAGE ============ */
+        .company-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .chip {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .chip.active { border-color: var(--primary); color: var(--primary); background: rgba(0,255,136,0.08); }
+
+        .practice-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 14px;
+            background: var(--card-dark);
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+        .practice-input:focus { outline: none; border-color: var(--primary); }
+
+        .feedback-card {
+            background: var(--card);
+            border-left: 4px solid var(--primary);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 12px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+
+        /* ============ PREP PAGE ============ */
+        .prep-result {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 12px;
+            white-space: pre-wrap;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        /* ============ SETTINGS PAGE ============ */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .setting-info { flex: 1; }
+        .setting-name { font-size: 14px; font-weight: 600; }
+        .setting-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Toggle Switch */
+        .toggle {
+            width: 48px;
+            height: 26px;
+            background: #333;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: none;
+        }
+        .toggle.on { background: var(--primary); }
+        .toggle::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s;
+        }
+        .toggle.on::after { transform: translateX(22px); }
+
+        /* ============ MISC ============ */
+        .page-title { font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+        .page-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+        .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .mb-12 { margin-bottom: 12px; }
+
+        .success-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: #0a0a1a;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .success-toast.show { opacity: 1; }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(4) infinite;
+        }
+        @keyframes dots { 0%{content:''} 25%{content:'.'} 50%{content:'..'} 75%{content:'...'} }
+
+        /* ============ AUTO-LISTEN INDICATOR ============ */
+        .auto-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .auto-indicator.active { color: var(--primary); }
+        .auto-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+        }
+        .auto-indicator.active .auto-dot {
+            background: var(--danger);
+            animation: pulse 1s infinite;
+        }
     </style>
 </head>
 <body>
-    <h1>🎯 NeuralHire</h1>
-    <p>If you can see this, GitHub Pages is working!</p>
-    <div class="status">✅ App loaded successfully</div>
-    <p style="margin-top:20px;font-size:13px;color:#666">
-        Next step: Replace this file with the full app code.
+
+<!-- ============ SUCCESS TOAST ============ -->
+<div class="success-toast" id="toast">✅ Saved!</div>
+
+<!-- ============ FONT CONTROLS ============ -->
+<div class="font-controls" id="fontControls">
+    <button class="font-btn" onclick="NH.changeFontSize(-2)">A-</button>
+    <button class="font-btn" onclick="NH.changeFontSize(2)">A+</button>
+</div>
+
+<!-- ======================================== -->
+<!-- ============ SETUP PAGE ============ -->
+<!-- ======================================== -->
+<div class="page active" id="pageSetup">
+    <div class="header">
+        <div class="logo">🎯 NeuralHire</div>
+        <span style="font-size:11px;color:var(--text-muted)">v3.0</span>
+    </div>
+
+    <div style="text-align:center;margin:20px 0">
+        <div style="font-size:48px;margin-bottom:8px">🎯</div>
+        <h1 style="font-size:24px;color:var(--primary);margin-bottom:4px">NeuralHire</h1>
+        <p style="color:var(--text-muted);font-size:13px">AI-Powered Interview Copilot</p>
+    </div>
+
+    <div class="setup-section">
+        <div class="setup-title">🔑 Step 1: API Key</div>
+        <div class="input-label">Groq API Key (free)</div>
+        <input class="input" type="password" id="inputApiKey" 
+               placeholder="gsk_xxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+        <div class="input-hint">
+            Get free at <a href="https://console.groq.com" target="_blank" 
+            style="color:var(--primary)">console.groq.com</a> → API Keys → Create
+        </div>
+    </div>
+
+    <div class="setup-section">
+        <div class="setup-title">📄 Step 2: Your Resume</div>
+        <div class="input-label">Paste key achievements & skills</div>
+        <textarea class="input" id="inputResume" placeholder="Example:
+Software Engineer, 5 years experience
+
+- Senior Dev at TechCorp (2022-Present)
+  Led team of 5, reduced API latency 40%
+  Migrated monolith to 12 microservices
+  Serving 1M+ daily active users
+
+- Developer at StartupXYZ (2020-2022)
+  Built analytics dashboard (React + Python)
+  Increased engagement by 35%
+
+Skills: Python, JavaScript, React, AWS, Docker, SQL
+Education: BS Computer Science, GPA 3.7"></textarea>
+    </div>
+
+    <div class="setup-section">
+        <div class="setup-title">💼 Step 3: Target Job</div>
+        <div class="input-label">Job title and key requirements</div>
+        <textarea class="input" id="inputJobDesc" placeholder="Example:
+Senior Software Engineer at Google
+
+Requirements:
+- 5+ years software development
+- Python, Java, or Go proficiency
+- Distributed systems experience
+- Strong problem-solving skills
+- BS in Computer Science or equivalent" style="min-height:80px"></textarea>
+    </div>
+
+    <button class="btn btn-primary" onclick="NH.saveSetup()" style="font-size:16px;padding:14px">
+        🚀 Start Interview Mode
+    </button>
+
+    <p style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-muted)">
+        All data stored locally on your phone. Nothing sent except to Groq API.
     </p>
+</div>
+
+<!-- ======================================== -->
+<!-- ============ LIVE INTERVIEW PAGE ============ -->
+<!-- ======================================== -->
+<div class="page" id="pageLive">
+    <div class="header">
+        <div class="logo">🎯 NeuralHire</div>
+        <div class="status-badge listening" id="statusBadge">● LISTENING</div>
+    </div>
+
+    <!-- Question Card -->
+    <div class="card question-card" id="questionCard">
+        <div class="card-label">
+            ❓ INTERVIEWER ASKED
+            <span class="type-badge" id="questionType"></span>
+        </div>
+        <div class="card-content" id="questionText">
+            Tap 🎤 when interviewer asks a question
+        </div>
+    </div>
+
+    <!-- Answer Card -->
+    <div class="card answer-card">
+        <div class="card-label">✅ YOUR ANSWER</div>
+        <div class="card-content" id="answerText">
+            Ready! Place phone behind your monitor near the webcam.
+
+Tap the microphone button below when the interviewer starts speaking.
+        </div>
+    </div>
+
+    <!-- Voice Mode -->
+    <div class="voice-controls">
+        <button class="voice-toggle off" id="voiceToggle" onclick="NH.toggleVoice()">
+            🔇 Voice OFF
+        </button>
+        <button class="speed-btn" onclick="NH.adjustSpeed(-0.1)">🐌</button>
+        <span class="speed-display" id="speedDisplay">1.1x</span>
+        <button class="speed-btn" onclick="NH.adjustSpeed(0.1)">🐇</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-value" id="statQuestions">0</div>
+            <div class="stat-label">Questions</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+            <div class="stat-value" id="statSpeed">-</div>
+            <div class="stat-label">Speed</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+            <div class="stat-value" id="statSession">0:00</div>
+            <div class="stat-label">Session</div>
+        </div>
+    </div>
+
+    <!-- Control Buttons -->
+    <div class="btn-row mt-8">
+        <button class="btn btn-primary" id="recordBtn" onclick="NH.toggleRecording()" style="flex:2">
+            🎤 Tap to Listen
+        </button>
+        <button class="btn btn-danger" onclick="NH.clearDisplay()" style="flex:1">
+            🗑
+        </button>
+    </div>
+
+    <!-- Auto Listen -->
+    <div class="btn-row" style="margin-top:6px">
+        <button class="btn btn-outline btn-sm" id="autoListenBtn" onclick="NH.toggleAutoListen()">
+            🔄 Auto-Listen: OFF
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="NH.manualInput()">
+            ⌨️ Type Question
+        </button>
+    </div>
+
+    <!-- Auto Listen Indicator -->
+    <div class="auto-indicator" id="autoIndicator">
+        <div class="auto-dot"></div>
+        <span>Auto-listen inactive</span>
+    </div>
+</div>
+
+<!-- ======================================== -->
+<!-- ============ PRACTICE PAGE ============ -->
+<!-- ======================================== -->
+<div class="page" id="pagePractice">
+    <div class="header">
+        <div class="logo">🎯 Practice</div>
+    </div>
+
+    <div class="page-title">🎯 Practice Mode</div>
+    <div class="page-subtitle">AI-powered interview practice with instant feedback</div>
+
+    <!-- Company Chips -->
+    <div class="company-chips" id="companyChips">
+        <button class="chip active" onclick="NH.selectCompany('general',this)">General</button>
+        <button class="chip" onclick="NH.selectCompany('google',this)">Google</button>
+        <button class="chip" onclick="NH.selectCompany('amazon',this)">Amazon</button>
+        <button class="chip" onclick="NH.selectCompany('meta',this)">Meta</button>
+        <button class="chip" onclick="NH.selectCompany('microsoft',this)">Microsoft</button>
+        <button class="chip" onclick="NH.selectCompany('apple',this)">Apple</button>
+        <button class="chip" onclick="NH.selectCompany('startup',this)">Startup</button>
+    </div>
+
+    <!-- Practice Question -->
+    <div class="card question-card">
+        <div class="card-label">❓ PRACTICE QUESTION</div>
+        <div class="card-content" id="practiceQuestion">
+            Select a company and tap "Next Question" to start!
+        </div>
+    </div>
+
+    <!-- User Answer -->
+    <textarea class="practice-input" id="practiceAnswer" 
+              placeholder="Type your answer here...&#10;&#10;Practice being concise and confident.&#10;Use specific examples and numbers."></textarea>
+
+    <!-- Practice Buttons -->
+    <div class="btn-row">
+        <button class="btn btn-primary" onclick="NH.nextPracticeQuestion()">
+            Next Question ➜
+        </button>
+        <button class="btn btn-secondary" onclick="NH.evaluatePracticeAnswer()">
+            🤖 Evaluate
+        </button>
+    </div>
+
+    <button class="btn btn-outline btn-sm mt-8" onclick="NH.showIdealAnswer()">
+        💡 Show Ideal Answer
+    </button>
+
+    <!-- Feedback -->
+    <div class="feedback-card hidden" id="practiceFeedback"></div>
+
+    <!-- Company Prep Section -->
+    <hr class="divider" style="margin-top:24px">
+
+    <div class="page-title" style="font-size:18px">📋 Interview Prep Sheet</div>
+    <div class="page-subtitle">Generate company-specific preparation guide</div>
+
+    <div class="btn-row">
+        <input class="input" id="prepCompany" placeholder="Company name" style="margin:0;flex:1">
+        <input class="input" id="prepRole" placeholder="Role" style="margin:0;flex:1">
+    </div>
+    <button class="btn btn-primary mt-8" onclick="NH.generatePrepSheet()">
+        📋 Generate Prep Sheet
+    </button>
+
+    <div class="prep-result hidden" id="prepResult"></div>
+</div>
+
+<!-- ======================================== -->
+<!-- ============ SETTINGS PAGE ============ -->
+<!-- ======================================== -->
+<div class="page" id="pageSettings">
+    <div class="header">
+        <div class="logo">⚙️ Settings</div>
+    </div>
+
+    <div class="page-title">⚙️ Settings</div>
+
+    <!-- API Key -->
+    <div class="setup-section">
+        <div class="setup-title">🔑 API Key</div>
+        <input class="input" type="password" id="settingsApiKey" placeholder="gsk_...">
+        <button class="btn btn-outline btn-sm" onclick="NH.testApiKey()">Test Connection</button>
+    </div>
+
+    <!-- Resume -->
+    <div class="setup-section">
+        <div class="setup-title">📄 Resume</div>
+        <textarea class="input" id="settingsResume" style="min-height:120px"></textarea>
+        <button class="btn btn-outline btn-sm" onclick="NH.saveSettings()">Save</button>
+    </div>
+
+    <!-- Job Description -->
+    <div class="setup-section">
+        <div class="setup-title">💼 Job Description</div>
+        <textarea class="input" id="settingsJobDesc" style="min-height:80px"></textarea>
+        <button class="btn btn-outline btn-sm" onclick="NH.saveSettings()">Save</button>
+    </div>
+
+    <!-- Feature Toggles -->
+    <div class="setup-section">
+        <div class="setup-title">🎛️ Features</div>
+
+        <div class="setting-row">
+            <div class="setting-info">
+                <div class="setting-name">🔊 Voice Mode</div>
+                <div class="setting-desc">Read answers through earphone</div>
+            </div>
+            <button class="toggle" id="toggleVoice" onclick="NH.toggleSetting('voice',this)"></button>
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-info">
+                <div class="setting-name">📳 Vibration Alerts</div>
+                <div class="setting-desc">Vibrate when new answer ready</div>
+            </div>
+            <button class="toggle on" id="toggleVibration" onclick="NH.toggleSetting('vibration',this)"></button>
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-info">
+                <div class="setting-name">☀️ Keep Screen Awake</div>
+                <div class="setting-desc">Prevent phone from sleeping</div>
+            </div>
+            <button class="toggle on" id="toggleWake" onclick="NH.toggleSetting('wake',this)"></button>
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-info">
+                <div class="setting-name">🌙 Auto-Listen Mode</div>
+                <div class="setting-desc">Continuously listen without tapping</div>
+            </div>
+            <button class="toggle" id="toggleAutoListen" onclick="NH.toggleSetting('autoListen',this)"></button>
+        </div>
+    </div>
+
+    <!-- Model Selection -->
+    <div class="setup-section">
+        <div class="setup-title">🧠 AI Model</div>
+        <select class="input" id="modelSelect" onchange="NH.changeModel(this.value)" style="min-height:auto">
+            <option value="llama-3.1-8b-instant">LLama 3.1 8B (Fast) ⭐</option>
+            <option value="llama-3.3-70b-versatile">LLama 3.3 70B (Best Quality)</option>
+            <option value="gemma2-9b-it">Gemma 2 9B</option>
+            <option value="mixtral-8x7b-32768">Mixtral 8x7B (Long Context)</option>
+        </select>
+    </div>
+
+    <!-- Data Management -->
+    <div class="setup-section">
+        <div class="setup-title">💾 Data</div>
+        <button class="btn btn-outline btn-sm mb-12" onclick="NH.exportData()">📤 Export All Data</button>
+        <button class="btn btn-danger btn-sm" onclick="NH.clearAllData()">🗑 Clear All Data</button>
+    </div>
+
+    <!-- About -->
+    <div class="setup-section">
+        <div class="setup-title">ℹ️ About</div>
+        <p style="font-size:12px;color:var(--text-muted);line-height:1.6">
+            NeuralHire v3.0 - AI Interview Copilot<br>
+            All processing via Groq Cloud API (free tier)<br>
+            Data stored locally on your device<br>
+            No data collected or tracked<br><br>
+            ⚠️ For educational & practice purposes
+        </p>
+    </div>
+</div>
+
+<!-- ======================================== -->
+<!-- ============ NAVIGATION BAR ============ -->
+<!-- ======================================== -->
+<nav class="nav-bar" id="navBar">
+    <button class="nav-item" onclick="NH.navigate('pageLive',this)" id="navLive">
+        <span class="nav-icon">🎯</span>
+        Live
+    </button>
+    <button class="nav-item" onclick="NH.navigate('pagePractice',this)">
+        <span class="nav-icon">🏋️</span>
+        Practice
+    </button>
+    <button class="nav-item" onclick="NH.navigate('pageSettings',this)">
+        <span class="nav-icon">⚙️</span>
+        Settings
+    </button>
+</nav>
+
+<!-- ======================================== -->
+<!-- ============ MAIN JAVASCRIPT ============ -->
+<!-- ======================================== -->
+<script>
+const NH = {
+    // ============ STATE ============
+    apiKey: '',
+    resume: '',
+    jobDesc: '',
+    model: 'llama-3.1-8b-instant',
+    conversationHistory: [],
+    questionCount: 0,
+    sessionStart: null,
+    fontSize: 19,
+    
+    // Audio
+    mediaRecorder: null,
+    audioChunks: [],
+    isRecording: false,
+    audioStream: null,
+    
+    // Auto-listen
+    autoListening: false,
+    autoListenTimer: null,
+    
+    // Voice
+    voiceEnabled: false,
+    voiceSpeed: 1.1,
+    
+    // Settings
+    vibrationEnabled: true,
+    keepAwake: true,
+    
+    // Practice
+    selectedCompany: 'general',
+    currentPracticeQ: '',
+    
+    // Question bank
+    questionBank: {
+        general: [
+            "Tell me about yourself.",
+            "Why are you interested in this position?",
+            "What are your greatest strengths?",
+            "What is your biggest weakness?",
+            "Where do you see yourself in 5 years?",
+            "Tell me about a challenging project you worked on.",
+            "How do you handle conflict at work?",
+            "Why are you leaving your current job?",
+            "What makes you unique?",
+            "Do you have any questions for us?",
+            "Describe a time you showed leadership.",
+            "How do you prioritize your work?",
+            "Tell me about a time you failed.",
+            "How do you handle pressure?",
+            "What are your salary expectations?",
+            "Why should we hire you?"
+        ],
+        google: [
+            "Why Google?",
+            "Tell me about a time you dealt with ambiguity.",
+            "Describe your most impactful project.",
+            "How would you improve Google Search?",
+            "Tell me about a time you had to influence without authority.",
+            "Design a system to handle millions of requests per second.",
+            "How do you handle disagreements with teammates?",
+            "Describe a complex technical problem you solved.",
+            "Tell me about a time you took initiative."
+        ],
+        amazon: [
+            "Tell me about a time you took ownership of a problem. (Ownership)",
+            "Describe when you had to make a decision with incomplete data. (Bias for Action)",
+            "How do you ensure the customer comes first? (Customer Obsession)",
+            "Tell me about a time you simplified a complex process. (Invent and Simplify)",
+            "Describe a time you raised the bar for your team. (Insist on Highest Standards)",
+            "Tell me about a time you disagreed with your manager. (Have Backbone)",
+            "How do you handle competing priorities? (Deliver Results)",
+            "Tell me about a time you dove deep into data. (Dive Deep)",
+            "Describe when you earned trust from a skeptical stakeholder. (Earn Trust)"
+        ],
+        meta: [
+            "Why Meta?",
+            "Move fast and break things - how do you balance speed with quality?",
+            "Tell me about your most complex technical project.",
+            "How do you handle feedback?",
+            "Describe a time you built something from 0 to 1.",
+            "How would you design Instagram's feed?",
+            "Tell me about a time you had to pivot quickly.",
+            "What would you improve about WhatsApp?"
+        ],
+        microsoft: [
+            "Why Microsoft?",
+            "Give me an example of growth mindset.",
+            "Tell me about a time you influenced without authority.",
+            "How would you improve a Microsoft product?",
+            "Describe a technical challenge you overcame.",
+            "How do you stay current with technology?",
+            "Tell me about working on a diverse team."
+        ],
+        apple: [
+            "Why Apple?",
+            "Tell me about a product you designed that you're proud of.",
+            "How do you balance user experience with technical constraints?",
+            "Describe your attention to detail with an example.",
+            "Tell me about a time you said no to a feature.",
+            "How do you handle perfectionism vs shipping?"
+        ],
+        startup: [
+            "Why do you want to join a startup?",
+            "How do you handle wearing multiple hats?",
+            "Tell me about building something from scratch.",
+            "How do you prioritize with limited resources?",
+            "Where do you see yourself in 2 years?",
+            "How do you handle uncertainty?",
+            "Tell me about a time you worked outside your comfort zone."
+        ]
+    },
+
+    // ============ INITIALIZATION ============
+    init() {
+        this.loadSavedData();
+        this.setupSessionTimer();
+        this.requestWakeLock();
+    },
+
+    loadSavedData() {
+        this.apiKey = localStorage.getItem('nh_apiKey') || '';
+        this.resume = localStorage.getItem('nh_resume') || '';
+        this.jobDesc = localStorage.getItem('nh_jobDesc') || '';
+        this.model = localStorage.getItem('nh_model') || 'llama-3.1-8b-instant';
+        this.voiceEnabled = localStorage.getItem('nh_voice') === 'true';
+        this.vibrationEnabled = localStorage.getItem('nh_vibration') !== 'false';
+        this.voiceSpeed = parseFloat(localStorage.getItem('nh_voiceSpeed') || '1.1');
+        this.fontSize = parseInt(localStorage.getItem('nh_fontSize') || '19');
+
+        // Populate setup fields
+        if (this.apiKey) document.getElementById('inputApiKey').value = this.apiKey;
+        if (this.resume) document.getElementById('inputResume').value = this.resume;
+        if (this.jobDesc) document.getElementById('inputJobDesc').value = this.jobDesc;
+
+        // If already configured, go to live page
+        if (this.apiKey && this.resume) {
+            this.navigate('pageLive', document.getElementById('navLive'));
+            document.getElementById('navBar').classList.remove('hidden');
+        } else {
+            document.getElementById('navBar').classList.add('hidden');
+            document.getElementById('fontControls').classList.add('hidden');
+        }
+
+        // Populate settings
+        document.getElementById('settingsApiKey').value = this.apiKey;
+        document.getElementById('settingsResume').value = this.resume;
+        document.getElementById('settingsJobDesc').value = this.jobDesc;
+        document.getElementById('modelSelect').value = this.model;
+        document.getElementById('speedDisplay').textContent = this.voiceSpeed.toFixed(1) + 'x';
+
+        // Apply font size
+        document.getElementById('answerText').style.fontSize = this.fontSize + 'px';
+    },
+
+    // ============ SETUP ============
+    saveSetup() {
+        this.apiKey = document.getElementById('inputApiKey').value.trim();
+        this.resume = document.getElementById('inputResume').value.trim();
+        this.jobDesc = document.getElementById('inputJobDesc').value.trim();
+
+        if (!this.apiKey) {
+            alert('Please enter your Groq API key!\n\nGet free at: console.groq.com');
+            return;
+        }
+
+        if (!this.apiKey.startsWith('gsk_')) {
+            alert('Invalid API key format.\nIt should start with "gsk_"');
+            return;
+        }
+
+        // Save
+        localStorage.setItem('nh_apiKey', this.apiKey);
+        localStorage.setItem('nh_resume', this.resume);
+        localStorage.setItem('nh_jobDesc', this.jobDesc);
+
+        // Update settings page
+        document.getElementById('settingsApiKey').value = this.apiKey;
+        document.getElementById('settingsResume').value = this.resume;
+        document.getElementById('settingsJobDesc').value = this.jobDesc;
+
+        // Navigate to live page
+        document.getElementById('navBar').classList.remove('hidden');
+        document.getElementById('fontControls').classList.remove('hidden');
+        this.navigate('pageLive', document.getElementById('navLive'));
+        this.sessionStart = Date.now();
+
+        // Request mic
+        this.requestMicrophone();
+
+        this.showToast('✅ Setup complete! Ready to go.');
+    },
+
+    // ============ NAVIGATION ============
+    navigate(pageId, navItem) {
+        // Hide all pages
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+        // Show selected
+        document.getElementById(pageId).classList.add('active');
+        if (navItem) navItem.classList.add('active');
+
+        // Show/hide font controls
+        if (pageId === 'pageLive') {
+            document.getElementById('fontControls').classList.remove('hidden');
+        } else {
+            document.getElementById('fontControls').classList.add('hidden');
+        }
+    },
+
+    // ============ MICROPHONE ============
+    async requestMicrophone() {
+        try {
+            this.audioStream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true,
+                    sampleRate: 16000
+                }
+            });
+            this.setStatus('listening', '● LISTENING');
+            console.log('🎤 Microphone ready');
+        } catch (err) {
+            alert('Microphone access needed!\n\n' + err.message + '\n\nGo to browser settings and allow microphone.');
+            this.setStatus('error', '● MIC ERROR');
+        }
+    },
+
+    // ============ RECORDING ============
+    toggleRecording() {
+        if (this.isRecording) {
+            this.stopRecording();
+        } else {
+            this.startRecording();
+        }
+    },
+
+    async startRecording() {
+        if (!this.audioStream) {
+            await this.requestMicrophone();
+            if (!this.audioStream) return;
+        }
+
+        this.audioChunks = [];
+
+        // Detect supported mime type
+        let mimeType = 'audio/webm;codecs=opus';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'audio/webm';
+        }
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'audio/mp4';
+        }
+
+        try {
+            this.mediaRecorder = new MediaRecorder(this.audioStream, { mimeType });
+        } catch (e) {
+            this.mediaRecorder = new MediaRecorder(this.audioStream);
+        }
+
+        this.mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) this.audioChunks.push(e.data);
+        };
+
+        this.mediaRecorder.onstop = () => {
+            const blob = new Blob(this.audioChunks, { type: this.mediaRecorder.mimeType });
+            this.processAudio(blob);
+        };
+
+        this.mediaRecorder.start(250); // Collect in 250ms chunks
+        this.isRecording = true;
+
+        const btn = document.getElementById('recordBtn');
+        btn.textContent = '⏹ Tap to Stop';
+        btn.style.background = 'var(--danger)';
+        btn.style.color = '#fff';
+        this.setStatus('recording', '🔴 RECORDING');
+
+        // Auto-stop after 30 seconds
+        this.recordTimeout = setTimeout(() => {
+            if (this.isRecording) this.stopRecording();
+        }, 30000);
+    },
+
+    stopRecording() {
+        clearTimeout(this.recordTimeout);
+
+        if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+            this.mediaRecorder.stop();
+        }
+        this.isRecording = false;
+
+        const btn = document.getElementById('recordBtn');
+        btn.textContent = '🎤 Tap to Listen';
+        btn.style.background = 'var(--primary)';
+        btn.style.color = '#0a0a1a';
+    },
+
+    // ============ AUTO-LISTEN ============
+    toggleAutoListen() {
+        this.autoListening = !this.autoListening;
+        const btn = document.getElementById('autoListenBtn');
+        const indicator = document.getElementById('autoIndicator');
+
+        if (this.autoListening) {
+            btn.textContent = '🔄 Auto-Listen: ON';
+            btn.style.borderColor = 'var(--primary)';
+            btn.style.color = 'var(--primary)';
+            indicator.classList.add('active');
+            indicator.querySelector('span').textContent = 'Auto-listening active';
+            this.autoListenLoop();
+        } else {
+            btn.textContent = '🔄 Auto-Listen: OFF';
+            btn.style.borderColor = '#333';
+            btn.style.color = 'var(--text-dim)';
+            indicator.classList.remove('active');
+            indicator.querySelector('span').textContent = 'Auto-listen inactive';
+            clearTimeout(this.autoListenTimer);
+        }
+    },
+
+    async autoListenLoop() {
+        if (!this.autoListening) return;
+
+        // Start recording
+        await this.startRecording();
+
+        // Record for 8 seconds
+        this.autoListenTimer = setTimeout(() => {
+            if (this.isRecording) {
+                this.stopRecording();
+            }
+
+            // Wait for processing then record again
+            this.autoListenTimer = setTimeout(() => {
+                if (this.autoListening) {
+                    this.autoListenLoop();
+                }
+            }, 4000); // 4 second gap for processing
+        }, 8000);
+    },
+
+    // ============ AUDIO PROCESSING ============
+    async processAudio(audioBlob) {
+        const startTime = Date.now();
+
+        try {
+            // Step 1: Transcribe
+            this.setStatus('transcribing', '● TRANSCRIBING');
+
+            const formData = new FormData();
+            formData.append('file', audioBlob, 'recording.webm');
+            formData.append('model', 'whisper-large-v3');
+            formData.append('language', 'en');
+            formData.append('response_format', 'json');
+
+            const transcribeResp = await fetch(
+                'https://api.groq.com/openai/v1/audio/transcriptions',
+                {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${this.apiKey}` },
+                    body: formData
+                }
+            );
+
+            if (!transcribeResp.ok) {
+                const errText = await transcribeResp.text();
+                if (transcribeResp.status === 401) {
+                    throw new Error('Invalid API key. Check Settings.');
+                }
+                if (transcribeResp.status === 429) {
+                    throw new Error('Rate limit reached. Wait 30 seconds.');
+                }
+                throw new Error(`Transcription failed (${transcribeResp.status})`);
+            }
+
+            const transcribeData = await transcribeResp.json();
+            const question = (transcribeData.text || '').trim();
+
+            // Skip if too short or noise
+            if (!question || question.length < 8) {
+                this.setStatus('listening', '● LISTENING');
+                return;
+            }
+
+            // Skip common noise
+            const noisePatterns = [
+                'thank you', 'thanks', 'okay', 'ok', 'um', 'uh',
+                'you know', 'i see', 'right', 'sure', 'yes', 'no',
+                'hmm', 'mhm', 'ah'
+            ];
+            if (noisePatterns.includes(question.toLowerCase())) {
+                this.setStatus('listening', '● LISTENING');
+                return;
+            }
+
+            // Step 2: Show question
+            const qType = this.classifyQuestion(question);
+            document.getElementById('questionText').textContent = question;
+            document.getElementById('questionType').textContent = qType;
+            document.getElementById('answerText').innerHTML = '<span class="loading-dots">⏳ Generating answer</span>';
+            this.setStatus('thinking', '● THINKING');
+
+            // Step 3: Generate answer
+            const answer = await this.generateAnswer(question, qType);
+
+            // Step 4: Display
+            const responseTime = (Date.now() - startTime) / 1000;
+            this.questionCount++;
+
+            this.displayAnswer(answer);
+            document.getElementById('statQuestions').textContent = this.questionCount;
+            document.getElementById('statSpeed').textContent = responseTime.toFixed(1) + 's';
+
+            this.setStatus('ready', '● READY');
+
+            // Notifications
+            if (this.vibrationEnabled && navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
+            }
+
+            // Voice mode
+            if (this.voiceEnabled) {
+                this.speakAnswer(answer);
+            }
+
+        } catch (error) {
+            console.error('Processing error:', error);
+            document.getElementById('answerText').textContent = '❌ ' + error.message + '\n\nStill listening...';
+            this.setStatus('error', '● ERROR');
+
+            setTimeout(() => {
+                this.setStatus('listening', '● LISTENING');
+            }, 3000);
+        }
+    },
+
+    // ============ AI ANSWER GENERATION ============
+    async generateAnswer(question, qType) {
+        this.conversationHistory.push(`Q: ${question}`);
+        const recentHistory = this.conversationHistory.slice(-8).join('\n');
+
+        let systemPrompt = '';
+
+        if (qType === 'behavioral') {
+            systemPrompt = `You are an expert interview coach. The candidate is in a LIVE interview right now.
+
+CANDIDATE RESUME:
+${this.resume.substring(0, 2500)}
+
+TARGET JOB:
+${this.jobDesc.substring(0, 1000)}
+
+CONVERSATION SO FAR:
+${recentHistory}
+
+RULES:
+- Answer in FIRST PERSON as the candidate
+- Use STAR method: **Situation** → **Task** → **Action** → **Result**
+- Include specific metrics and numbers from resume
+- Mark **key phrases** to emphasize while speaking
+- Keep to 5-7 sentences
+- Sound natural and confident`;
+
+        } else if (qType === 'coding') {
+            systemPrompt = `You are an expert coding interview coach helping in real-time.
+
+RESUME: ${this.resume.substring(0, 1500)}
+
+RULES:
+- Start with **Approach** (2 sentences)
+- Show clean code solution
+- Mention **Time: O(?)** and **Space: O(?)**
+- List key **edge cases**
+- Keep explanation concise for quick reading`;
+
+        } else {
+            systemPrompt = `You are an expert interview coach. Candidate is in a LIVE interview.
+
+CANDIDATE RESUME:
+${this.resume.substring(0, 2500)}
+
+TARGET JOB:
+${this.jobDesc.substring(0, 1000)}
+
+CONVERSATION SO FAR:
+${recentHistory}
+
+RULES:
+- Answer in FIRST PERSON as the candidate
+- Be concise: 3-5 sentences for simple questions, 5-7 for complex
+- Use specific numbers, metrics, examples from resume
+- Mark **key phrases** the candidate should emphasize
+- Sound natural and confident, not robotic
+- For "tell me about yourself" → 60-second elevator pitch
+- For "weakness" → genuine weakness + improvement plan
+- For "why this company" → show knowledge and genuine interest
+- End with impact or result when possible`;
+        }
+
+        const resp = await fetch(
+            'https://api.groq.com/openai/v1/chat/completions',
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: this.model,
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: `Interview question: ${question}` }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 350
+                })
+            }
+        );
+
+        if (!resp.ok) {
+            if (resp.status === 429) throw new Error('Rate limit. Wait 30s and try again.');
+            if (resp.status === 401) throw new Error('Invalid API key.');
+            throw new Error(`API error: ${resp.status}`);
+        }
+
+        const data = await resp.json();
+        const answer = data.choices[0].message.content;
+
+        this.conversationHistory.push(`A: ${answer}`);
+        return answer;
+    },
+
+    // ============ QUESTION CLASSIFIER ============
+    classifyQuestion(text) {
+        const t = text.toLowerCase();
+
+        const behavioralWords = [
+            'tell me about a time', 'describe a situation', 'give me an example',
+            'how did you handle', 'challenge', 'conflict', 'difficult',
+            'mistake', 'failure', 'leadership', 'teamwork', 'pressure',
+            'deadline', 'disagree', 'describe when'
+        ];
+        for (const w of behavioralWords) {
+            if (t.includes(w)) return 'behavioral';
+        }
+
+        const codingWords = [
+            'algorithm', 'function', 'array', 'string', 'tree', 'binary',
+            'sort', 'search', 'code', 'implement', 'write a program',
+            'data structure', 'complexity', 'optimize', 'recursive',
+            'linked list', 'hash', 'stack', 'queue', 'graph', 'leetcode',
+            'def ', 'class ', 'return '
+        ];
+        for (const w of codingWords) {
+            if (t.includes(w)) return 'coding';
+        }
+
+        const designWords = [
+            'design a system', 'architecture', 'scale', 'millions of users',
+            'distributed', 'microservice', 'how would you design', 'system design'
+        ];
+        for (const w of designWords) {
+            if (t.includes(w)) return 'system design';
+        }
+
+        return 'general';
+    },
+
+    // ============ DISPLAY ============
+    displayAnswer(answer) {
+        const el = document.getElementById('answerText');
+        let html = answer
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre style="background:#0a0a2a;padding:10px;border-radius:6px;font-size:13px;overflow-x:auto;margin:6px 0;border:1px solid #1a1a3e"><code>$2</code></pre>')
+            .replace(/`([^`]+)`/g, '<code style="background:#0a0a2a;padding:2px 6px;border-radius:3px;font-size:14px;color:#ffd700">$1</code>')
+            .replace(/\n/g, '<br>');
+        el.innerHTML = html;
+        el.style.fontSize = this.fontSize + 'px';
+    },
+
+    setStatus(status, text) {
+        const el = document.getElementById('statusBadge');
+        el.className = 'status-badge ' + status;
+        el.textContent = text;
+    },
+
+    changeFontSize(delta) {
+        this.fontSize = Math.max(12, Math.min(36, this.fontSize + delta));
+        document.getElementById('answerText').style.fontSize = this.fontSize + 'px';
+        localStorage.setItem('nh_fontSize', this.fontSize);
+    },
+
+    clearDisplay() {
+        document.getElementById('questionText').textContent = 'Listening for next question...';
+        document.getElementById('questionType').textContent = '';
+        document.getElementById('answerText').innerHTML = 'Ready for next question.';
+        this.setStatus('listening', '● LISTENING');
+    },
+
+    // ============ MANUAL INPUT ============
+    manualInput() {
+        const question = prompt('Type the interview question:');
+        if (question && question.trim().length > 3) {
+            this.processManualQuestion(question.trim());
+        }
+    },
+
+    async processManualQuestion(question) {
+        const startTime = Date.now();
+
+        try {
+            const qType = this.classifyQuestion(question);
+            document.getElementById('questionText').textContent = question;
+            document.getElementById('questionType').textContent = qType;
+            document.getElementById('answerText').innerHTML = '<span class="loading-dots">⏳ Generating answer</span>';
+            this.setStatus('thinking', '● THINKING');
+
+            const answer = await this.generateAnswer(question, qType);
+            const responseTime = (Date.now() - startTime) / 1000;
+            this.questionCount++;
+
+            this.displayAnswer(answer);
+            document.getElementById('statQuestions').textContent = this.questionCount;
+            document.getElementById('statSpeed').textContent = responseTime.toFixed(1) + 's';
+            this.setStatus('ready', '● READY');
+
+            if (this.vibrationEnabled && navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            if (this.voiceEnabled) this.speakAnswer(answer);
+
+        } catch (error) {
+            document.getElementById('answerText').textContent = '❌ ' + error.message;
+            this.setStatus('error', '● ERROR');
+        }
+    },
+
+    // ============ VOICE MODE (TTS) ============
+    toggleVoice() {
+        this.voiceEnabled = !this.voiceEnabled;
+        localStorage.setItem('nh_voice', this.voiceEnabled);
+
+        const btn = document.getElementById('voiceToggle');
+        if (this.voiceEnabled) {
+            btn.textContent = '🔊 Voice ON';
+            btn.className = 'voice-toggle on';
+        } else {
+            btn.textContent = '🔇 Voice OFF';
+            btn.className = 'voice-toggle off';
+            speechSynthesis.cancel();
+        }
+    },
+
+    adjustSpeed(delta) {
+        this.voiceSpeed = Math.max(0.5, Math.min(2.5, this.voiceSpeed + delta));
+        document.getElementById('speedDisplay').textContent = this.voiceSpeed.toFixed(1) + 'x';
+        localStorage.setItem('nh_voiceSpeed', this.voiceSpeed);
+    },
+
+    speakAnswer(text) {
+        if (!this.voiceEnabled || !('speechSynthesis' in window)) return;
+
+        speechSynthesis.cancel();
+
+        // Clean text for speech
+        const clean = text
+            .replace(/\*\*/g, '')
+            .replace(/```[\s\S]*?```/g, '')
+            .replace(/`[^`]+`/g, '')
+            .replace(/#{1,3}\s/g, '')
+            .replace(/\n{2,}/g, '. ')
+            .replace(/\n/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        if (!clean) return;
+
+        const utterance = new SpeechSynthesisUtterance(clean);
+        utterance.rate = this.voiceSpeed;
+        utterance.pitch = 1.0;
+        utterance.lang = 'en-US';
+
+        // Try to use a natural voice
+        const voices = speechSynthesis.getVoices();
+        const preferred = voices.find(v =>
+            v.name.includes('Samantha') || v.name.includes('Google') ||
+            v.name.includes('Natural') || v.name.includes('Enhanced')
+        );
+        if (preferred) utterance.voice = preferred;
+
+        speechSynthesis.speak(utterance);
+    },
+
+    // ============ SESSION TIMER ============
+    setupSessionTimer() {
+        setInterval(() => {
+            if (!this.sessionStart) return;
+            const elapsed = Math.floor((Date.now() - this.sessionStart) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            document.getElementById('statSession').textContent =
+                `${mins}:${secs.toString().padStart(2, '0')}`;
+        }, 1000);
+    },
+
+    // ============ KEEP AWAKE ============
+    async requestWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                this.wakeLock = await navigator.wakeLock.request('screen');
+            }
+        } catch (e) { }
+    },
+
+    // ============ PRACTICE MODE ============
+    selectCompany(company, btn) {
+        this.selectedCompany = company;
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+    },
+
+    nextPracticeQuestion() {
+        const questions = this.questionBank[this.selectedCompany] || this.questionBank.general;
+        const randomIdx = Math.floor(Math.random() * questions.length);
+        this.currentPracticeQ = questions[randomIdx];
+        document.getElementById('practiceQuestion').textContent = this.currentPracticeQ;
+        document.getElementById('practiceAnswer').value = '';
+        document.getElementById('practiceFeedback').classList.add('hidden');
+    },
+
+    async evaluatePracticeAnswer() {
+        const answer = document.getElementById('practiceAnswer').value.trim();
+        if (!answer) {
+            alert('Write your answer first!');
+            return;
+        }
+        if (!this.apiKey) {
+            alert('Set up your API key first in Settings');
+            return;
+        }
+
+        const feedbackEl = document.getElementById('practiceFeedback');
+        feedbackEl.classList.remove('hidden');
+        feedbackEl.innerHTML = '<span class="loading-dots">🤖 Evaluating your answer</span>';
+
+        try {
+            const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: this.model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `You are a strict but helpful interview coach. 
+Resume: ${this.resume.substring(0, 1500)}
+Evaluate the answer and provide:
+1. **Score**: X/10
+2. **Strengths**: 2 specific things done well
+3. **Improvements**: 2 specific things to improve
+4. **Better Answer**: Your suggested 4-5 sentence answer
+Be concise and actionable.`
+                        },
+                        {
+                            role: 'user',
+                            content: `Question: ${this.currentPracticeQ}\n\nCandidate's Answer: ${answer}`
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 400
+                })
+            });
+
+            const data = await resp.json();
+            let feedback = data.choices[0].message.content;
+            feedback = feedback.replace(/\*\*(.*?)\*\*/g, '<b style="color:var(--primary)">$1</b>');
+            feedbackEl.innerHTML = feedback;
+        } catch (e) {
+            feedbackEl.textContent = '❌ Error: ' + e.message;
+        }
+    },
+
+    async showIdealAnswer() {
+        if (!this.currentPracticeQ) {
+            alert('Get a question first!');
+            return;
+        }
+        if (!this.apiKey) {
+            alert('Set up your API key first');
+            return;
+        }
+
+        const feedbackEl = document.getElementById('practiceFeedback');
+        feedbackEl.classList.remove('hidden');
+        feedbackEl.innerHTML = '<span class="loading-dots">💡 Generating ideal answer</span>';
+
+        try {
+            const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: this.model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `Expert interview coach. Resume: ${this.resume.substring(0, 2000)}
+Job: ${this.jobDesc.substring(0, 800)}
+Generate the PERFECT interview answer. First person. Specific metrics. 
+Mark **key phrases**. Use STAR for behavioral. 4-6 sentences.`
+                        },
+                        {
+                            role: 'user',
+                            content: `Generate the ideal answer for: ${this.currentPracticeQ}`
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 350
+                })
+            });
+
+            const data = await resp.json();
+            let answer = data.choices[0].message.content;
+            answer = answer.replace(/\*\*(.*?)\*\*/g, '<b style="color:var(--primary)">$1</b>');
+            feedbackEl.innerHTML = '<div style="color:var(--primary);font-weight:700;margin-bottom:8px;font-size:12px">💡 IDEAL ANSWER</div>' + answer;
+        } catch (e) {
+            feedbackEl.textContent = '❌ Error: ' + e.message;
+        }
+    },
+
+    // ============ COMPANY PREP ============
+    async generatePrepSheet() {
+        const company = document.getElementById('prepCompany').value.trim();
+        const role = document.getElementById('prepRole').value.trim();
+
+        if (!company) { alert('Enter company name'); return; }
+        if (!this.apiKey) { alert('Set up API key first'); return; }
+
+        const resultEl = document.getElementById('prepResult');
+        resultEl.classList.remove('hidden');
+        resultEl.innerHTML = '<span class="loading-dots">📋 Generating prep sheet (10-15 seconds)</span>';
+
+        try {
+            const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.3-70b-versatile',
+                    messages: [{
+                        role: 'user',
+                        content: `Create interview prep sheet.
+
+COMPANY: ${company}
+ROLE: ${role || 'Software Engineer'}
+CANDIDATE RESUME: ${this.resume.substring(0, 2000)}
+
+Provide:
+1. **Company Overview** (2-3 sentences about culture/values)
+2. **Top 8 Likely Questions** with concise sample answers
+3. **Technical Topics to Review** (based on job + resume)
+4. **3 Great Questions to ASK the Interviewer**  
+5. **Red Flags to Avoid** (things NOT to say)
+6. **Power Phrases** (company-specific keywords to use)
+7. **30-Second Elevator Pitch** (tailored for this company)
+
+Be specific and actionable. Use candidate's actual resume details.`
+                    }],
+                    temperature: 0.7,
+                    max_tokens: 1500
+                })
+            });
+
+            const data = await resp.json();
+            let prep = data.choices[0].message.content;
+            prep = prep
+                .replace(/\*\*(.*?)\*\*/g, '<b style="color:var(--primary)">$1</b>')
+                .replace(/#{1,3}\s(.*?)(\n|$)/g, '<div style="color:var(--danger);font-weight:700;margin-top:12px;font-size:15px">$1</div>')
+                .replace(/\n/g, '<br>');
+            resultEl.innerHTML = prep;
+        } catch (e) {
+            resultEl.textContent = '❌ Error: ' + e.message;
+        }
+    },
+
+    // ============ SETTINGS ============
+    saveSettings() {
+        this.apiKey = document.getElementById('settingsApiKey').value.trim();
+        this.resume = document.getElementById('settingsResume').value.trim();
+        this.jobDesc = document.getElementById('settingsJobDesc').value.trim();
+
+        localStorage.setItem('nh_apiKey', this.apiKey);
+        localStorage.setItem('nh_resume', this.resume);
+        localStorage.setItem('nh_jobDesc', this.jobDesc);
+
+        this.showToast('✅ Settings saved!');
+    },
+
+    async testApiKey() {
+        const key = document.getElementById('settingsApiKey').value.trim();
+        if (!key) { alert('Enter API key first'); return; }
+
+        try {
+            const resp = await fetch('https://api.groq.com/openai/v1/models', {
+                headers: { 'Authorization': `Bearer ${key}` }
+            });
+
+            if (resp.ok) {
+                this.showToast('✅ API key is valid!');
+            } else {
+                alert('❌ Invalid API key. Status: ' + resp.status);
+            }
+        } catch (e) {
+            alert('❌ Connection failed: ' + e.message);
+        }
+    },
+
+    toggleSetting(name, btn) {
+        const isOn = btn.classList.toggle('on');
+
+        switch (name) {
+            case 'voice':
+                this.voiceEnabled = isOn;
+                localStorage.setItem('nh_voice', isOn);
+                break;
+            case 'vibration':
+                this.vibrationEnabled = isOn;
+                localStorage.setItem('nh_vibration', isOn);
+                break;
+            case 'wake':
+                this.keepAwake = isOn;
+                if (isOn) this.requestWakeLock();
+                break;
+            case 'autoListen':
+                // Just toggle the setting, actual auto-listen is on live page
+                break;
+        }
+    },
+
+    changeModel(model) {
+        this.model = model;
+        localStorage.setItem('nh_model', model);
+        this.showToast('✅ Model: ' + model);
+    },
+
+    exportData() {
+        const data = {
+            resume: this.resume,
+            jobDesc: this.jobDesc,
+            conversationHistory: this.conversationHistory,
+            questionCount: this.questionCount,
+            settings: {
+                model: this.model,
+                voiceEnabled: this.voiceEnabled,
+                voiceSpeed: this.voiceSpeed,
+                fontSize: this.fontSize
+            }
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `neuralhire_export_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        this.showToast('📤 Data exported!');
+    },
+
+    clearAllData() {
+        if (confirm('⚠️ Delete ALL data?\n\nThis will remove:\n- API key\n- Resume\n- Job description\n- Conversation history\n- All settings\n\nThis cannot be undone.')) {
+            localStorage.clear();
+            location.reload();
+        }
+    },
+
+    // ============ UTILITIES ============
+    showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+};
+
+// ============ INITIALIZE ============
+document.addEventListener('DOMContentLoaded', () => {
+    NH.init();
+});
+
+// Re-request wake lock on visibility change
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && NH.keepAwake) {
+        NH.requestWakeLock();
+    }
+});
+
+// Load voices for TTS
+if ('speechSynthesis' in window) {
+    speechSynthesis.onvoiceschanged = () => {
+        speechSynthesis.getVoices();
+    };
+}
+</script>
+
 </body>
 </html>
