@@ -324,7 +324,7 @@ function updateProviderHelp(){
 }
 
 const NH={
-    apiKey:'',provider:'gemini',resume:'',jobDesc:'',conversationHistory:[],questionCount:0,sessionStart:null,fontSize:19,
+    apiKey:'',provider:'gemini',lastRequestTime:0,requestCount:0,,resume:'',jobDesc:'',conversationHistory:[],questionCount:0,sessionStart:null,fontSize:19,
     mediaRecorder:null,audioChunks:[],isRecording:false,audioStream:null,
     autoListening:false,autoListenTimer:null,recordTimeout:null,
     voiceEnabled:false,voiceSpeed:1.1,vibrationEnabled:true,keepAwake:true,
@@ -428,10 +428,18 @@ const NH={
     },
 
     async autoListenLoop(){
-        if(!this.autoListening)return;
-        await this.startRecording();
-        this.autoListenTimer=setTimeout(()=>{if(this.isRecording)this.stopRecording();this.autoListenTimer=setTimeout(()=>{if(this.autoListening)this.autoListenLoop()},4000)},8000);
-    },
+    if(!this.autoListening)return;
+    await this.startRecording();
+    // Record for 10 seconds (was 8)
+    this.autoListenTimer=setTimeout(()=>{
+        if(this.isRecording)this.stopRecording();
+        // Wait 6 seconds between recordings (was 4)
+        // This prevents rate limiting
+        this.autoListenTimer=setTimeout(()=>{
+            if(this.autoListening)this.autoListenLoop()
+        },6000)
+    },10000);
+},
 
     async processAudio(audioBlob){
         const startTime=Date.now();
@@ -440,23 +448,48 @@ const NH={
             let question='';
 
             if(this.provider==='gemini'){
-                const ab=await audioBlob.arrayBuffer();
-                const b64=btoa(String.fromCharCode(...new Uint8Array(ab)));
-                const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${this.apiKey}`,{
-                    method:'POST',headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({contents:[{parts:[{text:"Transcribe this audio exactly. Return ONLY the spoken words, nothing else. If silence or no speech, return empty string."},{inline_data:{mime_type:audioBlob.type||"audio/webm",data:b64}}]}]})
-                });
-                if(!r.ok){if(r.status===400)throw new Error('Invalid Gemini API key');throw new Error('Gemini error: '+r.status)}
-                const d=await r.json();question=(d.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
-            }else if(this.provider==='groq'){
-                const fd=new FormData();fd.append('file',audioBlob,'recording.webm');fd.append('model','whisper-large-v3');fd.append('language','en');
-                const r=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{'Authorization':`Bearer ${this.apiKey}`},body:fd});
-                if(!r.ok){if(r.status===401)throw new Error('Invalid Groq API key');throw new Error('Groq error: '+r.status)}
-                const d=await r.json();question=(d.text||'').trim();
-            }else if(this.provider==='openrouter'){
-                question=prompt('OpenRouter doesn\'t support audio.\n\nType the question:');
-                if(!question){this.setStatus('listening','● LISTENING');return}
+    await this.rateLimitWait();
+    const ab=await audioBlob.arrayBuffer();
+    const b64=btoa(String.fromCharCode(...new Uint8Array(ab)));
+
+    // Try multiple models for transcription too
+    const models=['gemini-1.5-flash-8b','gemini-2.0-flash'];
+    let question='';
+    let success=false;
+
+    for(const model of models){
+        try{
+            const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`,{
+                method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({contents:[{parts:[
+                    {text:"Transcribe this audio exactly. Return ONLY the spoken words. If no speech, return empty string."},
+                    {inline_data:{mime_type:audioBlob.type||"audio/webm",data:b64}}
+                ]}]})
+            });
+
+            if(r.status===429){
+                console.log(`429 on ${model} transcription, trying next...`);
+                await this.sleep(2000);
+                continue;
             }
+
+            if(!r.ok)continue;
+
+            const d=await r.json();
+            question=(d.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
+            success=true;
+            break;
+        }catch(e){
+            console.log(`${model} failed:`,e);
+            continue;
+        }
+    }
+
+    if(!success){
+        // All models hit rate limit - ask user to type
+        question=prompt('⚠️ Rate limit reached.\n\nType the interview question instead:');
+        if(!question){this.setStatus('listening','● LISTENING');return}
+    }
 
             if(!question||question.length<8){this.setStatus('listening','● LISTENING');return}
             const noise=['thank you','thanks','okay','ok','um','uh','hmm','mhm','ah','right','sure','yes','no','you know','i see'];
@@ -484,31 +517,94 @@ const NH={
         }
     },
 
-    async callAI(prompt){
-        if(this.provider==='gemini'){
-            const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${this.apiKey}`,{
-                method:'POST',headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:500}})
-            });
-            if(!r.ok)throw new Error('Gemini error: '+r.status);
-            const d=await r.json();return d.candidates?.[0]?.content?.parts?.[0]?.text||'No response';
-        }else if(this.provider==='groq'){
-            const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-                method:'POST',headers:{'Authorization':`Bearer ${this.apiKey}`,'Content-Type':'application/json'},
-                body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:500})
-            });
-            if(!r.ok)throw new Error('Groq error: '+r.status);
-            const d=await r.json();return d.choices[0].message.content;
-        }else if(this.provider==='openrouter'){
-            const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{
-                method:'POST',headers:{'Authorization':`Bearer ${this.apiKey}`,'Content-Type':'application/json','HTTP-Referer':window.location.href},
-                body:JSON.stringify({model:'meta-llama/llama-3.1-8b-instruct:free',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:500})
-            });
-            if(!r.ok)throw new Error('OpenRouter error: '+r.status);
-            const d=await r.json();return d.choices[0].message.content;
+   async callAI(prompt){
+    // Rate limit protection
+    await this.rateLimitWait();
+
+    if(this.provider==='gemini'){
+        // Try gemini-1.5-flash-8b first (200 req/min limit)
+        // Falls back to gemini-2.0-flash
+        const models=['gemini-1.5-flash-8b','gemini-2.0-flash','gemini-1.5-flash'];
+        let lastError='';
+
+        for(const model of models){
+            try{
+                const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`,{
+                    method:'POST',headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:500}})
+                });
+
+                if(r.status===429){
+                    lastError='Rate limit hit. Trying another model...';
+                    console.log(`429 on ${model}, trying next...`);
+                    await this.sleep(2000);
+                    continue;
+                }
+
+                if(!r.ok){
+                    lastError=`${model} error: ${r.status}`;
+                    continue;
+                }
+
+                const d=await r.json();
+                const text=d.candidates?.[0]?.content?.parts?.[0]?.text;
+                if(text)return text;
+                lastError='Empty response from '+model;
+            }catch(e){
+                lastError=e.message;
+                continue;
+            }
         }
-        throw new Error('Unknown provider');
-    },
+        throw new Error(lastError||'All Gemini models failed. Wait 60 seconds and try again.');
+
+    }else if(this.provider==='groq'){
+        const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+            method:'POST',headers:{'Authorization':`Bearer ${this.apiKey}`,'Content-Type':'application/json'},
+            body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:500})
+        });
+        if(r.status===429){await this.sleep(3000);throw new Error('Rate limit. Wait 30 seconds.')}
+        if(!r.ok)throw new Error('Groq error: '+r.status);
+        const d=await r.json();return d.choices[0].message.content;
+
+    }else if(this.provider==='openrouter'){
+        const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{
+            method:'POST',headers:{'Authorization':`Bearer ${this.apiKey}`,'Content-Type':'application/json','HTTP-Referer':window.location.href},
+            body:JSON.stringify({model:'meta-llama/llama-3.1-8b-instruct:free',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:500})
+        });
+        if(!r.ok)throw new Error('OpenRouter error: '+r.status);
+        const d=await r.json();return d.choices[0].message.content;
+    }
+    throw new Error('Unknown provider');
+},
+
+// Rate limiter - prevents hitting 429
+async rateLimitWait(){
+    const now=Date.now();
+    const elapsed=now-this.lastRequestTime;
+
+    // Reset counter every 60 seconds
+    if(elapsed>60000){
+        this.requestCount=0;
+    }
+
+    this.requestCount++;
+
+    // If more than 12 requests in a minute, slow down
+    // (limit is 15, we stay under with buffer)
+    if(this.requestCount>12){
+        const waitTime=60000-elapsed;
+        if(waitTime>0){
+            console.log(`Rate limit protection: waiting ${Math.ceil(waitTime/1000)}s`);
+            this.setStatus('thinking','⏳ RATE LIMIT - WAIT');
+            await this.sleep(waitTime+1000);
+            this.requestCount=0;
+        }
+    }
+
+    this.lastRequestTime=Date.now();
+},
+
+sleep(ms){return new Promise(r=>setTimeout(r,ms))},
 
     async generateAnswer(question,qType){
         this.conversationHistory.push(`Q: ${question}`);
