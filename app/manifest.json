@@ -1,0 +1,16 @@
+{
+  "name": "NeuralHire",
+  "short_name": "NH Copilot",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a1a",
+  "theme_color": "#0a0a1a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/google/material-design-icons/master/png/action/visibility/materialicons/48dp/2x/baseline_visibility_white_48dp.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
