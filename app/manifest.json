@@ -1,16 +1,25 @@
 {
-  "name": "NeuralHire",
-  "short_name": "NH Copilot",
+  "name": "NeuralHire — AI Interview Copilot",
+  "short_name": "NeuralHire",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0a0a1a",
-  "theme_color": "#0a0a1a",
+  "background_color": "#050510",
+  "theme_color": "#050510",
   "orientation": "portrait",
+  "description": "AI-powered interview copilot. Real-time answers, mock interviews, session history.",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/google/material-design-icons/master/png/action/visibility/materialicons/48dp/2x/baseline_visibility_white_48dp.png",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Live Mode",
+      "url": "./index.html",
+      "description": "Start live interview mode"
     }
   ]
 }
