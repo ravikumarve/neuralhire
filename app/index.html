@@ -164,6 +164,26 @@
     .feedback-card{background:rgba(68,136,255,0.05);border:1px solid rgba(68,136,255,0.12);border-radius:var(--radius-md);padding:1rem;font-size:.9375rem;color:#c8d4f0;line-height:1.75}
     .feedback-label{font-size:.625rem;font-family:var(--fm);color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:.375rem}
 
+    /* TIMER */
+    .timer-display{background:linear-gradient(135deg,rgba(255,204,68,0.08) 0%,rgba(255,204,68,0.03) 100%);border:1px solid rgba(255,204,68,0.2);border-radius:var(--radius-md);padding:.875rem 1rem;display:none;align-items:center;justify-content:center;gap:1rem;animation:fadeIn .2s ease}
+    .timer-display.active{display:flex}
+    .timer-display.warning{background:linear-gradient(135deg,rgba(255,68,102,0.12) 0%,rgba(255,68,102,0.05) 100%);border-color:rgba(255,68,102,0.3);animation:timer-pulse .5s ease-in-out infinite}
+    .timer-display.critical{background:linear-gradient(135deg,rgba(255,68,102,0.2) 0%,rgba(255,68,102,0.1) 100%);border-color:rgba(255,68,102,0.5);animation:timer-pulse .25s ease-in-out infinite}
+    @keyframes timer-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+    .timer-ring{width:52px;height:52px;position:relative;flex-shrink:0}
+    .timer-ring svg{transform:rotate(-90deg);width:100%;height:100%}
+    .timer-ring-bg{fill:none;stroke:rgba(255,255,255,0.1);stroke-width:4}
+    .timer-ring-fill{fill:none;stroke:var(--yellow);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .1s linear,stroke .3s ease}
+    .timer-ring-fill.warning{stroke:var(--red)}
+    .timer-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.875rem;font-weight:800;color:var(--yellow)}
+    .timer-ring-text.warning{color:var(--red)}
+    .timer-info{flex:1}
+    .timer-label{font-size:.625rem;font-family:var(--fm);color:var(--yellow);letter-spacing:.5px;text-transform:uppercase;margin-bottom:.125rem}
+    .timer-label.warning{color:var(--red)}
+    .timer-controls{display:flex;gap:.375rem}
+    .timer-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--muted);font-size:.75rem;padding:.375rem .625rem;cursor:pointer;transition:var(--transition)}
+    .timer-btn:hover{background:rgba(255,255,255,0.1);color:var(--text)}
+
     /* CHIPS */
     .chip-row{display:flex;gap:.5rem;flex-wrap:wrap}
     .chip{padding:.5rem 1rem;border-radius:100px;font-size:.8125rem;font-weight:600;font-family:var(--fh);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:var(--transition);background:var(--surface)}
@@ -173,11 +193,30 @@
     /* HISTORY */
     .history-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem;cursor:pointer;transition:var(--transition);animation:fadeIn .2s ease}
     .history-item:hover{border-color:var(--green-glow);transform:translateX(4px);box-shadow:var(--shadow-md)}
+    .history-item.has-scores{border-left:3px solid var(--green)}
     .history-head{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;margin-bottom:.5rem}
     .history-q{font-size:.9375rem;font-weight:600;color:var(--text);line-height:1.5;flex:1}
     .history-time{font-size:.6875rem;font-family:var(--fm);color:var(--muted);flex-shrink:0}
     .history-preview{font-size:.8125rem;color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     .history-tags{display:flex;gap:.375rem;margin-top:.625rem;flex-wrap:wrap}
+    .history-meta{display:flex;align-items:center;gap:.5rem;margin-top:.625rem;flex-wrap:wrap}
+    .history-score{font-family:var(--fh);font-size:.875rem;font-weight:700;padding:.25rem .625rem;border-radius:6px}
+    .history-score.excellent{background:rgba(0,255,170,0.12);color:var(--green)}
+    .history-score.good{background:rgba(68,136,255,0.12);color:var(--blue)}
+    .history-score.average{background:rgba(255,204,68,0.12);color:var(--yellow)}
+    .history-score.poor{background:rgba(255,68,102,0.12);color:var(--red)}
+    .history-weak{display:flex;gap:.375rem;margin-top:.5rem}
+    .weak-badge{font-size:.625rem;font-family:var(--fm);padding:.125rem .5rem;border-radius:4px;background:rgba(255,68,102,0.08);color:var(--red);border:1px solid rgba(255,68,102,0.2)}
+    .history-trend{font-size:.6875rem;font-family:var(--fm);padding:.25rem .5rem;border-radius:4px;margin-top:.5rem}
+    .history-trend.up{background:rgba(0,255,170,0.08);color:var(--green)}
+    .history-trend.down{background:rgba(255,68,102,0.08);color:var(--red)}
+    .history-trend.flat{background:rgba(255,255,255,0.05);color:var(--muted)}
+    .history-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem;margin-bottom:1rem}
+    .history-summary-title{font-family:var(--fh);font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem}
+    .history-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;text-align:center}
+    .history-summary-stat .stat-val{font-family:var(--fh);font-size:1.5rem;font-weight:800;color:var(--green)}
+    .history-summary-stat .stat-label{font-size:.5625rem;font-family:var(--fm);color:var(--muted);margin-top:.125rem}
+    .history-summary-stat .stat-val.up{color:var(--green)}.history-summary-stat .stat-val.down{color:var(--red)}
     .empty-state{text-align:center;padding:3rem 1.5rem;color:var(--muted)}
     .empty-state .eso{font-size:2.5rem;margin-bottom:.75rem;opacity:0.5}
     .empty-state p{font-size:.9375rem;line-height:1.7}
@@ -236,6 +275,42 @@
       .header-right{gap:.375rem}
       .badge-pill{padding:.3125rem .625rem;font-size:.625rem}
       .logo{font-size:1rem}
+      .timer-display{padding:.625rem .75rem}
+      .timer-ring{width:44px;height:44px}
+      .timer-ring-text{font-size:.75rem}
+      .timer-label{font-size:.5625rem}
+      .history-summary-grid{grid-template-columns:1fr 1fr 1fr;gap:.5rem}
+      .history-summary-stat .stat-val{font-size:1.25rem}
+    }
+
+    /* PRINT STYLES - Hidden, only visible when printing */
+    .print-report{display:none}
+    @media print {
+      *{background:transparent!important;color:#000!important;font-family:'DM Sans',sans-serif!important}
+      body{overflow:visible;height:auto}
+      .print-report{display:block!important;padding:20px;max-width:800px;margin:0 auto}
+      .print-header{border-bottom:3px solid #00ffaa;padding-bottom:16px;margin-bottom:24px}
+      .print-logo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#00aa77}
+      .print-meta{display:flex;gap:24px;margin-top:8px;font-size:12px;color:#666}
+      .print-section{margin-bottom:24px}
+      .print-section-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#333;border-bottom:1px solid #ddd;padding-bottom:8px;margin-bottom:12px}
+      .print-question{background:#f5f5f5;padding:12px;border-radius:8px;margin-bottom:16px}
+      .print-q-label{font-size:10px;font-weight:700;color:#666;text-transform:uppercase;margin-bottom:4px}
+      .print-q-text{font-size:14px;font-weight:600}
+      .print-answer{margin-left:16px;padding-left:16px;border-left:3px solid #00ffaa}
+      .print-score-row{display:flex;gap:16px;margin-top:12px}
+      .print-score-box{flex:1;background:#f5f5f5;padding:12px;border-radius:8px;text-align:center}
+      .print-score-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800}
+      .print-score-val.high{color:#00aa77}.print-score-val.mid{color:#cc8800}.print-score-val.low{color:#cc2244}
+      .print-score-name{font-size:10px;color:#666;margin-top:4px}
+      .print-feedback{background:#f0f4ff;padding:12px;border-radius:8px;font-size:13px;line-height:1.6}
+      .print-grade{text-align:center;padding:24px;background:linear-gradient(135deg,#f5f5f5,#e8e8e8);border-radius:12px;margin-top:24px}
+      .print-grade-label{font-size:12px;color:#666;text-transform:uppercase;margin-bottom:8px}
+      .print-grade-val{font-family:'Syne',sans-serif;font-size:48px;font-weight:800}
+      .print-grade-val.excellent{color:#00aa77}.print-grade-val.good{color:#4488cc}.print-grade-val.average{color:#cc8800}.print-grade-val.poor{color:#cc2244}
+      .print-grade-text{font-size:14px;color:#666;margin-top:4px}
+      .print-footer{text-align:center;margin-top:32px;padding-top:16px;border-top:1px solid #ddd;font-size:11px;color:#999}
+      .no-print{display:none!important}
     }
   </style>
 </head>
@@ -263,6 +338,31 @@
   <div class="panel-inner">
 
     <div class="card">
+      <div class="card-title">💼 Interview Setup</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label>Role</label>
+          <select id="roleSelect" onchange="saveRole()">
+            <option value="General">General</option>
+            <option value="Frontend">Frontend</option>
+            <option value="Backend">Backend</option>
+            <option value="Data Science">Data Science</option>
+            <option value="PM">Product Manager</option>
+            <option value="DevOps">DevOps / SRE</option>
+          </select>
+        </div>
+        <div>
+          <label>Level</label>
+          <select id="levelSelect" onchange="saveLevel()">
+            <option value="Junior">Junior</option>
+            <option value="Mid-level" selected>Mid-level</option>
+            <option value="Senior">Senior</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="card-title">🎯 Job Context (optional)</div>
       <textarea id="jobDesc" placeholder="Paste job description or just the role (e.g. 'Backend Engineer at a fintech startup')..." rows="2"></textarea>
     </div>
@@ -284,6 +384,25 @@
     <div class="q-display" id="qDisplay">
       <div class="q-label">❓ Question Captured</div>
       <div id="qText"></div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer-display" id="timerDisplay">
+      <div class="timer-ring">
+        <svg viewBox="0 0 52 52">
+          <circle class="timer-ring-bg" cx="26" cy="26" r="22"/>
+          <circle class="timer-ring-fill" id="timerRingFill" cx="26" cy="26" r="22" stroke-dasharray="138.23" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-ring-text" id="timerText">2:00</div>
+      </div>
+      <div class="timer-info">
+        <div class="timer-label" id="timerLabel">⏱ Answer Timer</div>
+        <div style="font-size:.6875rem;color:var(--muted)">Time remaining</div>
+      </div>
+      <div class="timer-controls">
+        <button class="timer-btn" onclick="toggleTimer()" id="timerToggleBtn">⏸</button>
+        <button class="timer-btn" onclick="resetTimer()">↺</button>
+      </div>
     </div>
 
     <!-- Answer -->
@@ -386,6 +505,7 @@
         </div>
         <div class="answer-text" id="modelAnswerText"></div>
       </div>
+      <button class="btn btn-outline" onclick="downloadScoreReport()">📥 Download Score Report</button>
     </div>
 
   </div>
@@ -474,6 +594,33 @@
     </div>
 
     <div class="card">
+      <div class="card-title">⏱ Interview Timer</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="tts-row">
+          <div class="label-group">
+            <div class="label-title">⏱ Pressure Mode</div>
+            <div class="label-desc">2-min countdown per question</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="timerToggle" onchange="saveSettings();updateTimerDurationRow()">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div id="timerDurationRow">
+          <label>Timer Duration</label>
+          <select id="timerDuration" onchange="saveSettings()">
+            <option value="60">1 minute</option>
+            <option value="90">1.5 minutes</option>
+            <option value="120" selected>2 minutes</option>
+            <option value="180">3 minutes</option>
+            <option value="300">5 minutes</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="card-title">📊 Stats</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="score-cell"><div class="score-val" id="statLive" style="font-size:22px;color:var(--green)">0</div><div class="score-name">LIVE Q&A</div></div>
@@ -505,6 +652,9 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- PRINT REPORT (hidden, populated when printing) -->
+<div class="print-report" id="printReport"></div>
+
 <script>
 // ─── PDF.js ───
 if(typeof pdfjsLib !== 'undefined') {
@@ -532,16 +682,26 @@ let recognition = null, isListening = false;
 let mockRecognition = null, mockIsListening = false;
 let currentAnswer = '', currentQuestion = '', currentMockQ = '';
 let selectedCompany = 'General';
+let selectedRole = 'General';
+let selectedLevel = 'Mid-level';
 let history = [], settings = {}, resumeText = '';
 let lastOnlineState = navigator.onLine;
 try {
   history = JSON.parse(localStorage.getItem('nh_history') || '[]');
   settings = JSON.parse(localStorage.getItem('nh_settings') || '{}');
   resumeText = localStorage.getItem('nh_resume') || '';
+  selectedRole = localStorage.getItem('nh_role') || 'General';
+  selectedLevel = localStorage.getItem('nh_level') || 'Mid-level';
 } catch(e) {
   console.warn('Failed to load saved data:', e);
 }
 let interimTranscript = '', finalTranscript = '';
+
+// ─── TIMER STATE ───
+let timerInterval = null;
+let timerRemaining = 120;
+let timerRunning = false;
+const TIMER_CIRCUMFERENCE = 2 * Math.PI * 22;
 
 // ─── ONLINE/OFFLINE DETECTION ───
 function isOnline() {
@@ -669,6 +829,18 @@ function init() {
       if(settings.answerFormat && answerFormat) answerFormat.value = settings.answerFormat;
       if(settings.jobDesc && jobDesc) jobDesc.value = settings.jobDesc;
       if(settings.tts && ttsToggle) ttsToggle.checked = true;
+      
+      const roleSelect = $('roleSelect');
+      if(roleSelect) roleSelect.value = selectedRole;
+      
+      const levelSelect = $('levelSelect');
+      if(levelSelect) levelSelect.value = selectedLevel;
+      
+      const timerToggle = $('timerToggle');
+      const timerDuration = $('timerDuration');
+      if(timerToggle && settings.timerEnabled !== undefined) timerToggle.checked = settings.timerEnabled;
+      if(timerDuration && settings.timerDuration) timerDuration.value = settings.timerDuration;
+      updateTimerDurationRow();
     }
     
     if(resumeText) {
@@ -759,15 +931,224 @@ function saveSettings() {
   const modelSelect = $('modelSelect');
   const answerLength = $('answerLength');
   const answerFormat = $('answerFormat');
+  const timerToggle = $('timerToggle');
+  const timerDuration = $('timerDuration');
   
   if(modelSelect) settings.model = modelSelect.value;
   if(answerLength) settings.answerLength = answerLength.value;
   if(answerFormat) settings.answerFormat = answerFormat.value;
+  if(timerToggle) settings.timerEnabled = timerToggle.checked;
+  if(timerDuration) settings.timerDuration = parseInt(timerDuration.value);
   
   try {
     localStorage.setItem('nh_settings', JSON.stringify(settings));
   } catch(e) {
     console.warn('Failed to save settings:', e);
+  }
+  
+  updateTimerDurationRow();
+}
+
+function saveRole() {
+  const roleSelect = $('roleSelect');
+  if(roleSelect) {
+    selectedRole = roleSelect.value;
+    try {
+      localStorage.setItem('nh_role', selectedRole);
+    } catch(e) {
+      console.warn('Failed to save role:', e);
+    }
+  }
+}
+
+function saveLevel() {
+  const levelSelect = $('levelSelect');
+  if(levelSelect) {
+    selectedLevel = levelSelect.value;
+    try {
+      localStorage.setItem('nh_level', selectedLevel);
+    } catch(e) {
+      console.warn('Failed to save level:', e);
+    }
+  }
+}
+
+// ─── TIMER FUNCTIONS ───
+function updateTimerDurationRow() {
+  const timerToggle = $('timerToggle');
+  const timerDurationRow = $('timerDurationRow');
+  if(timerToggle && timerDurationRow) {
+    timerDurationRow.style.opacity = timerToggle.checked ? '1' : '0.5';
+    timerDurationRow.style.pointerEvents = timerToggle.checked ? 'auto' : 'none';
+  }
+}
+
+function getTimerDuration() {
+  const el = $('timerDuration');
+  return el ? parseInt(el.value) || 120 : 120;
+}
+
+function isTimerEnabled() {
+  const el = $('timerToggle');
+  return el ? el.checked : false;
+}
+
+function startTimer() {
+  if(!isTimerEnabled()) return;
+  
+  const duration = getTimerDuration();
+  timerRemaining = duration;
+  timerRunning = true;
+  
+  const timerDisplay = $('timerDisplay');
+  const timerText = $('timerText');
+  const timerLabel = $('timerLabel');
+  const timerRingFill = $('timerRingFill');
+  const timerToggleBtn = $('timerToggleBtn');
+  
+  if(timerDisplay) timerDisplay.classList.add('active');
+  if(timerToggleBtn) timerToggleBtn.textContent = '⏸';
+  
+  updateTimerDisplay();
+  
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if(!timerRunning) return;
+    
+    timerRemaining--;
+    updateTimerDisplay();
+    
+    if(timerRemaining <= 0) {
+      stopTimer();
+      showToast('⏱ Time is up!', 'red');
+      playTimerSound();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  timerRunning = false;
+  if(timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  
+  const timerToggleBtn = $('timerToggleBtn');
+  if(timerToggleBtn) timerToggleBtn.textContent = '▶';
+}
+
+function toggleTimer() {
+  if(timerRunning) {
+    stopTimer();
+  } else {
+    if(timerRemaining <= 0) {
+      timerRemaining = getTimerDuration();
+    }
+    timerRunning = true;
+    const timerToggleBtn = $('timerToggleBtn');
+    if(timerToggleBtn) timerToggleBtn.textContent = '⏸';
+    
+    if(timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      if(!timerRunning) return;
+      
+      timerRemaining--;
+      updateTimerDisplay();
+      
+      if(timerRemaining <= 0) {
+        stopTimer();
+        showToast('⏱ Time is up!', 'red');
+        playTimerSound();
+      }
+    }, 1000);
+  }
+}
+
+function resetTimer() {
+  stopTimer();
+  timerRemaining = getTimerDuration();
+  updateTimerDisplay();
+  
+  const timerDisplay = $('timerDisplay');
+  if(timerDisplay) {
+    timerDisplay.classList.remove('warning', 'critical');
+  }
+}
+
+function updateTimerDisplay() {
+  const timerText = $('timerText');
+  const timerLabel = $('timerLabel');
+  const timerRingFill = $('timerRingFill');
+  const timerDisplay = $('timerDisplay');
+  
+  const mins = Math.floor(timerRemaining / 60);
+  const secs = timerRemaining % 60;
+  const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+  
+  if(timerText) timerText.textContent = timeStr;
+  
+  const duration = getTimerDuration();
+  const progress = timerRemaining / duration;
+  const offset = TIMER_CIRCUMFERENCE * (1 - progress);
+  
+  if(timerRingFill) {
+    timerRingFill.style.strokeDashoffset = offset;
+  }
+  
+  const isWarning = timerRemaining <= 30 && timerRemaining > 10;
+  const isCritical = timerRemaining <= 10;
+  
+  if(timerDisplay) {
+    timerDisplay.classList.toggle('warning', isWarning);
+    timerDisplay.classList.toggle('critical', isCritical);
+  }
+  
+  if(timerText) {
+    timerText.classList.toggle('warning', isWarning || isCritical);
+  }
+  
+  if(timerLabel) {
+    timerLabel.classList.toggle('warning', isWarning || isCritical);
+    if(isCritical) {
+      timerLabel.textContent = '⚠️ Hurry!';
+    } else if(isWarning) {
+      timerLabel.textContent = '⏱ Running low';
+    } else {
+      timerLabel.textContent = '⏱ Answer Timer';
+    }
+  }
+  
+  if(timerRingFill) {
+    timerRingFill.classList.toggle('warning', isWarning || isCritical);
+    if(isCritical) {
+      timerRingFill.style.stroke = '#ff4466';
+    } else if(isWarning) {
+      timerRingFill.style.stroke = '#ff4466';
+    } else {
+      timerRingFill.style.stroke = '';
+    }
+  }
+}
+
+function playTimerSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+    
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.5);
+  } catch(e) {
+    console.warn('Could not play timer sound:', e);
   }
 }
 
@@ -1037,6 +1418,10 @@ function resetMicUI() {
   const micLabel = $('micLabel');
   const liveBadge = $('liveBadge');
   const transcriptBox = $('transcriptBox');
+  const timerDisplay = $('timerDisplay');
+  
+  stopTimer();
+  if(timerDisplay) timerDisplay.classList.remove('active', 'warning', 'critical');
   
   if(micBtn) {
     micBtn.textContent = '🎤';
@@ -1060,6 +1445,9 @@ async function processQuestion(question) {
   if(qDisplay) qDisplay.classList.add('show');
   if(qText) qText.textContent = question;
   if(transcriptBox) transcriptBox.classList.remove('show');
+  
+  resetTimer();
+  startTimer();
   
   if(micBtn) {
     micBtn.textContent = '🧠';
@@ -1095,7 +1483,7 @@ async function processQuestion(question) {
 
     if(ttsToggle?.checked) speakAnswer();
     
-    addToHistory({ type:'live', question, answer, time:Date.now(), elapsed });
+    addToHistory({ type:'live', question, answer, time:Date.now(), elapsed, role:selectedRole, level:selectedLevel });
     resetMicUI();
   } catch(e) {
     let msg = e.message || 'Unknown error';
@@ -1122,7 +1510,28 @@ function buildPrompt(question) {
   const format = settings.answerFormat || 'star';
   const lengthMap = { concise:'30-60 seconds when spoken', standard:'60-90 seconds when spoken', detailed:'90-120 seconds when spoken' };
   const formatMap = { star:'Use STAR method with clear Situation/Task/Action/Result structure', structured:'Use structured points with bold headers', conversational:'Natural conversational tone, no rigid format' };
+  
+  const levelMap = {
+    'Junior': 'This is a JUNIOR level interview. Focus on fundamentals, basic concepts, learning mindset, and entry-level expectations. Keep answers appropriate for someone with 0-2 years of experience. Show enthusiasm and willingness to learn.',
+    'Mid-level': 'This is a MID-LEVEL interview. Balance depth with breadth. Expect questions about past experience, problem-solving approach, and growing expertise. Answers should reflect 3-5 years of experience and increasing responsibility.',
+    'Senior': 'This is a SENIOR level interview. Focus on leadership, architectural decisions, mentoring others, and strategic thinking. Expect questions about system design, trade-offs, and impact at scale. Answers should reflect 6+ years of experience and technical leadership.'
+  };
+  
+  const roleMap = {
+    'Frontend': 'The candidate is interviewing for a Frontend Developer role. Focus on React, JavaScript, CSS, performance optimization, accessibility, and building user-friendly interfaces. Mention relevant frameworks and modern web technologies.',
+    'Backend': 'The candidate is interviewing for a Backend Developer role. Focus on API design, databases, server-side logic, scalability, security, and cloud infrastructure. Mention relevant languages, frameworks, and system design principles.',
+    'Data Science': 'The candidate is interviewing for a Data Science role. Focus on statistical analysis, machine learning, data visualization, and deriving insights from data. Mention relevant tools, algorithms, and business impact.',
+    'PM': 'The candidate is interviewing for a Product Manager role. Focus on product strategy, user needs, prioritization, stakeholder management, and data-driven decision making. Demonstrate leadership and communication skills.',
+    'DevOps': 'The candidate is interviewing for a DevOps/SRE role. Focus on CI/CD pipelines, infrastructure automation, monitoring, incident response, and system reliability. Mention relevant tools like Kubernetes, Docker, and cloud platforms.',
+    'General': 'The candidate is interviewing for a professional role. Provide a well-rounded, general interview answer.'
+  };
+  
+  const levelContext = levelMap[selectedLevel] || levelMap['Mid-level'];
+  const roleContext = roleMap[selectedRole] || roleMap['General'];
+  
   return `You are an expert interview coach helping a candidate answer an interview question.
+${levelContext}
+${roleContext}
 
 ${resumeText ? `CANDIDATE RESUME:\n${resumeText.slice(0,2500)}\n\n` : ''}${jd ? `JOB CONTEXT:\n${jd}\n\n` : ''}INTERVIEW QUESTION: "${question}"
 
@@ -1355,7 +1764,7 @@ Respond ONLY in this exact JSON format, no extra text, no markdown:
     if(scoreSection) scoreSection.style.display = 'flex';
     if(modelAnswerCard) modelAnswerCard.style.display = 'block';
     
-    addToHistory({ type:'mock', question:currentMockQ, answer:scores.model_answer, scores, time:Date.now(), company:selectedCompany });
+    addToHistory({ type:'mock', question:currentMockQ, answer:scores.model_answer, scores, time:Date.now(), company:selectedCompany, role:selectedRole, level:selectedLevel });
     updateStats();
   } catch(e) {
     showToast('Scoring error — ' + (e.message || 'try again'), 'red');
@@ -1418,6 +1827,123 @@ function copyModelAnswer() {
     showToast('Failed to copy', 'red');
     console.error('Clipboard error:', e);
   });
+}
+
+function getScoreClass(val) {
+  if(val >= 8) return 'high';
+  if(val >= 6) return 'mid';
+  return 'low';
+}
+
+function getScoreLabel(cls) {
+  if(cls === 'high') return 'Excellent';
+  if(cls === 'mid') return 'Good';
+  return 'Needs Work';
+}
+
+function downloadScoreReport() {
+  const scoreSection = $('scoreSection');
+  if(!scoreSection || scoreSection.style.display === 'none') {
+    showToast('Complete a mock interview first', 'red');
+    return;
+  }
+
+  const rel = $('scoreRel')?.textContent?.replace('/10','') || '—';
+  const spec = $('scoreSpec')?.textContent?.replace('/10','') || '—';
+  const star = $('scoreStar')?.textContent?.replace('/10','') || '—';
+  const feedback = $('feedbackText')?.innerText || '';
+  const modelAnswer = $('modelAnswerText')?.innerText || '';
+  const userAnswer = $('mockAnswer')?.value || '';
+  const question = currentMockQ || '';
+
+  const relNum = parseInt(rel) || 0;
+  const specNum = parseInt(spec) || 0;
+  const starNum = parseInt(star) || 0;
+  const avg = Math.round((relNum + specNum + starNum) / 3);
+
+  let gradeClass, gradeText;
+  if(avg >= 8) { gradeClass = 'excellent'; gradeText = 'Excellent Performance'; }
+  else if(avg >= 7) { gradeClass = 'good'; gradeText = 'Good Performance'; }
+  else if(avg >= 5) { gradeClass = 'average'; gradeText = 'Average Performance'; }
+  else { gradeClass = 'poor'; gradeText = 'Needs Improvement'; }
+
+  const relCls = getScoreClass(relNum);
+  const specCls = getScoreClass(specNum);
+  const starCls = getScoreClass(starNum);
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const timeStr = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+
+  const reportHTML = `
+    <div class="print-header">
+      <div class="print-logo">NeuralHire Interview Report</div>
+      <div class="print-meta">
+        <span>Date: ${dateStr}</span>
+        <span>Time: ${timeStr}</span>
+        <span>Company: ${selectedCompany}</span>
+      </div>
+    </div>
+
+    <div class="print-section">
+      <div class="print-section-title">Question</div>
+      <div class="print-question">
+        <div class="print-q-label">Interview Question</div>
+        <div class="print-q-text">${escHtml(question)}</div>
+      </div>
+    </div>
+
+    <div class="print-section">
+      <div class="print-section-title">Your Answer</div>
+      <div class="print-answer">${escHtml(userAnswer) || '<em style="color:#999">No answer provided</em>'}</div>
+    </div>
+
+    <div class="print-section">
+      <div class="print-section-title">Scoring</div>
+      <div class="print-score-row">
+        <div class="print-score-box">
+          <div class="print-score-val ${relCls}">${rel}/10</div>
+          <div class="print-score-name">RELEVANCE — ${getScoreLabel(relCls)}</div>
+        </div>
+        <div class="print-score-box">
+          <div class="print-score-val ${specCls}">${spec}/10</div>
+          <div class="print-score-name">SPECIFICITY — ${getScoreLabel(specCls)}</div>
+        </div>
+        <div class="print-score-box">
+          <div class="print-score-val ${starCls}">${star}/10</div>
+          <div class="print-score-name">STAR FORMAT — ${getScoreLabel(starCls)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="print-section">
+      <div class="print-section-title">AI Feedback</div>
+      <div class="print-feedback">${escHtml(feedback) || 'No feedback available'}</div>
+    </div>
+
+    <div class="print-section">
+      <div class="print-section-title">Model Answer</div>
+      <div class="print-answer">${escHtml(modelAnswer) || 'No model answer provided'}</div>
+    </div>
+
+    <div class="print-grade">
+      <div class="print-grade-label">Overall Grade</div>
+      <div class="print-grade-val ${gradeClass}">${avg}/10</div>
+      <div class="print-grade-text">${gradeText}</div>
+    </div>
+
+    <div class="print-footer">
+      Generated by NeuralHire — AI Interview Copilot<br>
+      Powered by Groq API
+    </div>
+  `;
+
+  const printDiv = $('printReport');
+  if(printDiv) {
+    printDiv.innerHTML = reportHTML;
+    window.print();
+    setTimeout(() => { if(printDiv) printDiv.innerHTML = ''; }, 500);
+  }
 }
 
 function copyHistAnswer() {
@@ -1515,16 +2041,105 @@ function renderHistory() {
   
   if(clearBtn) clearBtn.style.display = 'flex';
   
-  list.innerHTML = history.map((item,i) => {
+  const mockSessions = history.filter(h => h.type === 'mock' && h.scores);
+  let summaryHTML = '';
+  
+  if(mockSessions.length > 0) {
+    const totalScore = mockSessions.reduce((sum, s) => sum + (s.scores.relevance + s.scores.specificity + s.scores.star) / 3, 0);
+    const avgScore = (totalScore / mockSessions.length).toFixed(1);
+    
+    const recent = mockSessions.slice(-3);
+    const recentAvg = recent.reduce((sum, s) => sum + (s.scores.relevance + s.scores.specificity + s.scores.star) / 3, 0) / recent.length;
+    const older = mockSessions.slice(0, Math.max(0, mockSessions.length - 3));
+    const olderAvg = older.length > 0 ? older.reduce((sum, s) => sum + (s.scores.relevance + s.scores.specificity + s.scores.star) / 3, 0) / older.length : recentAvg;
+    const trend = recentAvg >= olderAvg ? 'up' : recentAvg < olderAvg ? 'down' : 'flat';
+    const trendIcon = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→';
+    const trendText = trend === 'up' ? 'Improving' : trend === 'down' ? 'Declining' : 'Stable';
+    
+    const weakCounts = { relevance: 0, specificity: 0, star: 0 };
+    mockSessions.forEach(s => {
+      if(s.scores.relevance < 7) weakCounts.relevance++;
+      if(s.scores.specificity < 7) weakCounts.specificity++;
+      if(s.scores.star < 7) weakCounts.star++;
+    });
+    const weakest = Object.entries(weakCounts).sort((a,b) => b[1] - a[1]).slice(0,2).map(([k]) => k);
+    const weakLabels = { relevance: 'Relevance', specificity: 'Specificity', star: 'STAR Format' };
+    
+    summaryHTML = `
+      <div class="history-summary">
+        <div class="history-summary-title">📊 Performance Summary</div>
+        <div class="history-summary-grid">
+          <div class="history-summary-stat">
+            <div class="stat-val">${mockSessions.length}</div>
+            <div class="stat-label">SESSIONS</div>
+          </div>
+          <div class="history-summary-stat">
+            <div class="stat-val">${avgScore}/10</div>
+            <div class="stat-label">AVG SCORE</div>
+          </div>
+          <div class="history-summary-stat">
+            <div class="stat-val ${trend}">${trendIcon} ${trendText}</div>
+            <div class="stat-label">TREND</div>
+          </div>
+        </div>
+        ${weakest.length > 0 ? `<div style="margin-top:.75rem;font-size:.6875rem;color:var(--muted)">Focus areas: <span style="color:var(--red)">${weakest.map(w => weakLabels[w]).join(', ')}</span></div>` : ''}
+      </div>
+    `;
+  }
+  
+  list.innerHTML = summaryHTML + history.map((item,i) => {
     const d = new Date(item.time);
-    const timeStr = d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    const tag = item.type==='mock' ? `<span class="meta-tag time">Mock · ${item.company||''}</span>` : `<span class="meta-tag model">Live</span>`;
-    const scoreTag = item.scores ? `<span class="meta-tag" style="background:rgba(0,255,170,0.08);color:var(--green);border:1px solid rgba(0,255,170,0.15)">Avg ${((item.scores.relevance+item.scores.specificity+item.scores.star)/3).toFixed(1)}/10</span>` : '';
-    const preview = (item.answer||'').replace(/<[^>]*>/g,'').slice(0,120);
-    return `<div class="history-item" data-index="${i}" onclick="openHistModal(${i})">
-      <div class="history-head"><div class="history-q">${escHtml(item.question)}</div><div class="history-time">${timeStr}</div></div>
-      <div class="history-preview">${escHtml(preview)}</div>
-      <div class="history-tags">${tag}${scoreTag}</div>
+    const dateStr = d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    const typeLabel = item.type === 'mock' ? `🏋️ Mock` : `🎤 Live`;
+    const companyLabel = item.company ? ` · ${item.company}` : '';
+    const roleLabel = item.role ? ` · ${item.role}` : '';
+    
+    let scoreHTML = '';
+    let weakHTML = '';
+    let trendHTML = '';
+    
+    if(item.scores) {
+      const avg = ((item.scores.relevance + item.scores.specificity + item.scores.star) / 3).toFixed(1);
+      const scoreClass = avg >= 8 ? 'excellent' : avg >= 6.5 ? 'good' : avg >= 5 ? 'average' : 'poor';
+      scoreHTML = `<span class="history-score ${scoreClass}">${avg}/10</span>`;
+      
+      const weaknesses = [];
+      if(item.scores.relevance < 7) weaknesses.push('Relevance');
+      if(item.scores.specificity < 7) weaknesses.push('Specificity');
+      if(item.scores.star < 7) weaknesses.push('STAR');
+      
+      if(weaknesses.length > 0) {
+        weakHTML = `<div class="history-weak">${weaknesses.slice(0,2).map(w => `<span class="weak-badge">⚠ ${w}</span>`).join('')}</div>`;
+      }
+      
+      if(i < history.length - 1) {
+        const prev = history.slice(0, i + 1).filter(h => h.scores).slice(-2, -1)[0];
+        if(prev && prev.scores) {
+          const currAvg = (item.scores.relevance + item.scores.specificity + item.scores.star) / 3;
+          const prevAvg = (prev.scores.relevance + prev.scores.specificity + prev.scores.star) / 3;
+          const diff = currAvg - prevAvg;
+          if(Math.abs(diff) >= 0.5) {
+            const tClass = diff > 0 ? 'up' : 'down';
+            const tIcon = diff > 0 ? '↑' : '↓';
+            trendHTML = `<div class="history-trend ${tClass}">${tIcon} ${Math.abs(diff).toFixed(1)} vs previous</div>`;
+          }
+        }
+      }
+    }
+    
+    return `<div class="history-item ${item.scores ? 'has-scores' : ''}" data-index="${i}" onclick="openHistModal(${i})">
+      <div class="history-head">
+        <div class="history-q">${escHtml(item.question)}</div>
+        <div class="history-time">${dateStr} · ${timeStr}</div>
+      </div>
+      <div class="history-meta">
+        <span class="meta-tag model">${typeLabel}${companyLabel}${roleLabel}</span>
+        ${scoreHTML}
+      </div>
+      ${weakHTML}
+      ${trendHTML}
     </div>`;
   }).join('<div style="height:8px"></div>');
 }
