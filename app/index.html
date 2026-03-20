@@ -767,21 +767,19 @@ function checkSpeechSupport() {
 }
 
 function switchTab(tab) {
-  $all('.panel').forEach(p => p.style.display = 'none');
-  $all('.tab').forEach(t => t.classList.remove('active'));
-  $all('.nav-pill').forEach(p => p.classList.remove('active'));
-  
-  const panel = $('panel-' + tab);
-  if(panel) panel.style.display = 'flex';
-  
-  const navPills = $all('.nav-pill');
-  navPills.forEach(p => { if(p.dataset.tab === tab) p.classList.add('active'); });
-  
-  const tabs = $all('.tab');
-  ['live','mock','history','setup'].forEach((t,i) => { if(t===tab && tabs[i]) tabs[i].classList.add('active'); });
-  
-  if(tab==='history') renderHistory();
-  if(tab==='setup') updateStats();
+  document.querySelectorAll('.panel').forEach(p => {
+    p.style.display = 'none';
+  });
+  document.querySelectorAll('.nav-pill').forEach(p => {
+    p.classList.remove('active');
+  });
+  const panel = document.getElementById('panel-' + tab);
+  if (panel) panel.style.display = 'flex';
+  document.querySelectorAll('.nav-pill').forEach(p => {
+    if (p.dataset.tab === tab) p.classList.add('active');
+  });
+  if (tab === 'history') renderHistory();
+  if (tab === 'setup') updateStats();
 }
 
 function saveApiKey() {
@@ -1538,6 +1536,7 @@ function escHtml(s) {
 if('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(e => {}); }
 
 if(document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+if(document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', () => setTimeout(() => switchTab('live'), 100)); } else { setTimeout(() => switchTab('live'), 100); }
 </script>
 </body>
 </html>
