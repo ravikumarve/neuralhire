@@ -768,11 +768,14 @@ function checkSpeechSupport() {
 function switchTab(tab) {
   ['live','mock','history','setup'].forEach(function(t) {
     var p = document.getElementById('panel-' + t);
-    if (p) { p.style.cssText = 'display:none!important'; }
+    if (p) p.style.display = 'none';
   });
   var target = document.getElementById('panel-' + tab);
   if (target) {
-    target.style.cssText = 'display:flex!important;flex-direction:column;flex:1;overflow:hidden;position:relative';
+    target.style.display = 'flex';
+    target.style.flexDirection = 'column';
+    target.style.flex = '1';
+    target.style.overflow = 'hidden';
   }
   document.querySelectorAll('.nav-pill').forEach(function(p) {
     p.classList.remove('active');
@@ -1118,7 +1121,7 @@ async function processQuestion(question) {
     const metaModel = $('metaModel');
     const answerActions = $('answerActions');
     const ttsToggle = $('ttsToggle');
-    if(answerTag) answerTag.textContent = `AI ANSWER · ${elapsed}s`;
+    if(answerTag) answerTag.textContent = `AI ANSWER - ${elapsed}s`;
     if(answerText) answerText.innerHTML = formatAnswer(answer);
     if(answerCard) answerCard.classList.add('show');
     if(answerActions) answerActions.style.display = 'flex';
@@ -1337,7 +1340,7 @@ function downloadScoreReport() {
   const starCls = getScoreClass(starNum);
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  const reportHTML = `<div style="padding:20px;max-width:800px;margin:0 auto;font-family:sans-serif}"><div style="border-bottom:2px solid var(--amber);padding-bottom:12px;margin-bottom:20px}"><div style="font-family:Outfit,sans-serif;font-size:20px;font-weight:700}">NeuralHire Report</div><div style="font-size:12px;color:#666;margin-top:4px">${dateStr} · ${selectedCompany}</div></div><div style="margin-bottom:20px}"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#666;margin-bottom:8px">Question</div><div style="background:#f5f5f5;padding:12px;border-radius:8px;font-size:14px}">${escHtml(question)}</div></div><div style="margin-bottom:20px}"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#666;margin-bottom:8px">Your Answer</div><div style="padding-left:12px;border-left:3px solid var(--amber)">${escHtml(userAnswer) || '<em>No answer</em>'}</div></div><div style="display:flex;gap:12px;margin-bottom:20px}"><div style="flex:1;background:#f5f5f5;padding:12px;border-radius:8px;text-align:center}"><div style="font-family:Outfit,sans-serif;font-size:24px;font-weight:700;color:${relCls==='high'?'#22c55e':relCls==='mid'?'#fb923c':'#ef4444}">${rel}/10</div><div style="font-size:10px;color:#666">RELEVANCE</div></div><div style="flex:1;background:#f5f5f5;padding:12px;border-radius:8px;text-align:center}"><div style="font-family:Outfit,sans-serif;font-size:24px;font-weight:700;color:${specCls==='high'?'#22c55e':specCls==='mid'?'#fb923c':'#ef4444}">${spec}/10</div><div style="font-size:10px;color:#666">SPECIFICITY</div></div><div style="flex:1;background:#f5f5f5;padding:12px;border-radius:8px;text-align:center}"><div style="font-family:Outfit,sans-serif;font-size:24px;font-weight:700;color:${starCls==='high'?'#22c55e':starCls==='mid'?'#fb923c':'#ef4444}">${star}/10</div><div style="font-size:10px;color:#666">STAR</div></div></div><div style="margin-bottom:20px}"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#666;margin-bottom:8px">Feedback</div><div style="background:#fff8f5;padding:12px;border-radius:8px">${escHtml(feedback)}</div></div><div style="text-align:center;padding:20px;background:#f5f5f5;border-radius:12px;margin-top:20px}"><div style="font-size:10px;text-transform:uppercase;color:#666">Overall Grade</div><div style="font-family:Outfit,sans-serif;font-size:36px;font-weight:700;color:${gradeClass==='excellent'?'#22c55e':gradeClass==='good'?'#fb923c':gradeClass==='average'?'#f59e0b':'#ef4444}">${avg}/10</div><div style="font-size:14px;color:#666">${gradeText}</div></div></div>`;
+  const reportHTML = `<div style="padding:20px;max-width:800px;margin:0 auto;font-family:sans-serif"><div style="border-bottom:2px solid var(--amber);padding-bottom:12px;margin-bottom:20px"><div style="font-family:Outfit,sans-serif;font-size:20px;font-weight:700">NeuralHire Report</div><div style="font-size:12px;color:#666;margin-top:4px">${dateStr} - ${selectedCompany}</div></div><div style="margin-bottom:20px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#666;margin-bottom:8px">Question</div><div style="background:#f5f5f5;padding:12px;border-radius:8px;font-size:14px">${escHtml(question)}</div></div><div style="margin-bottom:20px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#666;margin-bottom:8px">Your Answer</div><div style="padding-left:12px;border-left:3px solid var(--amber)">${escHtml(userAnswer) || '<em>No answer</em>'}</div></div><div style="display:flex;gap:12px;margin-bottom:20px"><div style="flex:1;background:#f5f5f5;padding:12px;border-radius:8px;text-align:center"><div style="font-family:Outfit,sans-serif;font-size:24px;font-weight:700;color:${relCls==='high'?'#22c55e':relCls==='mid'?'#fb923c':'#ef4444'}">${rel}/10</div><div style="font-size:10px;color:#666">RELEVANCE</div></div><div style="flex:1;background:#f5f5f5;padding:12px;border-radius:8px;text-align:center"><div style="font-family:Outfit,sans-serif;font-size:24px;font-weight:700;color:${specCls==='high'?'#22c55e':specCls==='mid'?'#fb923c':'#ef4444'}">${spec}/10</div><div style="font-size:10px;color:#666">SPECIFICITY</div></div><div style="flex:1;background:#f5f5f5;padding:12px;border-radius:8px;text-align:center"><div style="font-family:Outfit,sans-serif;font-size:24px;font-weight:700;color:${starCls==='high'?'#22c55e':starCls==='mid'?'#fb923c':'#ef4444'}">${star}/10</div><div style="font-size:10px;color:#666">STAR</div></div></div><div style="margin-bottom:20px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#666;margin-bottom:8px">Feedback</div><div style="background:#fff8f5;padding:12px;border-radius:8px">${escHtml(feedback)}</div></div><div style="text-align:center;padding:20px;background:#f5f5f5;border-radius:12px;margin-top:20px"><div style="font-size:10px;text-transform:uppercase;color:#666">Overall Grade</div><div style="font-family:Outfit,sans-serif;font-size:36px;font-weight:700;color:${gradeClass==='excellent'?'#22c55e':gradeClass==='good'?'#fb923c':gradeClass==='average'?'#f59e0b':'#ef4444'}">${avg}/10</div><div style="font-size:14px;color:#666">${gradeText}</div></div></div>`;
   const printDiv = $('printReport');
   if(printDiv) { printDiv.innerHTML = reportHTML; window.print(); setTimeout(() => { if(printDiv) printDiv.innerHTML = ''; }, 500); }
 }
@@ -1450,7 +1453,7 @@ function renderHistory() {
       const scoreClass = avg >= 8 ? 'excellent' : avg >= 6.5 ? 'good' : avg >= 5 ? 'average' : 'poor';
       scoreHTML = `<span class="history-score ${scoreClass}">${avg}/10</span>`;
     }
-    return `<div class="history-item ${item.scores ? 'has-scores' : ''}" data-index="${i}" onclick="openHistModal(${i})" style="animation-delay:${Math.min(i * 0.03, 0.3)}s"><div class="history-head"><div class="history-q">${escHtml(item.question)}</div><div class="history-time">${dateStr} · ${timeStr}</div></div><div class="history-meta"><span class="meta-tag">${typeLabel}</span>${scoreHTML}</div></div>`;
+    return `<div class="history-item ${item.scores ? 'has-scores' : ''}" data-index="${i}" onclick="openHistModal(${i})" style="animation-delay:${Math.min(i * 0.03, 0.3)}s"><div class="history-head"><div class="history-q">${escHtml(item.question)}</div><div class="history-time">${dateStr} - ${timeStr}</div></div><div class="history-meta"><span class="meta-tag">${typeLabel}</span>${scoreHTML}</div></div>`;
   }).join('<div style="height:.5rem"></div>');
 }
 
@@ -1465,8 +1468,8 @@ function openHistModal(i) {
   if(modalA) modalA.innerHTML = formatAnswer(item.answer);
   const d = new Date(item.time);
   let metaText = d.toLocaleString();
-  if(item.elapsed) metaText += ` · ${item.elapsed}s`;
-  if(item.company) metaText += ` · ${item.company}`;
+  if(item.elapsed) metaText += ` - ${item.elapsed}s`;
+  if(item.company) metaText += ` - ${item.company}`;
   if(modalMeta) modalMeta.textContent = metaText;
   if(modal) modal.classList.add('show');
 }
