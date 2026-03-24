@@ -22,7 +22,7 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   // Network-first for API calls, cache-first for app shell
-  if (event.request.url.includes('generativelanguage.googleapis.com')) {
+  if (event.request.url.includes('api.groq.com')) {
     event.respondWith(fetch(event.request));
     return;
   }
