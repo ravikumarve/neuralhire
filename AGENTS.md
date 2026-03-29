@@ -6,7 +6,7 @@ NeuralHire is a vanilla HTML/CSS/JS PWA for AI-powered interview assistance.
 Live at: **https://ravikumarve.github.io/neuralhire/**
 
 Core dependencies:
-- **Groq API** — AI responses (llama models, free tier)
+- **Multi-Provider AI** — Groq, OpenAI, Anthropic, Gemini, Ollama
 - **Web Speech API** — voice recognition (Chrome/Edge only)
 - **PDF.js** — resume parsing (text-layer PDFs only)
 
@@ -31,9 +31,10 @@ neuralhire/
 - **PDF.js** — requires a text-layer PDF. Scanned or image-only PDFs
   will extract empty text. Warn the user if extracted text is blank.
   Max 8 pages parsed; no Web Worker (runs on main thread).
-- **Groq free tier limits** — 30 requests/minute, 6000 tokens/minute,
-  approximately 14,400 requests/day. Handle 429 errors gracefully with
-  a user-visible message.
+- **Provider rate limits** — Each provider has different limits:
+  - Groq: 30 requests/minute, 6000 tokens/minute free tier
+  - OpenAI/Anthropic/Gemini: Follow their respective pricing and limits
+  Handle 429 errors gracefully with user-visible messages for all providers.
 - **localStorage** — cleared by browser in private mode and on iOS
   Safari when "Prevent Cross-Site Tracking" is on. Never assume data
   will persist; always check before reading. Storage cap ~5-10MB
@@ -174,11 +175,35 @@ branch → Branch: `main` → Folder: `/ (root)`.
 #### Constants (top of script)
 
 ```javascript
+// Provider URLs
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
+const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
+const OLLAMA_URL = 'http://localhost:11434/api/generate';
 
-const GROQ_MODELS = {
-  fast:  'llama-3.1-8b-instant',      // quick responses, low latency
-  smart: 'llama-3.3-70b-versatile'    // deeper analysis, slower
+// Default models for each provider
+const PROVIDER_MODELS = {
+  groq: {
+    fast:  'llama-3.1-8b-instant',      // quick responses, low latency
+    smart: 'llama-3.3-70b-versatile'    // deeper analysis, slower
+  },
+  openai: {
+    fast:  'gpt-3.5-turbo',
+    smart: 'gpt-4'
+  },
+  anthropic: {
+    fast:  'claude-3-haiku-20240307',
+    smart: 'claude-3-sonnet-20240229'
+  },
+  gemini: {
+    fast:  'gemini-pro',
+    smart: 'gemini-pro'
+  },
+  ollama: {
+    fast:  'llama2',
+    smart: 'codellama'
+  }
 };
 ```
 
@@ -186,8 +211,11 @@ const GROQ_MODELS = {
 
 ```javascript
 // Always use these — never access localStorage directly for the key
-const getApiKey = () => localStorage.getItem('nh_apikey') || '';
-const setApiKey = (k) => localStorage.setItem('nh_apikey', k);
+const getApiKey = () => { 
+  const providerId = settings.provider || 'groq';
+  return localStorage.getItem(`nh_apikey_${providerId}`) || localStorage.getItem('nh_apikey') || '';
+};
+const setApiKey = (k, providerId = 'groq') => localStorage.setItem(`nh_apikey_${providerId}`, k);
 ```
 
 #### Global State
@@ -215,25 +243,17 @@ let settings = JSON.parse(localStorage.getItem('nh_settings') || '{}');
 #### API Calls
 
 ```javascript
-async function callGroq(messages, model = GROQ_MODELS.fast) {
-  const key = getApiKey();
-  if (!key) throw new Error('No API key — add your Groq key in Setup');
+// Provider abstraction layer
+async function callAIProvider(messages, model) {
+  const providerId = settings.provider || 'groq';
+  const provider = providerFactory.getProvider(providerId);
+  const m = model || PROVIDER_MODELS[providerId]?.smart || 'llama-3.3-70b-versatile';
+  return await provider.generateAnswer(messages, m);
+}
 
-  const resp = await fetch(GROQ_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${key}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ model, messages, max_tokens: 1024 })
-  });
-
-  if (resp.status === 429) throw new Error('Rate limit hit — wait a moment and retry');
-  if (!resp.ok) throw new Error(`Groq error ${resp.status}`);
-
-  const data = await resp.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.choices?.[0]?.message?.content?.trim() || '';
+// Backward compatibility
+async function callGroq(messages, model) {
+  return await callAIProvider(messages, model);
 }
 ```
 
@@ -332,11 +352,13 @@ const CACHE_NAME = 'neuralhire-v2'; // bump this on every sw.js change
 
 ### New API Integration
 
-1. Add URL and model constants at top of script
-2. Create an `async function callXxx(...)` following the `callGroq` pattern
-3. Handle 429 and non-ok status explicitly
-4. Add user feedback on error via `showToast()`
-5. Document rate limits in the Known Limitations section above
+1. Create a new provider class extending `AIProvider`
+2. Implement `generateAnswer()` method with proper error handling
+3. Implement `getCostEstimate()` method for cost tracking
+4. Register provider in `ProviderFactory.initializeProviders()`
+5. Add provider option to provider selection dropdown in Setup panel
+6. Update API key validation in `saveApiKey()` for new provider format
+7. Document rate limits in the Known Limitations section above
 
 ### New UI Component
 
@@ -355,3 +377,7 @@ const CACHE_NAME = 'neuralhire-v2'; // bump this on every sw.js change
 - [ ] localStorage round-trips correctly
 - [ ] Responsive at 375px and 768px
 - [ ] escHtml() used on all user-provided content in innerHTML
+- [ ] Provider switching works correctly
+- [ ] API key validation works for each provider format
+- [ ] Cost estimation displays for paid providers
+- [ ] Error handling shows provider-specific messages

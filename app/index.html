@@ -515,6 +515,17 @@
     </div>
 
     <div class="card">
+      <div class="card-title">AI Provider</div>
+      <select id="providerSelect" onchange="saveSettings()">
+        <option value="groq">Groq</option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic</option>
+        <option value="gemini">Gemini</option>
+        <option value="ollama">Ollama</option>
+      </select>
+    </div>
+
+    <div class="card">
       <div class="card-title">AI Model</div>
       <select id="modelSelect" onchange="saveSettings()">
         <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Best)</option>
@@ -676,42 +687,298 @@ function safeClass(el, action, cls) { if(el) el.classList[action](cls); }
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
-function getApiKey() { 
-  try { return localStorage.getItem('nh_apikey') || ''; } catch(e) { return ''; }
+// Provider Abstraction Layer
+class AIProvider {
+  constructor(id, name, url, supportsStreaming = false) {
+    this.id = id;
+    this.name = name;
+    this.url = url;
+    this.supportsStreaming = supportsStreaming;
+  }
+
+  async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
+    throw new Error('Not implemented');
+  }
+
+  getCostEstimate(tokens) {
+    // Default cost estimation (free tier)
+    return 0;
+  }
 }
 
-async function callGroq(messages, model) {
-  if(!isOnline()) { throw new Error('No internet connection'); }
-  const key = getApiKey();
-  if(!key) throw new Error('No API key — add your Groq key in Setup');
-  const m = model || settings.model || 'llama-3.3-70b-versatile';
-  let res;
-  try {
-    res = await fetch(GROQ_URL, {
+class GroqProvider extends AIProvider {
+  constructor() {
+    super('groq', 'Groq', GROQ_URL, true);
+  }
+
+  async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
+    if(!isOnline()) throw new Error('No internet connection');
+    const key = getApiKey();
+    if(!key) throw new Error('No API key — add your Groq key in Setup');
+    
+    const res = await fetch(this.url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({ model: m, messages, temperature: 0.7, max_tokens: 1024 })
+      body: JSON.stringify({ model, messages, temperature, max_tokens: maxTokens })
     });
-  } catch(e) {
-    if(e.name === 'TypeError') { throw new Error('Network error — check connection'); }
-    throw e;
+
+    if(res.status === 429) throw new Error('Rate limit — wait 30 seconds');
+    if(res.status === 401) throw new Error('Invalid API key');
+    if(res.status === 403) throw new Error('API access denied');
+    if(!res.ok) throw new Error(`API error ${res.status}`);
+    
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message || 'API error');
+    
+    const content = data.choices?.[0]?.message?.content;
+    if(!content) throw new Error('Empty response');
+    
+    return content.trim();
   }
-  if(res.status === 429) { throw new Error('Rate limit — wait 30 seconds'); }
-  if(res.status === 401) { throw new Error('Invalid API key'); }
-  if(res.status === 403) { throw new Error('API access denied'); }
-  if(!res.ok) { throw new Error(`API error ${res.status}`); }
-  let data;
-  try { data = await res.json(); } catch(e) { throw new Error('Invalid response'); }
-  if(data.error) { throw new Error(data.error.message || 'API error'); }
-  const content = data.choices?.[0]?.message?.content;
-  if(!content) { throw new Error('Empty response'); }
-  return content.trim();
+
+  getCostEstimate(tokens) {
+    // Groq free tier estimation
+    return tokens <= 6000 ? 0 : Math.ceil((tokens - 6000) / 1000) * 0.1;
+  }
+}
+
+class OpenAiProvider extends AIProvider {
+  constructor() {
+    super('openai', 'OpenAI', 'https://api.openai.com/v1/chat/completions', true);
+  }
+
+  async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
+    if(!isOnline()) throw new Error('No internet connection');
+    const key = getApiKey();
+    if(!key) throw new Error('No API key — add your OpenAI key in Setup');
+    
+    const res = await fetch(this.url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+      body: JSON.stringify({ model, messages, temperature, max_tokens: maxTokens })
+    });
+
+    if(res.status === 429) throw new Error('Rate limit — wait 30 seconds');
+    if(res.status === 401) throw new Error('Invalid API key');
+    if(res.status === 403) throw new Error('API access denied');
+    if(!res.ok) throw new Error(`API error ${res.status}`);
+    
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message || 'API error');
+    
+    const content = data.choices?.[0]?.message?.content;
+    if(!content) throw new Error('Empty response');
+    
+    return content.trim();
+  }
+
+  getCostEstimate(tokens) {
+    // OpenAI cost estimation (gpt-3.5-turbo)
+    return Math.ceil(tokens / 1000) * 0.002;
+  }
+}
+
+class AnthropicProvider extends AIProvider {
+  constructor() {
+    super('anthropic', 'Anthropic', 'https://api.anthropic.com/v1/messages', true);
+  }
+
+  async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
+    if(!isOnline()) throw new Error('No internet connection');
+    const key = getApiKey();
+    if(!key) throw new Error('No API key — add your Anthropic key in Setup');
+    
+    // Convert OpenAI format to Anthropic format
+    const anthropicMessages = messages.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: [{ type: 'text', text: msg.content }]
+    }));
+    
+    const res = await fetch(this.url, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json', 
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({ 
+        model: model || 'claude-3-sonnet-20240229', 
+        messages: anthropicMessages, 
+        max_tokens: maxTokens,
+        temperature: temperature
+      })
+    });
+
+    if(res.status === 429) throw new Error('Rate limit — wait 30 seconds');
+    if(res.status === 401) throw new Error('Invalid API key');
+    if(res.status === 403) throw new Error('API access denied');
+    if(!res.ok) throw new Error(`API error ${res.status}`);
+    
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message || 'API error');
+    
+    const content = data.content?.[0]?.text;
+    if(!content) throw new Error('Empty response');
+    
+    return content.trim();
+  }
+
+  getCostEstimate(tokens) {
+    // Anthropic cost estimation (claude-3-sonnet)
+    return Math.ceil(tokens / 1000) * 0.003;
+  }
+}
+
+class GeminiProvider extends AIProvider {
+  constructor() {
+    super('gemini', 'Gemini', 'https://generativelanguage.googleapis.com/v1beta/models', true);
+  }
+
+  async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
+    if(!isOnline()) throw new Error('No internet connection');
+    const key = getApiKey();
+    if(!key) throw new Error('No API key — add your Gemini key in Setup');
+    
+    // Convert OpenAI format to Gemini format
+    const lastMessage = messages[messages.length - 1];
+    const geminiContent = lastMessage.role === 'user' ? lastMessage.content : '';
+    
+    const res = await fetch(`${this.url}/${model || 'gemini-pro'}:generateContent?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        contents: [{ parts: [{ text: geminiContent }] }],
+        generationConfig: {
+          temperature: temperature,
+          maxOutputTokens: maxTokens
+        }
+      })
+    });
+
+    if(res.status === 429) throw new Error('Rate limit — wait 30 seconds');
+    if(res.status === 401) throw new Error('Invalid API key');
+    if(res.status === 403) throw new Error('API access denied');
+    if(!res.ok) throw new Error(`API error ${res.status}`);
+    
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message || 'API error');
+    
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if(!content) throw new Error('Empty response');
+    
+    return content.trim();
+  }
+
+  getCostEstimate(tokens) {
+    // Gemini cost estimation (gemini-pro)
+    return Math.ceil(tokens / 1000) * 0.0005;
+  }
+}
+
+class OllamaProvider extends AIProvider {
+  constructor() {
+    super('ollama', 'Ollama', 'http://localhost:11434/api/generate', true);
+  }
+
+  async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
+    if(!isOnline()) throw new Error('No internet connection');
+    
+    // For Ollama, we don't need an API key, but we need to check if server is running
+    const lastMessage = messages[messages.length - 1];
+    const prompt = lastMessage.role === 'user' ? lastMessage.content : '';
+    
+    const res = await fetch(this.url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        model: model || 'llama2',
+        prompt: prompt,
+        temperature: temperature,
+        max_tokens: maxTokens,
+        stream: false
+      })
+    });
+
+    if(res.status === 404) throw new Error('Ollama server not running — start with: ollama serve');
+    if(!res.ok) throw new Error(`Ollama error ${res.status}`);
+    
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message || 'Ollama error');
+    
+    const content = data.response;
+    if(!content) throw new Error('Empty response');
+    
+    return content.trim();
+  }
+
+  getCostEstimate(tokens) {
+    // Ollama is free (local)
+    return 0;
+  }
+}
+
+class ProviderFactory {
+  constructor() {
+    this.providers = new Map();
+    this.defaultProvider = 'groq';
+    this.initializeProviders();
+  }
+
+  static getInstance() {
+    if(!ProviderFactory.instance) {
+      ProviderFactory.instance = new ProviderFactory();
+    }
+    return ProviderFactory.instance;
+  }
+
+  initializeProviders() {
+    this.registerProvider(new GroqProvider());
+    this.registerProvider(new OpenAiProvider());
+    this.registerProvider(new AnthropicProvider());
+    this.registerProvider(new GeminiProvider());
+    this.registerProvider(new OllamaProvider());
+  }
+
+  registerProvider(provider) {
+    this.providers.set(provider.id, provider);
+  }
+
+  getProvider(id) {
+    return this.providers.get(id) || this.providers.get(this.defaultProvider);
+  }
+
+  listProviders() {
+    return Array.from(this.providers.values());
+  }
+}
+
+// Initialize provider factory
+const providerFactory = ProviderFactory.getInstance();
+
+function getApiKey() { 
+  try { 
+    const providerId = settings.provider || 'groq';
+    return localStorage.getItem(`nh_apikey_${providerId}`) || localStorage.getItem('nh_apikey') || ''; 
+  } catch(e) { return ''; }
+}
+
+async function callAIProvider(messages, model) {
+  const providerId = settings.provider || 'groq';
+  const provider = providerFactory.getProvider(providerId);
+  const m = model || settings.model || 'llama-3.3-70b-versatile';
+  return await provider.generateAnswer(messages, m);
+}
+
+// Backward compatibility
+async function callGroq(messages, model) {
+  return await callAIProvider(messages, model);
 }
 
 function init() {
   if(!isOnline()) { showToast('You appear to be offline', 'error'); }
   try {
-    const key = localStorage.getItem('nh_apikey');
+    const providerId = settings.provider || 'groq';
+    const key = localStorage.getItem(`nh_apikey_${providerId}`) || localStorage.getItem('nh_apikey') || '';
     if(key) {
       const apiKeyInput = $('apiKeyInput');
       const modelSelect = $('modelSelect');
@@ -722,6 +989,7 @@ function init() {
       if(apiKeyInput) apiKeyInput.value = key;
       updateApiStatus(true);
       if(settings.model && modelSelect) modelSelect.value = settings.model;
+      if(settings.provider && providerSelect) providerSelect.value = settings.provider;
       if(settings.answerLength && answerLength) answerLength.value = settings.answerLength;
       if(settings.answerFormat && answerFormat) answerFormat.value = settings.answerFormat;
       if(settings.jobDesc && jobDesc) jobDesc.value = settings.jobDesc;
@@ -787,12 +1055,31 @@ function switchTab(tab) {
 
 function saveApiKey() {
   const input = $('apiKeyInput');
-  if(!input) return;
+  const providerSelect = $('providerSelect');
+  if(!input || !providerSelect) return;
+  
   const k = input.value.trim();
-  if(!k) { showToast('Enter a Groq API key first', 'error'); return; }
-  if(!k.startsWith('gsk_')) { showToast('Keys start with gsk_', 'error'); return; }
+  const providerId = providerSelect.value || 'groq';
+  
+  if(!k) { showToast('Enter an API key first', 'error'); return; }
+  
+  // Validate key format based on provider
+  if(providerId === 'groq' && !k.startsWith('gsk_')) { 
+    showToast('Groq keys start with gsk_', 'error'); return; 
+  }
+  if(providerId === 'openai' && !k.startsWith('sk-')) { 
+    showToast('OpenAI keys start with sk-', 'error'); return; 
+  }
+  if(providerId === 'anthropic' && !k.startsWith('sk-ant-')) { 
+    showToast('Anthropic keys start with sk-ant-', 'error'); return; 
+  }
+  if(providerId === 'gemini' && !k.startsWith('AIza')) { 
+    showToast('Gemini keys start with AIza', 'error'); return; 
+  }
+  // Ollama doesn't require API key validation
+  
   try {
-    localStorage.setItem('nh_apikey', k);
+    localStorage.setItem(`nh_apikey_${providerId}`, k);
     updateApiStatus(true);
     showToast('API key saved!', 'success');
   } catch(e) { showToast('Failed to save', 'error'); }
@@ -801,17 +1088,28 @@ function saveApiKey() {
 function updateApiStatus(ok) {
   const el = $('apiStatus');
   if(!el) return;
-  el.textContent = ok ? 'Groq Ready' : 'No Key';
+  const providerId = settings.provider || 'groq';
+  const providerNames = {
+    'groq': 'Groq',
+    'openai': 'OpenAI', 
+    'anthropic': 'Anthropic',
+    'gemini': 'Gemini',
+    'ollama': 'Ollama'
+  };
+  const providerName = providerNames[providerId] || 'AI';
+  el.textContent = ok ? `${providerName} Ready` : 'No Key';
   el.style.color = ok ? 'var(--success)' : '';
 }
 
 function saveSettings() {
   const modelSelect = $('modelSelect');
+  const providerSelect = $('providerSelect');
   const answerLength = $('answerLength');
   const answerFormat = $('answerFormat');
   const timerToggle = $('timerToggle');
   const timerDuration = $('timerDuration');
   if(modelSelect) settings.model = modelSelect.value;
+  if(providerSelect) settings.provider = providerSelect.value;
   if(answerLength) settings.answerLength = answerLength.value;
   if(answerFormat) settings.answerFormat = answerFormat.value;
   if(timerToggle) settings.timerEnabled = timerToggle.checked;
@@ -1111,7 +1409,7 @@ async function processQuestion(question) {
   animateFill(60, 90, 3000);
   const t0 = Date.now();
   try {
-    const answer = await callGroq([{ role: 'user', content: buildPrompt(question) }]);
+    const answer = await callAIProvider([{ role: 'user', content: buildPrompt(question) }]);
     const elapsed = ((Date.now()-t0)/1000).toFixed(1);
     currentAnswer = answer;
     const answerText = $('answerText');
@@ -1218,7 +1516,7 @@ async function getMockQuestion() {
   try {
     const typeEl = $('qType');
     const type = typeEl?.value || 'behavioral';
-    const q = await callGroq([{ role:'user', content:`Generate ONE ${type} interview question. Return ONLY the question.` }]);
+    const q = await callAIProvider([{ role:'user', content:`Generate ONE ${type} interview question. Return ONLY the question.` }]);
     currentMockQ = q;
     const mockQuestion = $('mockQuestion');
     const mockAnswer = $('mockAnswer');
@@ -1251,7 +1549,7 @@ async function scoreMockAnswer() {
     const jd = jobDescEl?.value.trim() || '';
     const prompt = `Evaluate this interview answer. Score 1-10 on relevance, specificity, star format. Return ONLY valid JSON: {"relevance":7,"specificity":6,"star":7,"feedback":"2-3 sentences.","model_answer":"3-4 sentences."}
 Question: "${currentMockQ}" ${jd ? `Role: ${jd}` : ''} Answer: "${answer}"`;
-    const raw = await callGroq([{ role:'user', content:prompt }], 'llama-3.1-8b-instant');
+    const raw = await callAIProvider([{ role:'user', content:prompt }], 'llama-3.1-8b-instant');
     const clean = raw.replace(/```json|```/g,'').trim();
     let scores;
     try { scores = JSON.parse(clean); } catch(e) { throw new Error('Failed to parse response'); }
