@@ -8,6 +8,7 @@
   <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.53.0/min/vs/loader.js"></script>
   <style>
     :root {
       --bg: #0c0906;
@@ -86,6 +87,12 @@
 
     .answer-section{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem;flex:1;min-height:120px;max-height:60vh;overflow-y:auto;display:none}
     .answer-section.show{display:block;animation:slideUp .4s ease}
+
+    .code-editor-section{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem;flex:1;min-height:200px;max-height:60vh;display:none}
+    .code-editor-section.show{display:block;animation:slideUp .4s ease}
+    .code-tag{display:flex;align-items:center;gap:.5rem;font-family:var(--font-mono);font-size:.5625rem;color:var(--text-muted);letter-spacing:.5px;margin-bottom:1rem}
+    .code-editor-container{height:300px;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+    .code-meta{display:flex;align-items:center;justify-content:space-between;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)}
     .answer-tag{display:flex;align-items:center;gap:.5rem;font-family:var(--font-mono);font-size:.5625rem;color:var(--text-muted);letter-spacing:.5px;margin-bottom:1rem}
     .answer-text{font-size:.9375rem;line-height:1.8;color:var(--text);overflow-wrap:break-word;word-break:break-word}
     .answer-text b,.answer-text strong{color:var(--amber);font-weight:600}
@@ -374,6 +381,15 @@
         <div class="answer-mode active" data-mode="concise" onclick="setAnswerMode('concise')">CONCISE</div>
         <div class="answer-mode" data-mode="deepdive" onclick="setAnswerMode('deepdive')">DEEP DIVE</div>
         <div class="answer-mode" data-mode="culturefit" onclick="setAnswerMode('culturefit')">CULTURE FIT</div>
+      </div>
+
+      <div class="code-editor-section" id="codeEditor" style="display:none">
+        <div class="code-tag">CODE EDITOR</div>
+        <div class="code-editor-container" id="codeEditorContainer"></div>
+        <div class="code-meta">
+          <span class="meta-tag" id="codeLanguage">JavaScript</span>
+          <button class="btn-icon" onclick="copyCode()" title="Copy Code">COPY</button>
+        </div>
       </div>
 
       <div class="answer-section" id="answerCard">
@@ -995,8 +1011,16 @@ async function callGroq(messages, model) {
   return await callAIProvider(messages, model);
 }
 
-function init() {
+async function init() {
   if(!isOnline()) { showToast('You appear to be offline', 'error'); }
+  
+  // Initialize Monaco Editor
+  try {
+    await initMonacoEditor();
+  } catch (error) {
+    console.warn('Monaco editor initialization failed:', error);
+  }
+  
   try {
     const providerId = settings.provider || 'groq';
     const key = localStorage.getItem(`nh_apikey_${providerId}`) || localStorage.getItem('nh_apikey') || '';
@@ -1438,6 +1462,16 @@ async function processQuestion(question) {
   if(qText) qText.textContent = question;
   const answerModes = $('answerModes');
   if(answerModes) answerModes.style.display = 'flex';
+  
+  // Check if question contains code and show editor if needed
+  const codeEditor = $('codeEditor');
+  if (hasCodeContent(question) && codeEditor) {
+    const detectedLanguage = detectCodeLanguage(question);
+    showCodeEditor(detectedLanguage);
+  } else {
+    hideCodeEditor();
+  }
+  
   if(transcriptBox) transcriptBox.classList.remove('show');
   resetTimer();
   startTimer();
@@ -1510,8 +1544,19 @@ function buildPrompt(question) {
   const levelContext = levelMap[selectedLevel] || levelMap['Mid-level'];
   const roleContext = roleMap[selectedRole] || roleMap['General'];
   const modeContext = modeMap[mode] || modeMap['concise'];
+  
+  // Add code context if available
+  let codeContext = '';
+  if (monacoEditor && hasCodeContent(question)) {
+    const code = monacoEditor.getValue();
+    if (code && code.trim().length > 10) { // Only include if there's meaningful code
+      const detectedLanguage = detectCodeLanguage(question) || 'code';
+      codeContext = `\nCODE (${detectedLanguage.toUpperCase()}):\n\`\`\`${detectedLanguage}\n${code.slice(0, 1000)}\n\`\`\`\n\n`;
+    }
+  }
+  
   return `You are an expert interview coach. ${levelContext} ${roleContext}
-${resumeText ? `RESUME:\n${resumeText.slice(0,2500)}\n\n` : ''}${jd ? `JOB:\n${jd}\n\n` : ''}QUESTION: "${question}"
+${resumeText ? `RESUME:\n${resumeText.slice(0,2500)}\n\n` : ''}${jd ? `JOB:\n${jd}\n\n` : ''}${codeContext}QUESTION: "${question}"
 ${modeContext} Write a compelling answer, ${lengthMap[length]}, ${formatMap[format]}. Use **bold** for key phrases. Be specific. Return ONLY the answer.`;
 }
 
@@ -1705,11 +1750,13 @@ function clearAnswer() {
   const transcriptBox = $('transcriptBox');
   const answerActions = $('answerActions');
   const answerModes = $('answerModes');
+  const codeEditor = $('codeEditor');
   if(answerCard) answerCard.classList.remove('show');
   if(qDisplay) qDisplay.style.display = 'none';
   if(transcriptBox) transcriptBox.classList.remove('show');
   if(answerActions) answerActions.style.display = 'none';
   if(answerModes) answerModes.style.display = 'none';
+  if(codeEditor) codeEditor.style.display = 'none';
   currentAnswer = '';
   currentQuestion = '';
   setStatus('Ready to start', '');
@@ -1879,6 +1926,110 @@ function showToast(msg, type) {
 
 function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Monaco Editor Integration
+let monacoEditor = null;
+
+async function initMonacoEditor() {
+  return new Promise((resolve) => {
+    require.config({ 
+      paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.53.0/min/vs' }
+    });
+    
+    require(['vs/editor/editor.main'], function() {
+      const container = document.getElementById('codeEditorContainer');
+      if (!container) return resolve();
+      
+      monacoEditor = monaco.editor.create(container, {
+        value: '// Write or paste your code here\nfunction example() {\n  return "Hello, World!";\n}',
+        language: 'javascript',
+        theme: 'vs-dark',
+        fontSize: 14,
+        lineNumbers: 'on',
+        roundedSelection: true,
+        scrollBeyondLastLine: false,
+        readOnly: false,
+        minimap: { enabled: false },
+        automaticLayout: true
+      });
+      
+      resolve();
+    });
+  });
+}
+
+function showCodeEditor(language = 'javascript') {
+  const codeEditor = document.getElementById('codeEditor');
+  const answerCard = document.getElementById('answerCard');
+  
+  if (codeEditor && answerCard) {
+    answerCard.style.display = 'none';
+    codeEditor.style.display = 'block';
+    
+    if (monacoEditor) {
+      const model = monacoEditor.getModel();
+      monaco.editor.setModelLanguage(model, language);
+      document.getElementById('codeLanguage').textContent = language;
+    }
+  }
+}
+
+function hideCodeEditor() {
+  const codeEditor = document.getElementById('codeEditor');
+  const answerCard = document.getElementById('answerCard');
+  
+  if (codeEditor && answerCard) {
+    codeEditor.style.display = 'none';
+    answerCard.style.display = 'block';
+  }
+}
+
+function copyCode() {
+  if (monacoEditor) {
+    const code = monacoEditor.getValue();
+    navigator.clipboard.writeText(code).then(() => {
+      showToast('Code copied to clipboard!', 'success');
+    }).catch(() => {
+      showToast('Failed to copy code', 'error');
+    });
+  }
+}
+
+function detectCodeLanguage(text) {
+  const patterns = {
+    javascript: /(function|const|let|var|=>|console\.log)/,
+    python: /(def|import|from|print|lambda|#)/,
+    java: /(public|class|static|void|System\.out\.println)/,
+    cpp: /(#include|using namespace|cout|endl)/,
+    html: /(<html|<head|<body|<div|class=")/,
+    css: /(\.|#|@media|margin|padding|color)/
+  };
+  
+  for (const [lang, pattern] of Object.entries(patterns)) {
+    if (pattern.test(text)) return lang;
+  }
+  
+  return 'plaintext';
+}
+
+function hasCodeContent(text) {
+  const codePatterns = [
+    /function\s+\w+\s*\(/,      // function declarations
+    /class\s+\w+/,               // class declarations
+    /const\s+\w+\s*=/,           // const assignments
+    /let\s+\w+\s*=/,             // let assignments
+    /var\s+\w+\s*=/,            // var assignments
+    /import\s+["']/,             // import statements
+    /from\s+["']/,              // from statements
+    /<[\w\s=\/"']+>/,           // HTML tags
+    /\/\/.*$/,                   // single line comments
+    /\/\*[\s\S]*?\*\//,         // multi-line comments
+    /def\s+\w+\s*\(/,           // Python functions
+    /public\s+\w+\s+\w+\s*\(/  // Java methods
+  ];
+  
+  return codePatterns.some(pattern => pattern.test(text));
 }
 
 if('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(function(){}); }

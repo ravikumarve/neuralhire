@@ -1,4 +1,4 @@
-# 🎯 NeuralHire v5.0
+# 🎯 NeuralHire v5.2
 
 **AI-powered interview copilot with multi-provider support.** Real-time answer generation, mock interview scoring, session history, and PDF resume upload across 5 AI providers.
 
@@ -21,6 +21,7 @@
 | 🔊 **Earpiece Mode** | Auto-reads answers so you can listen hands-free |
 | 🌐 **Multi-language** | Works in any language supported by your provider |
 | 🎯 **Answer Modes** | 3 answer styles: Concise (30s), Deep Dive (technical), Culture Fit (behavioral) |
+| 💻 **Code Editor** | Built-in Monaco editor for technical questions with syntax highlighting |
 
 ---
 
@@ -96,6 +97,27 @@ NeuralHire now offers 3 distinct answer modes to tailor your interview responses
 - Uses storytelling and personal examples
 - Ideal for behavioral and leadership questions
 
+### Code Editor
+NeuralHire now includes a built-in Monaco code editor for technical interview questions:
+
+**💻 Monaco Editor Integration**
+- Syntax highlighting for JavaScript, Python, Java, C++, HTML, CSS
+- VS Code-like editing experience
+- Line numbers and code formatting
+- Automatic language detection
+
+**🔍 Smart Code Detection**
+- Automatically detects code content in questions
+- Shows editor when technical content is identified
+- Enhances AI responses with code context
+- Supports multiple programming languages
+
+**📋 Code Management**
+- Copy code to clipboard with one click
+- Language-specific syntax highlighting
+- Clean, professional code presentation
+- Perfect for technical interviews and coding questions
+
 - **Live Mode** — tap mic, AI captures question and generates tailored answer in 2–3s
 - **Mock Mode** — company-specific questions (Google, Amazon, Meta, Microsoft, Apple, Startup)
 - **Scoring** — 3-dimension AI scoring with feedback and a model answer
@@ -106,6 +128,7 @@ NeuralHire now offers 3 distinct answer modes to tailor your interview responses
 - **Cost Tracking** — real-time cost estimation for paid providers
 - **Key Validation** — automatic format checking for each provider
 - **Answer Modes** — 3 answer styles: Concise (30s), Deep Dive (technical), Culture Fit (behavioral)
+- **Code Editor** — Built-in Monaco editor with syntax highlighting for technical questions
 
 ---
 
@@ -322,6 +345,7 @@ For educational and interview preparation purposes. Use responsibly.
 
 ## 📝 Version History
 
+**v5.2** - Monaco Editor integration for technical questions with syntax highlighting
 **v5.1** - Answer modes (Concise, Deep Dive, Culture Fit), enhanced UI
 **v5.0** - Multi-provider architecture, cost tracking, provider abstraction layer
 **v4.0** - PDF resume upload, mock interview scoring, session history
