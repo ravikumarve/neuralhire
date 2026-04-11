@@ -157,6 +157,11 @@
     .chip:hover{border-color:var(--amber-dim);color:var(--text)}
     .chip.active{background:var(--amber-dim);border-color:var(--amber);color:var(--amber)}
 
+    .answer-modes{display:flex;gap:.375rem;margin-bottom:.75rem;flex-wrap:wrap}
+    .answer-mode{padding:.375rem .75rem;border-radius:var(--radius-sm);font-size:.6875rem;font-weight:500;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;transition:var(--transition);background:var(--panel)}
+    .answer-mode:hover{border-color:var(--amber-dim);color:var(--text)}
+    .answer-mode.active{background:var(--amber-dim);border-color:var(--amber);color:var(--amber)}
+
     .timer-display{display:none;align-items:center;gap:1rem;padding:1rem;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-md);animation:fadeIn .3s ease}
     .timer-display.active{display:flex}
     .timer-display.warning{border-color:var(--rose-dim)}
@@ -363,6 +368,12 @@
       <div class="q-section" id="qDisplay" style="display:none">
         <div class="q-tag">QUESTION</div>
         <div class="q-text" id="qText"></div>
+      </div>
+
+      <div class="answer-modes" id="answerModes" style="display:none">
+        <div class="answer-mode active" data-mode="concise" onclick="setAnswerMode('concise')">CONCISE</div>
+        <div class="answer-mode" data-mode="deepdive" onclick="setAnswerMode('deepdive')">DEEP DIVE</div>
+        <div class="answer-mode" data-mode="culturefit" onclick="setAnswerMode('culturefit')">CULTURE FIT</div>
       </div>
 
       <div class="answer-section" id="answerCard">
@@ -659,6 +670,7 @@ let currentAnswer = '', currentQuestion = '', currentMockQ = '';
 let selectedCompany = 'General';
 let selectedRole = 'General';
 let selectedLevel = 'Mid-level';
+let answerMode = 'concise';
 let history = [], settings = {}, resumeText = '';
 let lastOnlineState = navigator.onLine;
 try {
@@ -1001,6 +1013,7 @@ function init() {
       if(settings.provider && providerSelect) providerSelect.value = settings.provider;
       if(settings.answerLength && answerLength) answerLength.value = settings.answerLength;
       if(settings.answerFormat && answerFormat) answerFormat.value = settings.answerFormat;
+      if(settings.answerMode) setAnswerMode(settings.answerMode);
       if(settings.jobDesc && jobDesc) jobDesc.value = settings.jobDesc;
       if(settings.tts && ttsToggle) ttsToggle.checked = true;
       const roleSelect = $('roleSelect');
@@ -1141,6 +1154,20 @@ function saveLevel() {
     selectedLevel = levelSelect.value;
     try { localStorage.setItem('nh_level', selectedLevel); } catch(e) {}
   }
+}
+
+function setAnswerMode(mode) {
+  answerMode = mode;
+  
+  // Update UI to show active mode
+  const modes = document.querySelectorAll('.answer-mode');
+  modes.forEach(m => m.classList.remove('active'));
+  const activeMode = document.querySelector(`.answer-mode[data-mode="${mode}"]`);
+  if(activeMode) activeMode.classList.add('active');
+  
+  // Save to settings
+  settings.answerMode = mode;
+  try { localStorage.setItem('nh_settings', JSON.stringify(settings)); } catch(e) {}
 }
 
 function updateTimerDurationRow() {
@@ -1409,6 +1436,8 @@ async function processQuestion(question) {
   const micLabel = $('micLabel');
   if(qDisplay) qDisplay.style.display = 'block';
   if(qText) qText.textContent = question;
+  const answerModes = $('answerModes');
+  if(answerModes) answerModes.style.display = 'flex';
   if(transcriptBox) transcriptBox.classList.remove('show');
   resetTimer();
   startTimer();
@@ -1457,8 +1486,14 @@ function buildPrompt(question) {
   const jd = jobDescEl?.value.trim() || '';
   const length = settings.answerLength || 'standard';
   const format = settings.answerFormat || 'star';
+  const mode = answerMode || 'concise';
   const lengthMap = { concise:'30-60 seconds', standard:'60-90 seconds', detailed:'90-120 seconds' };
   const formatMap = { star:'Use STAR method', structured:'Use structured points with bold headers', conversational:'Natural conversational tone' };
+  const modeMap = {
+    concise: 'Provide a concise 30-60 second answer perfect for quick responses. Focus on key points and clarity.',
+    deepdive: 'Provide a technical deep dive with architectural insights, implementation details, and best practices. Include specific examples and consider tradeoffs.',
+    culturefit: 'Focus on teamwork, collaboration, and soft skills. Emphasize communication, adaptability, and cultural fit. Use storytelling and personal examples.'
+  };
   const levelMap = {
     'Junior': 'JUNIOR level interview. Focus on fundamentals, learning mindset, 0-2 years experience.',
     'Mid-level': 'MID-LEVEL interview. Balance depth with breadth, 3-5 years experience.',
@@ -1474,9 +1509,10 @@ function buildPrompt(question) {
   };
   const levelContext = levelMap[selectedLevel] || levelMap['Mid-level'];
   const roleContext = roleMap[selectedRole] || roleMap['General'];
+  const modeContext = modeMap[mode] || modeMap['concise'];
   return `You are an expert interview coach. ${levelContext} ${roleContext}
 ${resumeText ? `RESUME:\n${resumeText.slice(0,2500)}\n\n` : ''}${jd ? `JOB:\n${jd}\n\n` : ''}QUESTION: "${question}"
-Write a compelling answer, ${lengthMap[length]}, ${formatMap[format]}. Use **bold** for key phrases. Be specific. Return ONLY the answer.`;
+${modeContext} Write a compelling answer, ${lengthMap[length]}, ${formatMap[format]}. Use **bold** for key phrases. Be specific. Return ONLY the answer.`;
 }
 
 function toggleMockListen() {
@@ -1668,10 +1704,12 @@ function clearAnswer() {
   const qDisplay = $('qDisplay');
   const transcriptBox = $('transcriptBox');
   const answerActions = $('answerActions');
+  const answerModes = $('answerModes');
   if(answerCard) answerCard.classList.remove('show');
   if(qDisplay) qDisplay.style.display = 'none';
   if(transcriptBox) transcriptBox.classList.remove('show');
   if(answerActions) answerActions.style.display = 'none';
+  if(answerModes) answerModes.style.display = 'none';
   currentAnswer = '';
   currentQuestion = '';
   setStatus('Ready to start', '');

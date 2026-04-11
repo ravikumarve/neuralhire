@@ -20,6 +20,7 @@
 | 📋 **Session History** | Every Q&A saved locally. Review, copy, track improvement |
 | 🔊 **Earpiece Mode** | Auto-reads answers so you can listen hands-free |
 | 🌐 **Multi-language** | Works in any language supported by your provider |
+| 🎯 **Answer Modes** | 3 answer styles: Concise (30s), Deep Dive (technical), Culture Fit (behavioral) |
 
 ---
 
@@ -75,6 +76,26 @@ NeuralHire v5.0 supports 5 AI providers with unified interface:
 
 ## 🚀 Features
 
+### Answer Modes
+NeuralHire now offers 3 distinct answer modes to tailor your interview responses:
+
+**🎯 Concise Mode**
+- Perfect for quick, 30-60 second answers
+- Focuses on key points and clarity
+- Ideal for rapid-fire interview questions
+
+**🔍 Deep Dive Mode** 
+- Technical deep dive with architectural insights
+- Includes implementation details and best practices
+- Provides specific examples and tradeoff analysis
+- Perfect for technical and system design questions
+
+**🤝 Culture Fit Mode**
+- Focuses on teamwork, collaboration, and soft skills
+- Emphasizes communication, adaptability, and cultural fit
+- Uses storytelling and personal examples
+- Ideal for behavioral and leadership questions
+
 - **Live Mode** — tap mic, AI captures question and generates tailored answer in 2–3s
 - **Mock Mode** — company-specific questions (Google, Amazon, Meta, Microsoft, Apple, Startup)
 - **Scoring** — 3-dimension AI scoring with feedback and a model answer
@@ -84,6 +105,7 @@ NeuralHire v5.0 supports 5 AI providers with unified interface:
 - **Multi-Provider** — switch between 5 AI providers seamlessly
 - **Cost Tracking** — real-time cost estimation for paid providers
 - **Key Validation** — automatic format checking for each provider
+- **Answer Modes** — 3 answer styles: Concise (30s), Deep Dive (technical), Culture Fit (behavioral)
 
 ---
 
@@ -116,6 +138,15 @@ NeuralHire v5.0 supports 5 AI providers with unified interface:
 1. Drag & drop your PDF resume
 2. AI will extract text and reference it in all answers
 3. Supports text-layer PDFs only (no scanned documents)
+
+### Step 5 — Choose Answer Mode
+
+1. After asking a question, select your preferred answer mode:
+   - **CONCISE**: Quick 30-60 second answers
+   - **DEEP DIVE**: Technical deep dives with examples
+   - **CULTURE FIT**: Behavioral and soft skill focused
+2. The AI will tailor its response style accordingly
+3. Your mode preference is saved for future sessions
 
 ---
 
@@ -291,6 +322,7 @@ For educational and interview preparation purposes. Use responsibly.
 
 ## 📝 Version History
 
+**v5.1** - Answer modes (Concise, Deep Dive, Culture Fit), enhanced UI
 **v5.0** - Multi-provider architecture, cost tracking, provider abstraction layer
 **v4.0** - PDF resume upload, mock interview scoring, session history
 **v3.0** - Voice recognition, real-time answers, PWA support
