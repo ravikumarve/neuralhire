@@ -1428,7 +1428,11 @@ function clearPdf() {
 function toggleListen() {
   if(!getApiKey()) { showToast('Add API key in Setup', 'error'); switchTab('setup'); return; }
   if(!isOnline()) { showToast('You are offline', 'error'); return; }
-  if(isListening) { stopListening(); return; }
+  if(isListening) { 
+    stopListening(); 
+    showToast('Stopped listening', 'success');
+    return; 
+  }
   startListening();
 }
 
@@ -1479,10 +1483,20 @@ function startListening() {
   };
   recognition.onend = () => {
     if(isListening) {
-      isListening = false;
-      const q = (finalTranscript || interimTranscript).trim();
-      resetMicUI();
-      if(q) { processQuestion(q); } else { setStatus('Nothing heard', 'error'); }
+      // Only process if we have a final transcript and user hasn't manually stopped
+      const q = finalTranscript.trim();
+      if(q) {
+        isListening = false;
+        resetMicUI();
+        processQuestion(q);
+      } else {
+        // No speech detected, restart listening for continuous operation
+        try { recognition.start(); } catch(e) { 
+          isListening = false;
+          resetMicUI();
+          setStatus('Mic error - tap again', 'error');
+        }
+      }
     }
   };
   try { recognition.start(); } catch(e) { showToast('Failed to start mic', 'error'); }
@@ -1490,7 +1504,17 @@ function startListening() {
 
 function stopListening() {
   isListening = false;
-  if(recognition) { try { recognition.stop(); } catch(e) {} }
+  if(recognition) { 
+    try { 
+      recognition.stop(); 
+      // Process any captured speech before stopping
+      const q = finalTranscript.trim();
+      if(q) {
+        processQuestion(q);
+      }
+    } catch(e) {} 
+  }
+  resetMicUI();
 }
 
 function resetMicUI() {
