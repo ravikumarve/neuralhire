@@ -252,6 +252,37 @@ npx serve app
 
 ---
 
+## 📱 Mobile App Installation
+
+NeuralHire is a Progressive Web App (PWA) that can be installed on your mobile device:
+
+### **Android (Chrome)**
+1. Open Chrome browser and navigate to https://ravikumarve.github.io/neuralhire/
+2. Tap the "Install" button in the address bar
+3. Confirm installation when prompted
+4. The app will appear on your home screen
+
+### **iOS (Safari)**
+1. Open Safari and navigate to https://ravikumarve.github.io/neuralhire/
+2. Tap the Share button (📤)
+3. Select "Add to Home Screen"
+4. Name it "NeuralHire" and tap "Add"
+
+### **Mobile App Features**
+- 📱 **Responsive Design**: Optimized for mobile screens
+- 🎤 **Voice Recognition**: Works best on Chrome Android
+- 📄 **PDF Upload**: Mobile-friendly file selection
+- 💾 **Offline Support**: App shell works offline
+- 🏠 **Home Screen Access**: Launch like a native app
+
+### **Mobile Limitations**
+- Voice recognition requires Chrome/Edge on Android
+- iOS Safari has limited Web Speech API support
+- PDF parsing works best with text-layer PDFs
+- Screen timeout may interrupt voice recording
+
+---
+
 ## ⚠️ Disclaimer
 
 For educational and interview preparation purposes. Use responsibly.
