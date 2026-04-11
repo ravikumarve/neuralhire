@@ -319,12 +319,23 @@
         </select>
       </div>
 
-      <div class="left-section">
+       <div class="left-section">
         <div class="left-label">Level</div>
         <select class="pill-select" id="levelSelect" onchange="saveLevel()">
           <option value="Junior">Junior</option>
           <option value="Mid-level" selected>Mid-level</option>
           <option value="Senior">Senior</option>
+        </select>
+      </div>
+
+      <div class="left-section">
+        <div class="left-label">Company</div>
+        <select class="pill-select" id="companySelect" onchange="saveCompany()">
+          <option value="General">General</option>
+          <option value="Google">Google</option>
+          <option value="Amazon">Amazon</option>
+          <option value="Microsoft">Microsoft</option>
+          <option value="Startup">Startup</option>
         </select>
       </div>
 
@@ -688,6 +699,40 @@ let selectedRole = 'General';
 let selectedLevel = 'Mid-level';
 let answerMode = 'concise';
 let history = [], settings = {}, resumeText = '';
+
+// Company Profile Database
+const COMPANY_PROFILES = {
+  'General': {
+    name: 'General',
+    values: ['Technical excellence', 'Clear communication', 'Problem-solving'],
+    interviewStyle: 'Balanced technical and behavioral',
+    emphasis: ['Fundamentals', 'Communication skills', 'Adaptability']
+  },
+  'Google': {
+    name: 'Google',
+    values: ['Focus on the user', 'Technical excellence', 'Fast iteration', 'Think big'],
+    interviewStyle: 'Data-driven and structured with emphasis on algorithms',
+    emphasis: ['Scalability', 'Algorithm complexity', 'System design', 'Data structures']
+  },
+  'Amazon': {
+    name: 'Amazon',
+    values: ['Customer obsession', 'Ownership', 'Bias for action', 'Learn and be curious', 'Earn trust'],
+    interviewStyle: 'Leadership Principles focused with operational excellence',
+    emphasis: ['Operational excellence', 'Metrics-driven decisions', 'Customer impact', 'Leadership examples']
+  },
+  'Microsoft': {
+    name: 'Microsoft',
+    values: ['Growth mindset', 'Customer focus', 'Diversity and inclusion', 'One Microsoft'],
+    interviewStyle: 'Collaborative and structured with emphasis on teamwork',
+    emphasis: ['Team collaboration', 'Technical depth', 'Customer scenarios', 'Learning agility']
+  },
+  'Startup': {
+    name: 'Startup',
+    values: ['Move fast', 'Resourcefulness', 'Impact over process', 'Ownership mentality'],
+    interviewStyle: 'Practical and hands-on with focus on execution',
+    emphasis: ['Getting things done', 'Adaptability', 'Wearing multiple hats', 'Impact measurement']
+  }
+};
 let lastOnlineState = navigator.onLine;
 try {
   history = JSON.parse(localStorage.getItem('nh_history') || '[]');
@@ -695,6 +740,7 @@ try {
   resumeText = localStorage.getItem('nh_resume') || '';
   selectedRole = localStorage.getItem('nh_role') || 'General';
   selectedLevel = localStorage.getItem('nh_level') || 'Mid-level';
+  selectedCompany = localStorage.getItem('nh_company') || 'General';
 } catch(e) {}
 let interimTranscript = '', finalTranscript = '';
 
@@ -1044,6 +1090,8 @@ async function init() {
       if(roleSelect) roleSelect.value = selectedRole;
       const levelSelect = $('levelSelect');
       if(levelSelect) levelSelect.value = selectedLevel;
+      const companySelect = $('companySelect');
+      if(companySelect) companySelect.value = selectedCompany;
       const timerToggle = $('timerToggle');
       const timerDuration = $('timerDuration');
       if(timerToggle && settings.timerEnabled !== undefined) timerToggle.checked = settings.timerEnabled;
@@ -1177,6 +1225,15 @@ function saveLevel() {
   if(levelSelect) {
     selectedLevel = levelSelect.value;
     try { localStorage.setItem('nh_level', selectedLevel); } catch(e) {}
+  }
+}
+
+function saveCompany() {
+  const companySelect = $('companySelect');
+  if(companySelect) {
+    selectedCompany = companySelect.value;
+    try { localStorage.setItem('nh_company', selectedCompany); } catch(e) {}
+    showToast(`Company set to ${selectedCompany}`, 'success');
   }
 }
 
@@ -1555,7 +1612,16 @@ function buildPrompt(question) {
     }
   }
   
-  return `You are an expert interview coach. ${levelContext} ${roleContext}
+  // Add company context if selected
+  let companyContext = '';
+  if (selectedCompany && selectedCompany !== 'General' && COMPANY_PROFILES[selectedCompany]) {
+    const company = COMPANY_PROFILES[selectedCompany];
+    companyContext = `\nCOMPANY CONTEXT: Interviewing at ${company.name}. Key values: ${company.values.join(', ')}. ` +
+                     `Focus on: ${company.emphasis.join(', ')}. ` +
+                     `Interview style: ${company.interviewStyle}.`;
+  }
+  
+  return `You are an expert interview coach. ${levelContext} ${roleContext}${companyContext}
 ${resumeText ? `RESUME:\n${resumeText.slice(0,2500)}\n\n` : ''}${jd ? `JOB:\n${jd}\n\n` : ''}${codeContext}QUESTION: "${question}"
 ${modeContext} Write a compelling answer, ${lengthMap[length]}, ${formatMap[format]}. Use **bold** for key phrases. Be specific. Return ONLY the answer.`;
 }
