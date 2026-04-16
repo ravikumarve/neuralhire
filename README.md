@@ -1,15 +1,18 @@
-# 🎯 NeuralHire v5.2
+# 🎯 NeuralHire v5.3
 
-**AI-powered interview copilot with multi-provider support.** Real-time answer generation, mock interview scoring, session history, and PDF resume upload across 5 AI providers.
+**AI-powered interview copilot with multi-provider support.** Real-time answer generation, mock interview scoring, session history, PDF resume upload, and premium PDF export across 5 AI providers.
 
 [**→ Launch App**](https://ravikumarve.github.io/neuralhire/app/)
 
 ---
 
-## ✨ What's New in v5.0
+## ✨ What's New in v5.3
 
 | Feature | Description |
 |---|---|
+| 🔋 **Screen Wake Lock** | Prevents screen sleep during voice sessions on mobile (free) |
+| 📄 **PDF Export** | Export session history as professional PDF reports (premium) |
+| 🔓 **Gumroad Integration** | Premium features unlocked via Gumroad ($2.99 one-time) |
 | 🔄 **Multi-Provider Support** | Choose from 5 AI providers — Groq, OpenAI, Anthropic, Gemini, or Ollama |
 | 🏗️ **Provider Abstraction Layer** | Unified API interface — switch providers without changing code |
 | 💰 **Cost Estimation** | Real-time cost tracking for each provider (free tier awareness) |
@@ -76,6 +79,20 @@ NeuralHire v5.0 supports 5 AI providers with unified interface:
 ---
 
 ## 🚀 Features
+
+### Screen Wake Lock (NEW in v5.3)
+NeuralHire now prevents screen sleep during voice sessions on mobile devices:
+- **🔋 Auto Wake Lock**: Automatically keeps screen awake when voice recognition starts
+- **📱 Mobile Optimized**: Critical for long interview sessions on mobile
+- **🔄 Smart Release**: Releases wake lock when you stop listening
+- **🌐 Visibility Aware**: Re-acquires lock when you switch back to the tab
+
+### PDF Export (Premium Feature)
+Export your interview sessions as professional PDF reports:
+- **📄 Professional Formatting**: Clean, branded PDF layout
+- **📊 Performance Metrics**: Session stats and average scores included
+- **🔒 Premium Unlock**: One-time $2.99 via Gumroad
+- **♾️ Unlimited Exports**: Export as many sessions as you need
 
 ### Answer Modes
 NeuralHire now offers 3 distinct answer modes to tailor your interview responses:
@@ -201,7 +218,7 @@ NeuralHire now includes a built-in Monaco code editor for technical interview qu
 **All Providers**:
 - Handle 429 errors gracefully with user-visible messages
 - API calls require internet (app shell cached only)
-- Mobile devices may sleep during voice capture
+- Mobile devices: Screen Wake Lock prevents sleep during voice capture
 - Voice recognition stops when app backgrounds
 
 ---
@@ -345,6 +362,7 @@ For educational and interview preparation purposes. Use responsibly.
 
 ## 📝 Version History
 
+**v5.3** - Screen Wake Lock API, PDF Export with Gumroad premium integration
 **v5.2** - Monaco Editor integration for technical questions with syntax highlighting
 **v5.1** - Answer modes (Concise, Deep Dive, Culture Fit), enhanced UI
 **v5.0** - Multi-provider architecture, cost tracking, provider abstraction layer
