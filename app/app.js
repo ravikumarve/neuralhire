@@ -109,30 +109,33 @@ function toggleListen() {
   startListening();
 }
 
-function startListening() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SpeechRecognition) { showToast('Use Chrome browser for voice', 'error'); return; }
-  try { recognition = new SpeechRecognition(); } catch(e) { showToast('Failed to start', 'error'); return; }
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = 'en-US';
-  recognition.maxAlternatives = 1;
-  finalTranscript = '';
-  interimTranscript = '';
-  
-  recognition.onstart = () => {
-    isListening = true;
-    const micBtn = $('micBtn');
-    const micLabel = $('micLabel');
-    const liveBadge = $('liveBadge');
-    const transcriptBox = $('transcriptBox');
-    if(micBtn) { micBtn.textContent = 'STOP'; micBtn.classList.add('recording'); }
-    if(micLabel) micLabel.textContent = 'Listening...';
-    if(liveBadge) liveBadge.style.display = 'flex';
-    if(transcriptBox) { transcriptBox.classList.add('show'); transcriptBox.textContent = '...'; }
-    setStatus('Listening — speak clearly', '');
-    animateFill(0, 60, 8000);
-  };
+async function startListening() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SpeechRecognition) { showToast('Use Chrome browser for voice', 'error'); return; }
+    try { recognition = new SpeechRecognition(); } catch(e) { showToast('Failed to start', 'error'); return; }
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    recognition.maxAlternatives = 1;
+    finalTranscript = '';
+    interimTranscript = '';
+
+    // Phase 3: Request Wake Lock to prevent screen sleep on mobile
+    await requestWakeLock();
+
+    recognition.onstart = () => {
+        isListening = true;
+        const micBtn = $('micBtn');
+        const micLabel = $('micLabel');
+        const liveBadge = $('liveBadge');
+        const transcriptBox = $('transcriptBox');
+        if(micBtn) { micBtn.textContent = 'STOP'; micBtn.classList.add('recording'); }
+        if(micLabel) micLabel.textContent = 'Listening...';
+        if(liveBadge) liveBadge.style.display = 'flex';
+        if(transcriptBox) { transcriptBox.classList.add('show'); transcriptBox.textContent = '...'; }
+        setStatus('Listening — speak clearly', '');
+        animateFill(0, 60, 8000);
+    };
   
   recognition.onresult = (event) => {
     interimTranscript = '';
@@ -184,18 +187,20 @@ function startListening() {
 }
 
 function stopListening() {
-  isListening = false;
-  if(recognition) {
-    try {
-      recognition.stop();
-      // Process any captured speech before stopping
-      const q = finalTranscript.trim();
-      if(q) {
-        processQuestion(q);
-      }
-    } catch(e) {}
-  }
-  resetMicUI();
+    isListening = false;
+    if(recognition) {
+        try {
+            recognition.stop();
+            // Process any captured speech before stopping
+            const q = finalTranscript.trim();
+            if(q) {
+                processQuestion(q);
+            }
+        } catch(e) {}
+    }
+    // Phase 3: Release Wake Lock when stopping
+    releaseWakeLock();
+    resetMicUI();
 }
 
 function resetMicUI() {
@@ -937,69 +942,75 @@ function updateFooterStats() {
 }
 
 function renderHistory() {
-  const list = $('historyList');
-  const clearBtn = $('clearHistBtn');
-  
-  if(!list) return;
-  
-  if(!history.length) {
-    list.innerHTML = `<div class="empty-state"><div class="eso">H</div><p>No sessions yet.<br><span style="color:var(--text-dim)">Start a live interview or mock session.</span></p></div>`;
-    if(clearBtn) clearBtn.style.display = 'none';
-    return;
-  }
-  
-  if(clearBtn) clearBtn.style.display = 'block';
-  
-  const mockSessions = history.filter(h => h.type === 'mock' && h.scores);
-  let summaryHTML = '';
-  
-  if(mockSessions.length > 0) {
-    const totalScore = mockSessions.reduce((sum, s) => sum + (s.scores.relevance + s.scores.specificity + s.scores.star) / 3, 0);
-    const avgScore = (totalScore / mockSessions.length).toFixed(1);
-    
-    summaryHTML = `<div class="history-summary">
-      <div class="history-summary-title">Performance Summary</div>
-      <div class="history-summary-grid">
-        <div class="history-summary-stat">
-          <div class="stat-val">${mockSessions.length}</div>
-          <div class="stat-label">SESSIONS</div>
-        </div>
-        <div class="history-summary-stat">
-          <div class="stat-val">${avgScore}/10</div>
-          <div class="stat-label">AVG SCORE</div>
-        </div>
-        <div class="history-summary-stat">
-          <div class="stat-val">${history.length}</div>
-          <div class="stat-label">QUESTIONS</div>
-        </div>
-      </div>
-    </div>`;
-  }
-  
-  list.innerHTML = summaryHTML + history.map((item,i) => {
-    const d = new Date(item.time);
-    const dateStr = d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
-    const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const typeLabel = item.type === 'mock' ? 'Mock' : 'Live';
-    
-    let scoreHTML = '';
-    if(item.scores) {
-      const avg = ((item.scores.relevance + item.scores.specificity + item.scores.star) / 3).toFixed(1);
-      const scoreClass = avg >= 8 ? 'excellent' : avg >= 6.5 ? 'good' : avg >= 5 ? 'average' : 'poor';
-      scoreHTML = `<span class="history-score ${scoreClass}">${avg}/10</span>`;
+    const list = $('historyList');
+    const clearBtn = $('clearHistBtn');
+    const historyActions = $('historyActions');
+
+    if(!list) return;
+
+    if(!history.length) {
+        list.innerHTML = `<div class="empty-state"><div class="eso">H</div><p>No sessions yet.<br><span style="color:var(--text-dim)">Start a live interview or mock session.</span></p></div>`;
+        if(clearBtn) clearBtn.style.display = 'none';
+        if(historyActions) historyActions.style.display = 'none';
+        return;
     }
+
+    if(clearBtn) clearBtn.style.display = 'block';
+    if(historyActions) historyActions.style.display = 'flex';
+
+    const mockSessions = history.filter(h => h.type === 'mock' && h.scores);
+    let summaryHTML = '';
+
+    if(mockSessions.length > 0) {
+        const totalScore = mockSessions.reduce((sum, s) => sum + (s.scores.relevance + s.scores.specificity + s.scores.star) / 3, 0);
+        const avgScore = (totalScore / mockSessions.length).toFixed(1);
+
+        summaryHTML = `<div class="history-summary">
+            <div class="history-summary-title">Performance Summary</div>
+            <div class="history-summary-grid">
+                <div class="history-summary-stat">
+                    <div class="stat-val">${mockSessions.length}</div>
+                    <div class="stat-label">SESSIONS</div>
+                </div>
+                <div class="history-summary-stat">
+                    <div class="stat-val">${avgScore}/10</div>
+                    <div class="stat-label">AVG SCORE</div>
+                </div>
+                <div class="history-summary-stat">
+                    <div class="stat-val">${history.length}</div>
+                    <div class="stat-label">QUESTIONS</div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    list.innerHTML = summaryHTML + history.map((item,i) => {
+        const d = new Date(item.time);
+        const dateStr = d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+        const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const typeLabel = item.type === 'mock' ? 'Mock' : 'Live';
+
+        let scoreHTML = '';
+        if(item.scores) {
+            const avg = ((item.scores.relevance + item.scores.specificity + item.scores.star) / 3).toFixed(1);
+            const scoreClass = avg >= 8 ? 'excellent' : avg >= 6.5 ? 'good' : avg >= 5 ? 'average' : 'poor';
+            scoreHTML = `<span class="history-score ${scoreClass}">${avg}/10</span>`;
+        }
+
+        return `<div class="history-item ${item.scores ? 'has-scores' : ''}" data-index="${i}" onclick="openHistModal(${i})" style="animation-delay:${Math.min(i * 0.03, 0.3)}s">
+            <div class="history-head">
+                <div class="history-q">${escHtml(item.question)}</div>
+                <div class="history-time">${dateStr} - ${timeStr}</div>
+            </div>
+            <div class="history-meta">
+                <span class="meta-tag">${typeLabel}</span>
+                ${scoreHTML}
+            </div>
+        </div>`;
+    }).join('<div style="height:.5rem"></div>');
     
-    return `<div class="history-item ${item.scores ? 'has-scores' : ''}" data-index="${i}" onclick="openHistModal(${i})" style="animation-delay:${Math.min(i * 0.03, 0.3)}s">
-      <div class="history-head">
-        <div class="history-q">${escHtml(item.question)}</div>
-        <div class="history-time">${dateStr} - ${timeStr}</div>
-      </div>
-      <div class="history-meta">
-        <span class="meta-tag">${typeLabel}</span>
-        ${scoreHTML}
-      </div>
-    </div>`;
-  }).join('<div style="height:.5rem"></div>');
+    // Update premium UI state for export button
+    updatePremiumUI();
 }
 
 function openHistModal(i) {
@@ -1205,5 +1216,406 @@ function hasCodeContent(text) {
   return codePatterns.some(pattern => pattern.test(text));
 }
 
+// ============================================
+// PHASE 3: USER EXPERIENCE ENHANCEMENT
+// ============================================
+
+// --- Screen Wake Lock API (Free Feature) ---
+// Prevents screen sleep during voice sessions on mobile devices
+let wakeLock = null;
+
+async function requestWakeLock() {
+    // Check if Wake Lock API is supported
+    if ('wakeLock' in navigator) {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock acquired - screen will stay awake');
+            
+            // Handle wake lock release (e.g., when tab becomes hidden)
+            wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock released');
+                wakeLock = null;
+            });
+            
+            return true;
+        } catch (err) {
+            console.log('Wake Lock failed:', err.name, err.message);
+            // Common errors: NotAllowedError, SecurityError
+            return false;
+        }
+    }
+    return false;
+}
+
+async function releaseWakeLock() {
+    if (wakeLock) {
+        try {
+            await wakeLock.release();
+            wakeLock = null;
+            console.log('Wake Lock released manually');
+        } catch (err) {
+            console.log('Error releasing wake lock:', err);
+        }
+    }
+}
+
+// Re-acquire wake lock when page becomes visible again
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && isListening) {
+        await requestWakeLock();
+    }
+});
+
+// --- Premium Feature Unlock System (Gumroad Integration) ---
+const PREMIUM_FEATURES = {
+    pdfExport: {
+        name: 'PDF Export',
+        price: 2.99,
+        gumroadId: 'neuralhire-pdf-export',
+        localStorageKey: 'nh_premium_pdf'
+    }
+};
+
+function isPremiumUnlocked(featureKey) {
+    const feature = PREMIUM_FEATURES[featureKey];
+    if (!feature) return false;
+    
+    try {
+        const unlocked = localStorage.getItem(feature.localStorageKey);
+        return unlocked === 'true';
+    } catch (e) {
+        return false;
+    }
+}
+
+function unlockPremiumFeature(featureKey) {
+    const feature = PREMIUM_FEATURES[featureKey];
+    if (!feature) return false;
+    
+    try {
+        localStorage.setItem(feature.localStorageKey, 'true');
+        showToast(`${feature.name} unlocked!`, 'success');
+        return true;
+    } catch (e) {
+        showToast('Failed to unlock feature', 'error');
+        return false;
+    }
+}
+
+function showPremiumPrompt(featureKey) {
+    const feature = PREMIUM_FEATURES[featureKey];
+    if (!feature) return;
+    
+    const modal = document.createElement('div');
+    modal.className = 'premium-modal-overlay';
+    modal.innerHTML = `
+        <div class="premium-modal">
+            <div class="premium-header">
+                <span class="premium-icon">✨</span>
+                <h3>Unlock ${feature.name}</h3>
+            </div>
+            <div class="premium-body">
+                <p>Export your interview sessions as professional PDF reports.</p>
+                <ul class="premium-features">
+                    <li>✓ Professional formatting</li>
+                    <li>✓ Company branding ready</li>
+                    <li>✓ Performance metrics included</li>
+                    <li>✓ Unlimited exports</li>
+                </ul>
+                <div class="premium-price">
+                    <span class="price-amount">$${feature.price}</span>
+                    <span class="price-label">one-time</span>
+                </div>
+            </div>
+            <div class="premium-actions">
+                <button class="btn btn-ghost" onclick="this.closest('.premium-modal-overlay').remove()">Maybe Later</button>
+                <button class="btn btn-primary" onclick="handlePremiumPurchase('${featureKey}')">
+                    Unlock Now
+                </button>
+            </div>
+            <p class="premium-note">Secure payment via Gumroad</p>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function handlePremiumPurchase(featureKey) {
+    const feature = PREMIUM_FEATURES[featureKey];
+    if (!feature) return;
+    
+    // For demo/testing: Simulate unlock (in production, this would redirect to Gumroad)
+    // In production: window.open(`https://gum.co/${feature.gumroadId}`, '_blank');
+    
+    // Demo mode: Direct unlock for testing
+    const confirmed = confirm(`Demo Mode: Unlock ${feature.name} for testing?\n\nIn production, this would redirect to Gumroad payment.`);
+    if (confirmed) {
+        unlockPremiumFeature(featureKey);
+        // Close modal
+        document.querySelector('.premium-modal-overlay')?.remove();
+        // Refresh UI
+        updatePremiumUI();
+    }
+}
+
+function updatePremiumUI() {
+    // Update export button state based on premium status
+    const exportBtn = $('exportPdfBtn');
+    if (exportBtn) {
+        if (isPremiumUnlocked('pdfExport')) {
+            exportBtn.classList.remove('locked');
+            exportBtn.innerHTML = '📄 Export PDF';
+        } else {
+            exportBtn.classList.add('locked');
+            exportBtn.innerHTML = '🔒 Export PDF';
+        }
+    }
+}
+
+// --- Session History PDF Export ---
+async function exportHistoryAsPDF() {
+    if (!isPremiumUnlocked('pdfExport')) {
+        showPremiumPrompt('pdfExport');
+        return;
+    }
+    
+    if (history.length === 0) {
+        showToast('No sessions to export', 'error');
+        return;
+    }
+    
+    showToast('Generating PDF...', '');
+    
+    // Generate PDF content using browser's print functionality
+    const pdfContent = generatePDFContent();
+    
+    // Create a hidden iframe for printing
+    const printFrame = document.createElement('iframe');
+    printFrame.style.position = 'absolute';
+    printFrame.style.top = '-10000px';
+    printFrame.style.left = '-10000px';
+    document.body.appendChild(printFrame);
+    
+    const doc = printFrame.contentDocument || printFrame.contentWindow.document;
+    doc.open();
+    doc.write(pdfContent);
+    doc.close();
+    
+    // Wait for content to load
+    setTimeout(() => {
+        printFrame.contentWindow.focus();
+        printFrame.contentWindow.print();
+        
+        // Cleanup after print dialog
+        setTimeout(() => {
+            document.body.removeChild(printFrame);
+        }, 1000);
+    }, 500);
+}
+
+function generatePDFContent() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    
+    // Calculate stats
+    const liveSessions = history.filter(h => h.type === 'live').length;
+    const mockSessions = history.filter(h => h.type === 'mock' && h.scores);
+    const avgScore = mockSessions.length > 0 
+        ? (mockSessions.reduce((sum, s) => sum + (s.scores.relevance + s.scores.specificity + s.scores.star) / 3, 0) / mockSessions.length).toFixed(1)
+        : 'N/A';
+    
+    let sessionsHTML = history.map((item, i) => {
+        const d = new Date(item.time);
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const typeLabel = item.type === 'mock' ? 'Mock Interview' : 'Live Session';
+        
+        let scoreHTML = '';
+        if (item.scores) {
+            const avg = ((item.scores.relevance + item.scores.specificity + item.scores.star) / 3).toFixed(1);
+            scoreHTML = `
+                <div class="score-box">
+                    <div class="score-label">Score</div>
+                    <div class="score-value">${avg}/10</div>
+                </div>
+            `;
+        }
+        
+        return `
+            <div class="session-item">
+                <div class="session-header">
+                    <span class="session-type">${typeLabel}</span>
+                    <span class="session-date">${dateStr} at ${timeStr}</span>
+                </div>
+                <div class="session-question">
+                    <strong>Question:</strong> ${escHtml(item.question)}
+                </div>
+                ${item.answer ? `<div class="session-answer"><strong>Answer:</strong> ${escHtml(item.answer.substring(0, 500))}${item.answer.length > 500 ? '...' : ''}</div>` : ''}
+                ${scoreHTML}
+            </div>
+        `;
+    }).join('');
+    
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>NeuralHire Session Report</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    padding: 40px;
+                    color: #1a1a1a;
+                    line-height: 1.6;
+                }
+                .header {
+                    text-align: center;
+                    margin-bottom: 40px;
+                    padding-bottom: 20px;
+                    border-bottom: 2px solid #f97316;
+                }
+                .logo {
+                    font-size: 28px;
+                    font-weight: 700;
+                    margin-bottom: 8px;
+                }
+                .logo-neural { color: #1a1a1a; }
+                .logo-hire { color: #f97316; }
+                .report-date {
+                    color: #666;
+                    font-size: 14px;
+                }
+                .stats-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 20px;
+                    margin-bottom: 40px;
+                }
+                .stat-card {
+                    background: #f8f8f8;
+                    padding: 20px;
+                    border-radius: 8px;
+                    text-align: center;
+                }
+                .stat-value {
+                    font-size: 32px;
+                    font-weight: 700;
+                    color: #f97316;
+                }
+                .stat-label {
+                    font-size: 12px;
+                    color: #666;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-top: 4px;
+                }
+                .sessions-title {
+                    font-size: 18px;
+                    font-weight: 600;
+                    margin-bottom: 20px;
+                    color: #1a1a1a;
+                }
+                .session-item {
+                    background: #fafafa;
+                    border: 1px solid #e5e5e5;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin-bottom: 16px;
+                    page-break-inside: avoid;
+                }
+                .session-header {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 12px;
+                }
+                .session-type {
+                    background: #f97316;
+                    color: white;
+                    padding: 4px 12px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    font-weight: 600;
+                }
+                .session-date {
+                    color: #666;
+                    font-size: 13px;
+                }
+                .session-question {
+                    margin-bottom: 12px;
+                    color: #1a1a1a;
+                }
+                .session-answer {
+                    color: #444;
+                    font-size: 14px;
+                    margin-bottom: 12px;
+                }
+                .score-box {
+                    display: inline-block;
+                    background: #f0fdf4;
+                    border: 1px solid #22c55e;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                }
+                .score-label {
+                    font-size: 11px;
+                    color: #666;
+                    text-transform: uppercase;
+                }
+                .score-value {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: #22c55e;
+                }
+                .footer {
+                    margin-top: 40px;
+                    padding-top: 20px;
+                    border-top: 1px solid #e5e5e5;
+                    text-align: center;
+                    color: #666;
+                    font-size: 12px;
+                }
+                @media print {
+                    body { padding: 20px; }
+                    .session-item { page-break-inside: avoid; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="logo">
+                    <span class="logo-neural">Neural</span><span class="logo-hire">Hire</span>
+                </div>
+                <div class="report-date">Session Report • ${dateStr}</div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">${history.length}</div>
+                    <div class="stat-label">Total Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${liveSessions}</div>
+                    <div class="stat-label">Live Interviews</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${avgScore}</div>
+                    <div class="stat-label">Avg Score</div>
+                </div>
+            </div>
+            
+            <div class="sessions-title">Session Details</div>
+            ${sessionsHTML}
+            
+            <div class="footer">
+                Generated by NeuralHire • AI Interview Copilot<br>
+                https://ravikumarve.github.io/neuralhire/
+            </div>
+        </body>
+        </html>
+    `;
+}
+
 // Initialize speech support on load
 checkSpeechSupport();
+// Initialize premium UI on load
+updatePremiumUI();
