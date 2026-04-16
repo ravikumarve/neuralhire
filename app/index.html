@@ -6,10 +6,10 @@
   <title>NeuralHire — AI Interview Copilot</title>
   <meta name="theme-color" content="#0c0906">
   <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.53.0/min/vs/loader.js"></script>
-  <style>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.53.0/min/vs/loader.js"></script>
+<link rel="stylesheet" href="app/style.css">
     :root {
       --bg: #0c0906;
       --surface: #111009;
@@ -280,20 +280,21 @@
 <body>
 
 <header>
-  <div class="brand"><span class="brand-neural">Neural</span><span class="brand-hire">Hire</span></div>
-  <div class="header-right">
-    <div class="nav-pills">
-      <div class="nav-pill active" data-tab="live" onclick="switchTab('live')">LIVE</div>
-      <div class="nav-pill" data-tab="mock" onclick="switchTab('mock')">MOCK</div>
-      <div class="nav-pill" data-tab="history" onclick="switchTab('history')">HISTORY</div>
-      <div class="nav-pill" data-tab="setup" onclick="switchTab('setup')">SETUP</div>
-    </div>
-    <div class="live-badge" id="liveBadge" style="display:none">
-      <span class="live-dot"></span>
-      <span class="live-label">LIVE SESSION</span>
-    </div>
-    <div class="model-badge" id="apiStatus">No Key</div>
+ <div class="brand"><span class="brand-neural">Neural</span><span class="brand-hire">Hire</span></div>
+ <div class="header-right">
+  <div class="nav-pills">
+   <div class="nav-pill active" data-tab="live" onclick="switchTab('live')">LIVE</div>
+   <div class="nav-pill" data-tab="mock" onclick="switchTab('mock')">MOCK</div>
+   <div class="nav-pill" data-tab="history" onclick="switchTab('history')">HISTORY</div>
+   <div class="nav-pill" data-tab="setup" onclick="switchTab('setup')">SETUP</div>
   </div>
+  <div class="live-badge" id="liveBadge" style="display:none">
+   <span class="live-dot"></span>
+   <span class="live-label">LIVE SESSION</span>
+  </div>
+  <div class="model-badge" id="apiStatus">No Key</div>
+ </div>
+ <div id="chromeBanner" style="display:none;background:var(--rose-dim);border:1px solid var(--rose);color:var(--rose);padding:.5rem .75rem;font-family:var(--font-mono);font-size:.625rem;text-align:center;position:absolute;top:100%;left:0;right:0;z-index:100">Use Chrome browser for voice features</div>
 </header>
 
 <div class="tabs">
@@ -659,37 +660,10 @@
 <div class="toast" id="toast"></div>
 <div class="print-report" id="printReport"></div>
 
-<script>
-document.addEventListener('click', function(e) {
-  const btn = e.target.closest('.btn');
-  if(!btn || btn.disabled) return;
-  const ripple = document.createElement('span');
-  ripple.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,255,255,0.3);transform:scale(0);animation:ripple .5s linear;pointer-events:none';
-  const rect = btn.getBoundingClientRect();
-  const size = Math.max(rect.width, rect.height);
-  ripple.style.width = ripple.style.height = size + 'px';
-  ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
-  ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
-  btn.style.position = 'relative';
-  btn.style.overflow = 'hidden';
-  btn.appendChild(ripple);
-  setTimeout(() => ripple.remove(), 500);
-});
+<!-- Removed all JavaScript from index.html - moved to app.js -->
 
-if(typeof pdfjsLib !== 'undefined') {
-  try { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; } catch(e) {}
-}
-
-window.onerror = function(msg, src, line, col, error) {
-  console.error('Error:', { msg, src, line, col, error });
-  showToast('An error occurred', 'error');
-  return false;
-};
-
-window.onunhandledrejection = function(e) {
-  console.error('Unhandled rejection:', e.reason);
-  return false;
-};
+<!-- Keep only the script tag that loads the external JS file -->
+<script src="app/app.js"></script>
 
 let recognition = null, isListening = false;
 let mockRecognition = null, mockIsListening = false;
@@ -794,30 +768,30 @@ class GroqProvider extends AIProvider {
     super('groq', 'Groq', GROQ_URL, true);
   }
 
-  async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
-    if(!isOnline()) throw new Error('No internet connection');
-    const key = getApiKey();
-    if(!key) throw new Error('No API key — add your Groq key in Setup');
-    
-    const res = await fetch(this.url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({ model, messages, temperature, max_tokens: maxTokens })
-    });
-
-    if(res.status === 429) throw new Error('Rate limit — wait 30 seconds');
-    if(res.status === 401) throw new Error('Invalid API key');
-    if(res.status === 403) throw new Error('API access denied');
-    if(!res.ok) throw new Error(`API error ${res.status}`);
-    
-    const data = await res.json();
-    if(data.error) throw new Error(data.error.message || 'API error');
-    
-    const content = data.choices?.[0]?.message?.content;
-    if(!content) throw new Error('Empty response');
-    
-    return content.trim();
-  }
+async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
+        if(!isOnline()) throw new Error('No internet connection');
+        const key = getApiKey();
+        if(!key) throw new Error('No API key — add your Groq key in Setup');
+        
+        const res = await fetch(this.url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+          body: JSON.stringify({ model, messages, temperature, max_tokens: maxTokens })
+        });
+        
+        if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
+        if(res.status === 401) throw new Error('Invalid API key');
+        if(res.status === 403) throw new Error('API access denied');
+        if(!res.ok) throw new Error(`API error ${res.status}`);
+        
+        const data = await res.json();
+        if(data.error) throw new Error(data.error.message || 'API error');
+        
+        const content = data.choices?.[0]?.message?.content;
+        if(!content) throw new Error('Empty response');
+        
+        return content.trim();
+      }
 
   getCostEstimate(tokens) {
     // Groq free tier estimation
@@ -830,30 +804,30 @@ class OpenAiProvider extends AIProvider {
     super('openai', 'OpenAI', 'https://api.openai.com/v1/chat/completions', true);
   }
 
-  async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
-    if(!isOnline()) throw new Error('No internet connection');
-    const key = getApiKey();
-    if(!key) throw new Error('No API key — add your OpenAI key in Setup');
-    
-    const res = await fetch(this.url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({ model, messages, temperature, max_tokens: maxTokens })
-    });
-
-    if(res.status === 429) throw new Error('Rate limit — wait 30 seconds');
-    if(res.status === 401) throw new Error('Invalid API key');
-    if(res.status === 403) throw new Error('API access denied');
-    if(!res.ok) throw new Error(`API error ${res.status}`);
-    
-    const data = await res.json();
-    if(data.error) throw new Error(data.error.message || 'API error');
-    
-    const content = data.choices?.[0]?.message?.content;
-    if(!content) throw new Error('Empty response');
-    
-    return content.trim();
-  }
+async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
+        if(!isOnline()) throw new Error('No internet connection');
+        const key = getApiKey();
+        if(!key) throw new Error('No API key — add your OpenAI key in Setup');
+        
+        const res = await fetch(this.url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+          body: JSON.stringify({ model, messages, temperature, max_tokens: maxTokens })
+        });
+        
+        if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
+        if(res.status === 401) throw new Error('Invalid API key');
+        if(res.status === 403) throw new Error('API access denied');
+        if(!res.ok) throw new Error(`API error ${res.status}`);
+        
+        const data = await res.json();
+        if(data.error) throw new Error(data.error.message || 'API error');
+        
+        const content = data.choices?.[0]?.message?.content;
+        if(!content) throw new Error('Empty response');
+        
+        return content.trim();
+      }
 
   getCostEstimate(tokens) {
     // OpenAI cost estimation (gpt-3.5-turbo)
@@ -866,45 +840,45 @@ class AnthropicProvider extends AIProvider {
     super('anthropic', 'Anthropic', 'https://api.anthropic.com/v1/messages', true);
   }
 
-  async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
-    if(!isOnline()) throw new Error('No internet connection');
-    const key = getApiKey();
-    if(!key) throw new Error('No API key — add your Anthropic key in Setup');
-    
-    // Convert OpenAI format to Anthropic format
-    const anthropicMessages = messages.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'assistant',
-      content: [{ type: 'text', text: msg.content }]
-    }));
-    
-    const res = await fetch(this.url, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json', 
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({ 
-        model: model || 'claude-3-sonnet-20240229', 
-        messages: anthropicMessages, 
-        max_tokens: maxTokens,
-        temperature: temperature
-      })
-    });
-
-    if(res.status === 429) throw new Error('Rate limit — wait 30 seconds');
-    if(res.status === 401) throw new Error('Invalid API key');
-    if(res.status === 403) throw new Error('API access denied');
-    if(!res.ok) throw new Error(`API error ${res.status}`);
-    
-    const data = await res.json();
-    if(data.error) throw new Error(data.error.message || 'API error');
-    
-    const content = data.content?.[0]?.text;
-    if(!content) throw new Error('Empty response');
-    
-    return content.trim();
-  }
+async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
+        if(!isOnline()) throw new Error('No internet connection');
+        const key = getApiKey();
+        if(!key) throw new Error('No API key — add your Anthropic key in Setup');
+        
+        // Convert OpenAI format to Anthropic format
+        const anthropicMessages = messages.map(msg => ({
+          role: msg.role === 'user' ? 'user' : 'assistant',
+          content: [{ type: 'text', text: msg.content }]
+        }));
+        
+        const res = await fetch(this.url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: model || 'claude-3-sonnet-20240229',
+            messages: anthropicMessages,
+            max_tokens: maxTokens,
+            temperature: temperature
+          })
+        });
+        
+        if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
+        if(res.status === 401) throw new Error('Invalid API key');
+        if(res.status === 403) throw new Error('API access denied');
+        if(!res.ok) throw new Error(`API error ${res.status}`);
+        
+        const data = await res.json();
+        if(data.error) throw new Error(data.error.message || 'API error');
+        
+        const content = data.content?.[0]?.text;
+        if(!content) throw new Error('Empty response');
+        
+        return content.trim();
+      }
 
   getCostEstimate(tokens) {
     // Anthropic cost estimation (claude-3-sonnet)
@@ -917,40 +891,40 @@ class GeminiProvider extends AIProvider {
     super('gemini', 'Gemini', 'https://generativelanguage.googleapis.com/v1beta/models', true);
   }
 
-  async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
-    if(!isOnline()) throw new Error('No internet connection');
-    const key = getApiKey();
-    if(!key) throw new Error('No API key — add your Gemini key in Setup');
-    
-    // Convert OpenAI format to Gemini format
-    const lastMessage = messages[messages.length - 1];
-    const geminiContent = lastMessage.role === 'user' ? lastMessage.content : '';
-    
-    const res = await fetch(`${this.url}/${model || 'gemini-pro'}:generateContent?key=${key}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        contents: [{ parts: [{ text: geminiContent }] }],
-        generationConfig: {
-          temperature: temperature,
-          maxOutputTokens: maxTokens
-        }
-      })
-    });
-
-    if(res.status === 429) throw new Error('Rate limit — wait 30 seconds');
-    if(res.status === 401) throw new Error('Invalid API key');
-    if(res.status === 403) throw new Error('API access denied');
-    if(!res.ok) throw new Error(`API error ${res.status}`);
-    
-    const data = await res.json();
-    if(data.error) throw new Error(data.error.message || 'API error');
-    
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if(!content) throw new Error('Empty response');
-    
-    return content.trim();
-  }
+async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
+        if(!isOnline()) throw new Error('No internet connection');
+        const key = getApiKey();
+        if(!key) throw new Error('No API key — add your Gemini key in Setup');
+        
+        // Convert OpenAI format to Gemini format
+        const lastMessage = messages[messages.length - 1];
+        const geminiContent = lastMessage.role === 'user' ? lastMessage.content : '';
+        
+        const res = await fetch(`${this.url}/${model || 'gemini-pro'}:generateContent?key=${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: geminiContent }] }],
+            generationConfig: {
+              temperature: temperature,
+              maxOutputTokens: maxTokens
+            }
+          })
+        });
+        
+        if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
+        if(res.status === 401) throw new Error('Invalid API key');
+        if(res.status === 403) throw new Error('API access denied');
+        if(!res.ok) throw new Error(`API error ${res.status}`);
+        
+        const data = await res.json();
+        if(data.error) throw new Error(data.error.message || 'API error');
+        
+        const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if(!content) throw new Error('Empty response');
+        
+        return content.trim();
+      }
 
   getCostEstimate(tokens) {
     // Gemini cost estimation (gemini-pro)
@@ -1119,12 +1093,16 @@ async function init() {
 }
 
 function checkSpeechSupport() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const micBtn = $('micBtn');
-  if(!SpeechRecognition) {
-    setStatus('Speech not supported — use Chrome', 'error');
-    if(micBtn) { micBtn.disabled = true; micBtn.style.opacity = '0.4'; }
-  }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const micBtn = $('micBtn');
+    const chromeBanner = $('chromeBanner');
+    if(!SpeechRecognition) {
+        setStatus('Speech not supported — use Chrome', 'error');
+        if(micBtn) { micBtn.disabled = true; micBtn.style.opacity = '0.4'; }
+        if(chromeBanner) chromeBanner.style.display = 'block';
+    } else {
+        if(chromeBanner) chromeBanner.style.display = 'none';
+    }
 }
 
 function switchTab(tab) {
@@ -1387,7 +1365,7 @@ async function handlePdfUpload(event) {
       } catch(e) {}
     }
     text = text.trim();
-    if(!text || text.length < 50) { showToast('PDF appears empty', 'error'); setStatus('', ''); return; }
+    if(!text || text.length < 50) { showToast('Scanned PDF detected. Please use a text-layer PDF.', 'error'); setStatus('', ''); return; }
     resumeText = text;
     try { localStorage.setItem('nh_resume', text); localStorage.setItem('nh_resumename', file.name); } catch(e) { showToast('Storage full', 'error'); return; }
     const resumeTextEl = $('resumeText');
