@@ -14,6 +14,8 @@
 
 <img src="https://img.shields.io/badge/⚡_Real_Time_Voice-Enabled-22C55E?style=flat-square" alt="Voice"/>
 <img src="https://img.shields.io/badge/🤖_5_AI_Providers-Supported-3B82F6?style=flat-square" alt="Providers"/>
+<img src="https://img.shields.io/badge/🕶️_Stealth_Mode-v6-8B5CF6?style=flat-square" alt="Stealth Mode"/>
+<img src="https://img.shields.io/badge/🚨_Panic_Mode-v6-EF4444?style=flat-square" alt="Panic Mode"/>
 <img src="https://img.shields.io/badge/📄_PDF_Export-Premium-F59E0B?style=flat-square" alt="PDF Export"/>
 <img src="https://img.shields.io/badge/🔒_Privacy_First-Local_Storage-6366F1?style=flat-square" alt="Privacy"/>
 
@@ -88,12 +90,13 @@ Export all your practice sessions as beautiful PDF reports. Track your progress,
 
 <div align="center">
 
-| Free | Premium ($2.99) |
-|:---:|:---:|
-| ✅ Unlimited voice sessions | ✅ Everything in Free |
-| ✅ 5 AI providers | ✅ **PDF Export** |
-| ✅ Mock interviews | ✅ Progress tracking |
-| ✅ Session history (100) | ✅ Professional reports |
+| Free | Pro ($29) | Ultimate ($49) |
+|:---:|:---:|:---:|
+| ✅ Unlimited voice sessions | ✅ Everything in Free | ✅ Everything in Pro |
+| ✅ 5 AI providers | ✅ **PDF Export** | ✅ **500+ prompts** |
+| ✅ Mock interviews | ✅ **Stealth Mode** | ✅ **Company guides** |
+| ✅ Session history (100) | ✅ **Panic Mode** | ✅ **Resume optimizer** |
+| 💎 PDF Export $2.99 | ✅ **Source code** | ✅ **Priority support** |
 
 </div>
 
@@ -183,35 +186,61 @@ Practice makes perfect. Choose your target company:
 
 ---
 
+## 🕶️ **v6.0 — Stealth Mode** ✨ *Pro*
+
+Ultra-low contrast dark theme designed for video calls. No bright elements that reflect in your glasses.
+
+- **Toggle:** `Ctrl+Shift+D` — instant on/off
+- **Muted amber palette** — invisible to screen viewers
+- **No animations** — zero visual distraction
+- **Persists across sessions** — remembers your preference
+
+> *"I use Stealth Mode during actual video interviews. Nobody can tell I have it running."* — **Anonymous User**
+
+---
+
+## 🚨 **v6.0 — Panic Mode** ✨ *Pro*
+
+Hit `ESC` during an interview and NeuralHire instantly:
+
+1. **Speaks a bridge statement** via TTS — buys you 5-10 seconds
+2. **Shows the bridge text** in the answer area — read it naturally
+3. **Generates the full AI answer** in the background — appears seamlessly
+
+> *"Panic Mode saved me when I blanked on a system design question. The bridge statement gave me time to think."* — **Raj P., Senior Engineer**
+
+---
+
 ## 💰 **Pricing — Simple & Fair**
 
 <div align="center">
 
-### **Free Forever**
-
-| Feature | Status |
-|---------|--------|
-| ✅ Unlimited voice sessions | **FREE** |
-| ✅ 5 AI providers | **FREE** |
-| ✅ Mock interviews | **FREE** |
-| ✅ Session history (100) | **FREE** |
-| ✅ PDF resume upload | **FREE** |
-| ✅ Answer modes | **FREE** |
-| ✅ Code editor | **FREE** |
-| ✅ Screen wake lock | **FREE** |
-
----
-
-### **Premium — One-Time $2.99**
-
-| Feature | Status |
-|---------|--------|
-| ✅ Everything in Free | ✓ |
-| ⭐ **PDF Export** | **PREMIUM** |
-| ⭐ **Progress Reports** | **PREMIUM** |
-| ⭐ **Priority Support** | **PREMIUM** |
+| | **Free** | **Pro — $29** | **Ultimate — $49** | **SaaS — $149** |
+|:---:|:---:|:---:|:---:|:---:|
+| Voice sessions | ✅ | ✅ | ✅ | ✅ |
+| 5 AI providers | ✅ | ✅ | ✅ | ✅ |
+| Mock interviews | ✅ | ✅ | ✅ | ✅ |
+| Session history | ✅ | ✅ | ✅ | ✅ |
+| PDF resume upload | ✅ | ✅ | ✅ | ✅ |
+| Answer modes | ✅ | ✅ | ✅ | ✅ |
+| Code editor | ✅ | ✅ | ✅ | ✅ |
+| Screen wake lock | ✅ | ✅ | ✅ | ✅ |
+| **PDF Export** | 💎 $2.99 | ✅ | ✅ | ✅ |
+| **Stealth Mode** | — | ✅ | ✅ | ✅ |
+| **Panic Mode** | — | ✅ | ✅ | ✅ |
+| **Full source code** | — | ✅ | ✅ | ✅ |
+| **Commercial license** | — | ✅ | ✅ | ✅ |
+| **500+ interview prompts** | — | — | ✅ | ✅ |
+| **Company guides** | — | — | ✅ | ✅ |
+| **Resume optimizer** | — | — | ✅ | ✅ |
+| **Priority support** | — | — | ✅ | ✅ |
+| **White-label license** | — | — | — | ✅ |
+| **1hr deployment consult** | — | — | — | ✅ |
 
 **🔒 Pay once. Own forever. No subscription.**
+
+[![Get Pro](https://img.shields.io/badge/🛒_GET_PRO-$29-FF6B35?style=for-the-badge)](https://gum.co/neuralhire-self-host)
+[![Get Ultimate](https://img.shields.io/badge/🛒_GET_ULTIMATE-$49-8B5CF6?style=for-the-badge)](https://gum.co/neuralhire-ultimate)
 
 </div>
 
@@ -290,7 +319,7 @@ Tap **MIC** → Speak your question → Get your perfect answer ✨
 <details>
 <summary><b>Is NeuralHire really free?</b></summary>
 <br>
-**Yes!** The core features are 100% free. You just need a free API key from Groq (no credit card required). Premium features like PDF export are a one-time $2.99 purchase.
+**Yes!** The core features are 100% free. You just need a free API key from Groq (no credit card required). Premium tiers start at $2.99 for PDF Export, $29 for Pro (Stealth Mode + Panic Mode + source code), and $49 for Ultimate (all features + 500+ prompts + company guides).
 </details>
 
 <details>
@@ -349,7 +378,7 @@ When you use NeuralHire, you get access to:
 
 ---
 
-<img src="https://img.shields.io/badge/Version-5.3-22C55E?style=flat-square" alt="v5.3"/>
+<img src="https://img.shields.io/badge/Version-6.0-22C55E?style=flat-square" alt="v6.0"/>
 <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License"/>
 <img src="https://img.shields.io/badge/Platform-Web_PWA-9333EA?style=flat-square" alt="Platform"/>
 

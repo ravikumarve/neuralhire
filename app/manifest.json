@@ -6,7 +6,8 @@
   "background_color": "#0c0906",
   "theme_color": "#fb923c",
   "orientation": "portrait",
-  "description": "AI-powered interview copilot. Real-time answers, mock interviews, session history.",
+  "description": "AI-powered interview copilot with Stealth Mode, Panic Mode, and multi-provider support. Real-time answers, mock interviews, session history.",
+  "version": "6.0.0",
   "icons": [
     {
       "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23fb923c'/><text y='.9em' font-size='80' x='10'>🧠</text></svg>",

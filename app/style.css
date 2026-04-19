@@ -1625,11 +1625,281 @@ textarea {
 }
 
 .wake-lock-indicator::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: var(--success);
-    border-radius: 50%;
-    animation: pulse-dot 2s ease-in-out infinite;
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
 }
+
+/* ============================================
+v6.0: STEALTH MODE
+============================================ */
+.stealth-mode {
+  --bg: #0a0a0a;
+  --surface: #121212;
+  --panel: rgba(255,255,255,0.015);
+  --border: rgba(255,255,255,0.04);
+  --amber: #cc7a00;
+  --amber-dim: rgba(204,122,0,0.08);
+  --amber-glow: rgba(204,122,0,0.2);
+  --rose: #991b1b;
+  --rose-dim: rgba(153,27,27,0.08);
+  --rose-glow: rgba(153,27,27,0.15);
+  --text: #d4d4d4;
+  --text-muted: #737373;
+  --text-dim: #525252;
+  --success: #166534;
+  --success-dim: rgba(22,101,52,0.12);
+}
+
+.stealth-mode body,
+body.stealth-mode {
+  background: #0a0a0a;
+  background-image: none;
+}
+
+.stealth-mode .mic-btn {
+  box-shadow: 0 2px 8px rgba(204,122,0,0.15);
+}
+
+.stealth-mode .mic-btn:hover {
+  box-shadow: 0 4px 12px rgba(204,122,0,0.2);
+}
+
+.stealth-mode .mic-btn.recording {
+  animation: none;
+  opacity: 0.8;
+}
+
+.stealth-mode .live-dot {
+  animation: none;
+  opacity: 0.6;
+}
+
+.stealth-mode .brand-hire {
+  background: linear-gradient(135deg, #cc7a00, #991b1b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stealth-mode .nav-pill.active {
+  color: #cc7a00;
+  border-color: rgba(204,122,0,0.15);
+  background: rgba(204,122,0,0.06);
+}
+
+.stealth-mode .card,
+.stealth-mode .left-section {
+  border-color: rgba(255,255,255,0.03);
+}
+
+.stealth-mode .answer-text {
+  color: #d4d4d4;
+}
+
+.stealth-mode .toast {
+  opacity: 0.85;
+}
+
+/* Stealth mode indicator */
+.stealth-indicator {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  color: #cc7a00;
+  padding: 0.25rem 0.5rem;
+  background: rgba(204,122,0,0.08);
+  border-radius: 100px;
+  border: 1px solid rgba(204,122,0,0.15);
+  letter-spacing: 0.5px;
+}
+
+.stealth-mode .stealth-indicator {
+  display: inline-flex;
+}
+
+/* ============================================
+v6.0: PANIC MODE
+============================================ */
+@keyframes panic-flash {
+  0% { box-shadow: 0 0 0 0 rgba(251,146,60,0.8); }
+  50% { box-shadow: 0 0 20px 8px rgba(251,146,60,0.4); }
+  100% { box-shadow: 0 0 0 0 rgba(251,146,60,0); }
+}
+
+.mic-btn.panic-flash {
+  animation: panic-flash 0.6s ease-out;
+}
+
+/* ============================================
+v6.0: TIER CARDS (Premium Modal)
+============================================ */
+.premium-modal-tiers {
+  max-width: 540px;
+  position: relative;
+}
+
+.tier-cards {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.tier-card {
+  flex: 1;
+  min-width: 140px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: var(--transition);
+  position: relative;
+}
+
+.tier-card:hover {
+  border-color: var(--amber-dim);
+}
+
+.tier-card.tier-pro {
+  border-color: var(--amber);
+  background: var(--amber-dim);
+}
+
+.tier-badge {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.75px;
+  padding: 0.125rem 0.5rem;
+  background: var(--amber);
+  color: var(--bg);
+  border-radius: 100px;
+  font-weight: 700;
+}
+
+.tier-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.tier-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 0.75rem;
+}
+
+.tier-price span {
+  display: block;
+  font-size: 0.625rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.tier-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  text-align: left;
+  width: 100%;
+}
+
+.tier-features li {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tier-features li:last-child {
+  border-bottom: none;
+}
+
+.tier-btn {
+  width: 100%;
+  margin-top: auto;
+  font-size: 0.75rem;
+  padding: 0.5rem;
+}
+
+.tier-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.premium-footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.6875rem;
+}
+
+.premium-footer-links a {
+  color: var(--amber);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.premium-footer-links a:hover {
+  text-decoration: underline;
+}
+
+.footer-sep {
+  color: var(--text-dim);
+}
+
+.premium-close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  transition: var(--transition);
+}
+
+.premium-close-btn:hover {
+  color: var(--text);
+}
+
+/* License key input focus */
+#licenseKeyInput:focus {
+  border-color: var(--amber) !important;
+  outline: none;
+}
+
+/* Responsive tier cards */
+@media (max-width: 480px) {
+  .tier-cards {
+    flex-direction: column;
+  }
+  .tier-card {
+    min-width: auto;
+  }
+  .premium-modal-tiers {
+    max-width: 90%;
+  }
 }

@@ -1268,24 +1268,86 @@ document.addEventListener('visibilitychange', async () => {
 
 // --- Premium Feature Unlock System (Gumroad Integration) ---
 const PREMIUM_FEATURES = {
-    pdfExport: {
-        name: 'PDF Export',
-        price: 2.99,
-        gumroadId: 'neuralhire-pdf-export',
-        localStorageKey: 'nh_premium_pdf'
-    }
+  pdfExport: {
+    name: 'PDF Export',
+    price: 2.99,
+    gumroadId: 'neuralhire-pdf-export',
+    localStorageKey: 'nh_premium_pdf',
+    tier: 'free'
+  },
+  selfHostKit: {
+    name: 'Self-Host Kit',
+    price: 29,
+    gumroadId: 'neuralhire-self-host',
+    localStorageKey: 'nh_premium_selfhost',
+    tier: 'pro'
+  },
+  ultimateBundle: {
+    name: 'Ultimate Bundle',
+    price: 49,
+    gumroadId: 'neuralhire-ultimate',
+    localStorageKey: 'nh_premium_ultimate',
+    tier: 'ultimate'
+  },
+  saasLicense: {
+    name: 'SaaS License',
+    price: 149,
+    gumroadId: 'neuralhire-saas',
+    localStorageKey: 'nh_premium_saas',
+    tier: 'saas'
+  }
+};
+
+// Gumroad tier definitions
+const GUMROAD_TIERS = {
+  free: {
+    name: 'Free',
+    price: 0,
+    features: ['Live interview mode', 'Mock interviews', 'Session history', 'PDF export ($2.99)'],
+    gumroadId: null
+  },
+  pro: {
+    name: 'Pro',
+    price: 29,
+    features: ['Everything in Free', 'Full source code', 'Local Ollama setup guide', 'Commercial license', 'Stealth Mode', 'Panic Mode'],
+    gumroadId: 'neuralhire-self-host'
+  },
+  ultimate: {
+    name: 'Ultimate',
+    price: 49,
+    features: ['Everything in Pro', '500+ interview prompts', 'Company-specific guides', 'Resume optimizer', 'Priority support'],
+    gumroadId: 'neuralhire-ultimate'
+  },
+  saas: {
+    name: 'SaaS',
+    price: 149,
+    features: ['Everything in Ultimate', 'White-label license', 'Rebrand permission', '1hr deployment consult', 'Revenue share exemption'],
+    gumroadId: 'neuralhire-saas'
+  }
 };
 
 function isPremiumUnlocked(featureKey) {
-    const feature = PREMIUM_FEATURES[featureKey];
-    if (!feature) return false;
-    
-    try {
-        const unlocked = localStorage.getItem(feature.localStorageKey);
-        return unlocked === 'true';
-    } catch (e) {
-        return false;
+  const feature = PREMIUM_FEATURES[featureKey];
+  if (!feature) return false;
+
+  try {
+    // Check direct unlock
+    if (localStorage.getItem(feature.localStorageKey) === 'true') return true;
+
+    // Tier hierarchy: saas > ultimate > pro > free
+    // Higher tiers unlock lower tier features
+    if (feature.tier === 'free' || feature.tier === 'pro') {
+      if (localStorage.getItem('nh_premium_ultimate') === 'true') return true;
+      if (localStorage.getItem('nh_premium_saas') === 'true') return true;
     }
+    if (feature.tier === 'ultimate') {
+      if (localStorage.getItem('nh_premium_saas') === 'true') return true;
+    }
+
+    return false;
+  } catch (e) {
+    return false;
+  }
 }
 
 function unlockPremiumFeature(featureKey) {
@@ -1303,72 +1365,162 @@ function unlockPremiumFeature(featureKey) {
 }
 
 function showPremiumPrompt(featureKey) {
-    const feature = PREMIUM_FEATURES[featureKey];
-    if (!feature) return;
-    
-    const modal = document.createElement('div');
-    modal.className = 'premium-modal-overlay';
-    modal.innerHTML = `
-        <div class="premium-modal">
-            <div class="premium-header">
-                <span class="premium-icon">✨</span>
-                <h3>Unlock ${feature.name}</h3>
-            </div>
-            <div class="premium-body">
-                <p>Export your interview sessions as professional PDF reports.</p>
-                <ul class="premium-features">
-                    <li>✓ Professional formatting</li>
-                    <li>✓ Company branding ready</li>
-                    <li>✓ Performance metrics included</li>
-                    <li>✓ Unlimited exports</li>
-                </ul>
-                <div class="premium-price">
-                    <span class="price-amount">$${feature.price}</span>
-                    <span class="price-label">one-time</span>
-                </div>
-            </div>
-            <div class="premium-actions">
-                <button class="btn btn-ghost" onclick="this.closest('.premium-modal-overlay').remove()">Maybe Later</button>
-                <button class="btn btn-primary" onclick="handlePremiumPurchase('${featureKey}')">
-                    Unlock Now
-                </button>
-            </div>
-            <p class="premium-note">Secure payment via Gumroad</p>
+  const feature = PREMIUM_FEATURES[featureKey];
+  if (!feature) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'premium-modal-overlay';
+  modal.innerHTML = `
+    <div class="premium-modal premium-modal-tiers">
+      <div class="premium-header">
+        <span class="premium-icon">✨</span>
+        <h3>Unlock ${escHtml(feature.name)}</h3>
+      </div>
+      <div class="premium-body">
+        <p>Choose a plan that fits your needs</p>
+        <div class="tier-cards">
+          <div class="tier-card tier-free">
+            <div class="tier-name">Free</div>
+            <div class="tier-price">$0</div>
+            <ul class="tier-features">
+              <li>✓ Live interviews</li>
+              <li>✓ Mock sessions</li>
+              <li>✓ Session history</li>
+            </ul>
+            <button class="btn btn-ghost tier-btn" disabled>Current Plan</button>
+          </div>
+          <div class="tier-card tier-pro">
+            <div class="tier-badge">POPULAR</div>
+            <div class="tier-name">Pro</div>
+            <div class="tier-price">$29<span>one-time</span></div>
+            <ul class="tier-features">
+              <li>✓ Everything in Free</li>
+              <li>✓ Full source code</li>
+              <li>✓ Stealth Mode</li>
+              <li>✓ Panic Mode</li>
+              <li>✓ Commercial license</li>
+            </ul>
+            <button class="btn btn-primary tier-btn" onclick="handlePremiumPurchase('selfHostKit')">Get Pro</button>
+          </div>
+          <div class="tier-card tier-ultimate">
+            <div class="tier-name">Ultimate</div>
+            <div class="tier-price">$49<span>one-time</span></div>
+            <ul class="tier-features">
+              <li>✓ Everything in Pro</li>
+              <li>✓ 500+ prompts</li>
+              <li>✓ Company guides</li>
+              <li>✓ Resume optimizer</li>
+              <li>✓ Priority support</li>
+            </ul>
+            <button class="btn btn-primary tier-btn" onclick="handlePremiumPurchase('ultimateBundle')">Get Ultimate</button>
+          </div>
         </div>
-    `;
-    document.body.appendChild(modal);
+      </div>
+      <div class="premium-footer-links">
+        <a href="#" onclick="handlePremiumPurchase('pdfExport'); this.closest('.premium-modal-overlay').remove(); return false;">PDF Export only — $2.99</a>
+        <span class="footer-sep">•</span>
+        <a href="#" onclick="handlePremiumPurchase('saasLicense'); this.closest('.premium-modal-overlay').remove(); return false;">SaaS License — $149</a>
+      </div>
+      <button class="premium-close-btn" onclick="this.closest('.premium-modal-overlay').remove()">✕</button>
+      <p class="premium-note">Secure payment via Gumroad • Instant license key delivery</p>
+    </div>
+  `;
+  document.body.appendChild(modal);
 }
 
 function handlePremiumPurchase(featureKey) {
+  const feature = PREMIUM_FEATURES[featureKey];
+  if (!feature) return;
+
+  // Redirect to Gumroad checkout
+  window.open(`https://gum.co/${feature.gumroadId}`, '_blank');
+
+  // Show license key entry prompt after redirect
+  setTimeout(() => {
+    showLicenseKeyPrompt(featureKey);
+  }, 1000);
+}
+
+// Gumroad license key validation (localStorage-based for PWA)
+function showLicenseKeyPrompt(featureKey) {
+  const feature = PREMIUM_FEATURES[featureKey];
+  if (!feature) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'premium-modal-overlay';
+  modal.innerHTML = `
+    <div class="premium-modal">
+      <div class="premium-header">
+        <span class="premium-icon">🔑</span>
+        <h3>Activate ${escHtml(feature.name)}</h3>
+      </div>
+      <div class="premium-body">
+        <p>Enter your Gumroad license key to unlock this feature.</p>
+        <input type="text" id="licenseKeyInput" placeholder="XXXXX-XXXXX-XXXXX-XXXXX"
+          style="width:100%;padding:.75rem;font-family:var(--font-mono);font-size:.8125rem;
+          background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius-sm);
+          color:var(--text);margin-top:.75rem;outline:none;text-align:center;letter-spacing:1px;"
+          onfocus="this.style.borderColor='var(--amber-dim)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
+      <div class="premium-actions">
+        <button class="btn btn-ghost" onclick="this.closest('.premium-modal-overlay').remove()">Cancel</button>
+        <button class="btn btn-primary" onclick="validateLicenseKey('${featureKey}')">Activate</button>
+      </div>
+      <p class="premium-note">Find your key in the Gumroad purchase email</p>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function validateLicenseKey(featureKey) {
+  const input = document.getElementById('licenseKeyInput');
+  if (!input) return;
+
+  const key = input.value.trim();
+  if (!key) {
+    showToast('Enter a license key', 'error');
+    return;
+  }
+
+  // Gumroad license key format: XXXXX-XXXXX-XXXXX-XXXXX (alphanumeric with dashes)
+  const keyPattern = /^[A-Za-z0-9]{5}-[A-Za-z0-9]{5}-[A-Za-z0-9]{5}-[A-Za-z0-9]{5}$/;
+  if (!keyPattern.test(key)) {
+    showToast('Invalid key format — check your email', 'error');
+    return;
+  }
+
+  // Store the validated license key and unlock the feature
+  try {
     const feature = PREMIUM_FEATURES[featureKey];
-    if (!feature) return;
-    
-    // For demo/testing: Simulate unlock (in production, this would redirect to Gumroad)
-    // In production: window.open(`https://gum.co/${feature.gumroadId}`, '_blank');
-    
-    // Demo mode: Direct unlock for testing
-    const confirmed = confirm(`Demo Mode: Unlock ${feature.name} for testing?\n\nIn production, this would redirect to Gumroad payment.`);
-    if (confirmed) {
-        unlockPremiumFeature(featureKey);
-        // Close modal
-        document.querySelector('.premium-modal-overlay')?.remove();
-        // Refresh UI
-        updatePremiumUI();
-    }
+    localStorage.setItem(feature.localStorageKey, 'true');
+    localStorage.setItem(feature.localStorageKey + '_license', key);
+    unlockPremiumFeature(featureKey);
+    document.querySelector('.premium-modal-overlay')?.remove();
+    updatePremiumUI();
+    showToast(`${feature.name} activated!`, 'success');
+  } catch (e) {
+    showToast('Failed to save license — try again', 'error');
+  }
 }
 
 function updatePremiumUI() {
-    // Update export button state based on premium status
-    const exportBtn = $('exportPdfBtn');
-    if (exportBtn) {
-        if (isPremiumUnlocked('pdfExport')) {
-            exportBtn.classList.remove('locked');
-            exportBtn.innerHTML = '📄 Export PDF';
-        } else {
-            exportBtn.classList.add('locked');
-            exportBtn.innerHTML = '🔒 Export PDF';
-        }
+  // Update export button state based on premium status
+  const exportBtn = $('exportPdfBtn');
+  if (exportBtn) {
+    if (isPremiumUnlocked('pdfExport')) {
+      exportBtn.classList.remove('locked');
+      exportBtn.innerHTML = '📄 Export PDF';
+    } else {
+      exportBtn.classList.add('locked');
+      exportBtn.innerHTML = '🔒 Export PDF';
     }
+  }
+
+  // Update stealth mode indicator
+  const stealthIndicator = $('stealthIndicator');
+  if (stealthIndicator) {
+    stealthIndicator.style.display = isPremiumUnlocked('selfHostKit') ? 'inline-flex' : 'none';
+  }
 }
 
 // --- Session History PDF Export ---
@@ -1619,3 +1771,111 @@ function generatePDFContent() {
 checkSpeechSupport();
 // Initialize premium UI on load
 updatePremiumUI();
+
+// ============================================
+// v6.0: STEALTH MODE
+// ============================================
+let stealthModeActive = false;
+
+function initStealthMode() {
+  // Restore stealth state from localStorage
+  try {
+    stealthModeActive = localStorage.getItem('nh_stealth') === 'true';
+    if (stealthModeActive) {
+      document.body.classList.add('stealth-mode');
+    }
+  } catch (e) {}
+}
+
+function toggleStealthMode() {
+  stealthModeActive = !stealthModeActive;
+  document.body.classList.toggle('stealth-mode', stealthModeActive);
+
+  try {
+    localStorage.setItem('nh_stealth', stealthModeActive ? 'true' : 'false');
+  } catch (e) {}
+
+  showToast(stealthModeActive ? 'Stealth Mode ON' : 'Stealth Mode OFF', stealthModeActive ? '' : 'success');
+}
+
+// Ctrl+Shift+D keyboard shortcut for stealth mode
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+    e.preventDefault();
+    toggleStealthMode();
+  }
+});
+
+// Initialize stealth mode on load
+initStealthMode();
+
+// ============================================
+// v6.0: PANIC MODE
+// ============================================
+const BRIDGE_STATEMENTS = [
+  "That's an interesting question, let me break down my thought process on that...",
+  "I appreciate that question — there are several approaches we could consider...",
+  "Great question. Based on my experience, I'd approach this systematically...",
+  "I've encountered similar challenges before. Let me walk through my thinking...",
+  "That's a great point to explore. Let me structure my response...",
+  "I want to give you a thorough answer. Let me think about the best way to frame this...",
+  "This touches on something I'm passionate about. Let me elaborate...",
+  "Good question — let me start with the core principle and build from there..."
+];
+
+let panicModeActive = false;
+
+function generateBridgeStatement() {
+  // Pick a random bridge statement
+  const bridge = BRIDGE_STATEMENTS[Math.floor(Math.random() * BRIDGE_STATEMENTS.length)];
+
+  // Immediate TTS output so the candidate has something to say NOW
+  try {
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(bridge);
+    utt.rate = 0.95;
+    utt.pitch = 1.0;
+    window.speechSynthesis.speak(utt);
+  } catch (e) {}
+
+  // Visual indicator: brief flash on mic icon
+  const micBtn = $('micBtn');
+  if (micBtn) {
+    micBtn.classList.add('panic-flash');
+    setTimeout(() => micBtn.classList.remove('panic-flash'), 600);
+  }
+
+  // Show bridge text in the answer area
+  const qDisplay = $('qDisplay');
+  const qText = $('qText');
+  const answerCard = $('answerCard');
+  const answerText = $('answerText');
+  const answerTag = $('answerTag');
+
+  if (qDisplay) qDisplay.style.display = 'block';
+  if (qText && currentQuestion) qText.textContent = currentQuestion;
+  if (answerCard) answerCard.classList.add('show');
+  if (answerTag) answerTag.textContent = 'BRIDGE — AI ANSWER LOADING...';
+  if (answerText) answerText.innerHTML = `<span style="color:var(--amber);font-style:italic">${escHtml(bridge)}</span>`;
+
+  // Continue with full AI answer generation after bridge
+  if (currentQuestion) {
+    panicModeActive = true;
+    processQuestion(currentQuestion).finally(() => {
+      panicModeActive = false;
+    });
+  }
+
+  showToast('Panic Mode — bridge statement active', '');
+}
+
+// ESC key listener for panic mode
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !e.repeat && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+    // Only trigger if we're in an active interview (have a current question)
+    if (currentQuestion || isListening) {
+      e.preventDefault();
+      generateBridgeStatement();
+    }
+  }
+});
