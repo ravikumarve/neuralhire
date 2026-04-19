@@ -241,6 +241,7 @@ Hit `ESC` during an interview and NeuralHire instantly:
 
 [![Get Pro](https://img.shields.io/badge/🛒_GET_PRO-$29-FF6B35?style=for-the-badge)](https://gum.co/neuralhire-self-host)
 [![Get Ultimate](https://img.shields.io/badge/🛒_GET_ULTIMATE-$49-8B5CF6?style=for-the-badge)](https://gum.co/neuralhire-ultimate)
+[![Get SaaS](https://img.shields.io/badge/🛒_GET_SAAS-$149-EF4444?style=for-the-badge)](https://gum.co/neuralhire-saas)
 
 </div>
 
@@ -354,11 +355,12 @@ NeuralHire is designed for **practice and preparation**. We recommend using it t
 
 When you use NeuralHire, you get access to:
 
-- 📚 **500+ FAANG interview questions** built-in
-- 🎯 **Company-specific question banks**
+- 🎯 **Company-specific question banks** (built-in mock mode)
 - 📊 **Performance scoring system**
 - 💡 **STAR method templates**
 - 🔧 **Technical coding examples**
+
+> 💎 **Ultimate tier** unlocks 500+ curated FAANG interview prompts and company-specific deep-dive guides.
 
 ---
 

@@ -243,12 +243,139 @@
     .cta-box p { color: var(--text-muted); margin-bottom: 2rem; position: relative; }
     .cta-box .btn-primary { position: relative; font-size: 1.0625rem; padding: 1rem 2.5rem; }
 
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--border); padding: 2rem;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 1rem;
-    }
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* PRICING */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 3rem;
+}
+.pricing-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.75rem 1.5rem;
+  position: relative;
+  transition: all .2s;
+}
+.pricing-card:hover {
+  border-color: rgba(251,146,60,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.pricing-card.popular {
+  border-color: rgba(251,146,60,0.3);
+  box-shadow: 0 0 40px rgba(251,146,60,0.08);
+}
+.pricing-badge {
+  position: absolute;
+  top: -0.625rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: .5rem;
+  letter-spacing: 1px;
+  color: var(--bg);
+  background: linear-gradient(135deg, var(--amber), var(--rose));
+  padding: .25rem .75rem;
+  border-radius: 100px;
+  font-weight: 700;
+}
+.pricing-tier {
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: .5rem;
+}
+.pricing-price {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: .25rem;
+}
+.pricing-price span {
+  font-size: .8125rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.pricing-features {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.pricing-features li {
+  font-size: .8125rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+}
+.pricing-features li::before {
+  content: '✓';
+  color: var(--success);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.pricing-features li.locked {
+  color: var(--text-dim);
+}
+.pricing-features li.locked::before {
+  content: '—';
+  color: var(--text-dim);
+}
+.pricing-btn {
+  display: block;
+  width: 100%;
+  padding: .75rem;
+  border-radius: 10px;
+  font-size: .875rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: all .2s;
+  cursor: pointer;
+  border: none;
+}
+.pricing-btn.primary {
+  background: linear-gradient(135deg, var(--amber), var(--rose));
+  color: var(--bg);
+  box-shadow: 0 4px 16px var(--amber-glow);
+}
+.pricing-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px var(--amber-glow);
+}
+.pricing-btn.ghost {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text-muted);
+}
+.pricing-btn.ghost:hover {
+  border-color: var(--amber-dim);
+  color: var(--amber);
+}
+.pricing-btn:disabled {
+  opacity: .5;
+  cursor: default;
+  transform: none !important;
+  box-shadow: none !important;
+}
     .footer-brand { font-weight: 700; font-size: .9375rem; }
     .footer-brand .h { background: linear-gradient(135deg, var(--amber), var(--rose)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .footer-links { display: flex; gap: 1.5rem; }
@@ -268,25 +395,26 @@
 
 <nav>
   <div class="nav-brand"><span class="n">Neural</span><span class="h">Hire</span></div>
-  <div class="nav-links">
-    <a href="#features">Features</a>
-    <a href="#how">How it works</a>
-    <a href="https://github.com/ravikumarve/neuralhire" target="_blank">GitHub</a>
-    <a href="app/index.html" class="nav-cta">Launch App →</a>
-  </div>
+<div class="nav-links">
+<a href="#features">Features</a>
+<a href="#pricing">Pricing</a>
+<a href="#how">How it works</a>
+<a href="https://github.com/ravikumarve/neuralhire" target="_blank">GitHub</a>
+<a href="app/index.html" class="nav-cta">Launch App →</a>
+</div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge"><div class="live-dot"></div>v4.0 — Now with Mock Interviews + Score Reports</div>
+  <div class="hero-badge"><div class="live-dot"></div>v6.0 — Stealth Mode + Panic Mode + 4 Pricing Tiers</div>
 
   <h1>Interview<br><span class="grad">Differently.</span></h1>
 
-  <p class="hero-sub">
-    AI copilot that <strong>listens, thinks, and answers</strong> in real-time.
-    Runs on your phone. Zero software on your computer.
-    <strong>Completely undetectable.</strong>
-  </p>
+<p class="hero-sub">
+AI copilot that <strong>listens, thinks, and answers</strong> in real-time.
+Runs on your phone. Zero software on your computer.
+<strong>Stealth Mode</strong> for video calls. <strong>Panic Mode</strong> when you blank.
+</p>
 
   <div class="hero-actions">
     <a href="app/index.html" class="btn-primary">🚀 Launch Free App</a>
@@ -383,11 +511,21 @@
       <div class="feature-title">PDF Score Report</div>
       <div class="feature-desc">Export a full session report with questions, answers, scores, and improvement tips. Interview proof.</div>
     </div>
-    <div class="feature-card">
-      <span class="feature-icon">📋</span>
-      <div class="feature-title">Session History</div>
-      <div class="feature-desc">Track your progress over time. See weak topics, score trends, and past answers in your history panel.</div>
-    </div>
+  <div class="feature-card">
+    <span class="feature-icon">📋</span>
+    <div class="feature-title">Session History</div>
+    <div class="feature-desc">Track your progress over time. See weak topics, score trends, and past answers in your history panel.</div>
+  </div>
+  <div class="feature-card" style="border-color:rgba(251,146,60,0.15)">
+    <span class="feature-icon">🕶️</span>
+    <div class="feature-title">Stealth Mode <span style="font-size:.625rem;font-family:var(--mono);color:var(--amber);background:var(--amber-dim);padding:.125rem .5rem;border-radius:100px;margin-left:.5rem">PRO</span></div>
+    <div class="feature-desc">Ultra-low contrast dark theme for video calls. No bright elements, no reflections. Ctrl+Shift+D to toggle instantly.</div>
+  </div>
+  <div class="feature-card" style="border-color:rgba(239,68,68,0.15)">
+    <span class="feature-icon">🚨</span>
+    <div class="feature-title">Panic Mode <span style="font-size:.625rem;font-family:var(--mono);color:var(--rose);background:var(--rose-dim);padding:.125rem .5rem;border-radius:100px;margin-left:.5rem">PRO</span></div>
+    <div class="feature-desc">Hit ESC during an interview — instantly speaks a bridge statement via TTS, then generates the full AI answer seamlessly.</div>
+  </div>
   </div>
 </section>
 
@@ -420,6 +558,69 @@
   </div>
 </section>
 
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="section-tag">Pricing</div>
+  <div class="section-title">Pay once. Own forever.</div>
+  <p class="section-sub">No subscriptions. No hidden fees. One-time purchase, lifetime access.</p>
+
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-tier">Free</div>
+      <div class="pricing-price">$0</div>
+      <ul class="pricing-features">
+        <li>Live voice sessions</li>
+        <li>5 AI providers</li>
+        <li>Mock interviews</li>
+        <li>Session history</li>
+        <li>PDF resume upload</li>
+        <li>Answer modes</li>
+        <li class="locked">Stealth Mode</li>
+        <li class="locked">Panic Mode</li>
+      </ul>
+      <a href="app/index.html" class="pricing-btn ghost">Launch Free</a>
+    </div>
+    <div class="pricing-card popular">
+      <div class="pricing-badge">POPULAR</div>
+      <div class="pricing-tier">Pro</div>
+      <div class="pricing-price">$29<span> one-time</span></div>
+      <ul class="pricing-features">
+        <li>Everything in Free</li>
+        <li>Stealth Mode</li>
+        <li>Panic Mode</li>
+        <li>Full source code</li>
+        <li>Commercial license</li>
+      </ul>
+      <a href="https://gum.co/neuralhire-self-host" target="_blank" class="pricing-btn primary">Get Pro →</a>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-tier">Ultimate</div>
+      <div class="pricing-price">$49<span> one-time</span></div>
+      <ul class="pricing-features">
+        <li>Everything in Pro</li>
+        <li>500+ interview prompts</li>
+        <li>Company-specific guides</li>
+        <li>Resume optimizer</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="https://gum.co/neuralhire-ultimate" target="_blank" class="pricing-btn primary">Get Ultimate →</a>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-tier">SaaS</div>
+      <div class="pricing-price">$149<span> one-time</span></div>
+      <ul class="pricing-features">
+        <li>Everything in Ultimate</li>
+        <li>White-label license</li>
+        <li>Rebrand permission</li>
+        <li>1hr deployment consult</li>
+        <li>Revenue share exemption</li>
+      </ul>
+      <a href="https://gum.co/neuralhire-saas" target="_blank" class="pricing-btn primary">Get SaaS →</a>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1.5rem;font-size:.75rem;color:var(--text-dim);font-family:var(--mono)">PDF Export standalone — <a href="https://gum.co/neuralhire-pdf-export" target="_blank" style="color:var(--amber)">$2.99</a> · Secure payment via Gumroad · Instant license key delivery</p>
+</section>
+
 <!-- CTA -->
 <div class="cta-section">
   <div class="cta-box">
@@ -436,7 +637,7 @@
     <a href="https://github.com/ravikumarve/neuralhire" target="_blank">GitHub</a>
     <a href="app/index.html">Launch App</a>
   </div>
-  <div class="footer-note">Built by ravikumarve · All data local · v4.0</div>
+  <div class="footer-note">Built by ravikumarve · All data local · v6.0</div>
 </footer>
 
 </body>

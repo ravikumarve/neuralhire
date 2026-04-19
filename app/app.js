@@ -1778,16 +1778,27 @@ updatePremiumUI();
 let stealthModeActive = false;
 
 function initStealthMode() {
-  // Restore stealth state from localStorage
+  // Restore stealth state from localStorage — only for Pro+ users
   try {
-    stealthModeActive = localStorage.getItem('nh_stealth') === 'true';
-    if (stealthModeActive) {
-      document.body.classList.add('stealth-mode');
+    if (isPremiumUnlocked('selfHostKit')) {
+      stealthModeActive = localStorage.getItem('nh_stealth') === 'true';
+      if (stealthModeActive) {
+        document.body.classList.add('stealth-mode');
+      }
+    } else {
+      // Free users: ensure stealth is off and indicator hidden
+      stealthModeActive = false;
+      localStorage.removeItem('nh_stealth');
     }
   } catch (e) {}
 }
 
 function toggleStealthMode() {
+  // Pro tier gate — Stealth Mode requires selfHostKit (Pro) or higher
+  if (!isPremiumUnlocked('selfHostKit')) {
+    showPremiumPrompt('selfHostKit');
+    return;
+  }
   stealthModeActive = !stealthModeActive;
   document.body.classList.toggle('stealth-mode', stealthModeActive);
 
@@ -1826,6 +1837,11 @@ const BRIDGE_STATEMENTS = [
 let panicModeActive = false;
 
 function generateBridgeStatement() {
+  // Pro tier gate — Panic Mode requires selfHostKit (Pro) or higher
+  if (!isPremiumUnlocked('selfHostKit')) {
+    showPremiumPrompt('selfHostKit');
+    return;
+  }
   // Pick a random bridge statement
   const bridge = BRIDGE_STATEMENTS[Math.floor(Math.random() * BRIDGE_STATEMENTS.length)];
 
