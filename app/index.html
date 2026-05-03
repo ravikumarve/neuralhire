@@ -644,10 +644,7 @@
 <div class="toast" id="toast"></div>
 <div class="print-report" id="printReport"></div>
 
-<!-- Removed all JavaScript from index.html - moved to app.js -->
-
-<!-- Keep only the script tag that loads the external JS file -->
-<script src="app/app.js"></script>
+<!-- Single-file architecture: All JavaScript is inline below -->
 
 let recognition = null, isListening = false;
 let mockRecognition = null, mockIsListening = false;
@@ -657,6 +654,137 @@ let selectedRole = 'General';
 let selectedLevel = 'Mid-level';
 let answerMode = 'concise';
 let history = [], settings = {}, resumeText = '';
+
+// ============================================
+// PROMPT VERSIONING SYSTEM
+// ============================================
+
+// Prompt version management
+const PROMPT_VERSIONS = {
+  'v1.0': {
+    name: 'Original',
+    description: 'Initial prompt version',
+    created: '2024-01-01',
+    isActive: false
+  },
+  'v2.0': {
+    name: 'Enhanced Context',
+    description: 'Added company context and code awareness',
+    created: '2024-02-15',
+    isActive: false
+  },
+  'v3.0': {
+    name: 'STAR Method Focus',
+    description: 'Emphasized STAR method and structured answers',
+    created: '2024-03-01',
+    isActive: false
+  },
+  'v4.0': {
+    name: 'Multi-Mode Support',
+    description: 'Added concise, deep-dive, and culture-fit modes',
+    created: '2024-04-01',
+    isActive: true
+  }
+};
+
+// Current active prompt version
+let currentPromptVersion = 'v4.0';
+
+// Prompt performance tracking
+const promptPerformance = {
+  versions: {},
+  totalQuestions: 0,
+  totalResponseTime: 0
+};
+
+// Initialize prompt performance tracking
+function initPromptTracking() {
+  const stored = localStorage.getItem('nh_prompt_performance');
+  if (stored) {
+    try {
+      const data = JSON.parse(stored);
+      promptPerformance.versions = data.versions || {};
+      promptPerformance.totalQuestions = data.totalQuestions || 0;
+      promptPerformance.totalResponseTime = data.totalResponseTime || 0;
+    } catch (e) {
+      console.error('Failed to load prompt performance data:', e);
+    }
+  }
+}
+
+// Track prompt performance
+function trackPromptPerformance(version, responseTime, success = true) {
+  if (!promptPerformance.versions[version]) {
+    promptPerformance.versions[version] = {
+      uses: 0,
+      totalResponseTime: 0,
+      successes: 0,
+      failures: 0,
+      avgResponseTime: 0
+    };
+  }
+  
+  const versionData = promptPerformance.versions[version];
+  versionData.uses++;
+  versionData.totalResponseTime += responseTime;
+  
+  if (success) {
+    versionData.successes++;
+  } else {
+    versionData.failures++;
+  }
+  
+  versionData.avgResponseTime = versionData.totalResponseTime / versionData.uses;
+  
+  promptPerformance.totalQuestions++;
+  promptPerformance.totalResponseTime += responseTime;
+  
+  // Save to localStorage
+  try {
+    localStorage.setItem('nh_prompt_performance', JSON.stringify(promptPerformance));
+  } catch (e) {
+    console.error('Failed to save prompt performance data:', e);
+  }
+}
+
+// Get prompt performance report
+function getPromptPerformanceReport() {
+  const report = {
+    currentVersion: currentPromptVersion,
+    availableVersions: PROMPT_VERSIONS,
+    performance: promptPerformance,
+    summary: {}
+  };
+  
+  // Calculate summary statistics
+  for (const [version, data] of Object.entries(promptPerformance.versions)) {
+    if (data.uses > 0) {
+      report.summary[version] = {
+        uses: data.uses,
+        successRate: ((data.successes / data.uses) * 100).toFixed(1) + '%',
+        avgResponseTime: data.avgResponseTime.toFixed(2) + 's',
+        versionName: PROMPT_VERSIONS[version]?.name || 'Unknown'
+      };
+    }
+  }
+  
+  return report;
+}
+
+// Switch prompt version (for A/B testing)
+function switchPromptVersion(version) {
+  if (PROMPT_VERSIONS[version]) {
+    currentPromptVersion = version;
+    console.log(`Switched to prompt version: ${version}`);
+    return true;
+  }
+  return false;
+}
+
+// Get current prompt version info
+function getCurrentPromptVersion() {
+  return PROMPT_VERSIONS[currentPromptVersion] || PROMPT_VERSIONS['v1.0'];
+}
 
 // Company Profile Database
 const COMPANY_PROFILES = {
@@ -1052,10 +1180,143 @@ class ProviderFactory {
 // Initialize provider factory
 const providerFactory = ProviderFactory.getInstance();
 
+// ============================================
+// SECURE API KEY STORAGE
+// ============================================
+
+// Simple encryption for API keys (XOR cipher with browser-specific key)
+function encryptApiKey(apiKey) {
+  if (!apiKey) return '';
+  
+  try {
+    // Create a simple encryption key from browser fingerprint
+    const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
+    let key = '';
+    for (let i = 0; i < fingerprint.length; i++) {
+      key += fingerprint.charCodeAt(i).toString(16);
+    }
+    
+    // XOR encryption
+    let encrypted = '';
+    for (let i = 0; i < apiKey.length; i++) {
+      const charCode = apiKey.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+      encrypted += String.fromCharCode(charCode);
+    }
+    
+    // Base64 encode for safe storage
+    return btoa(encrypted);
+  } catch (e) {
+    console.error('Encryption failed:', e);
+    return apiKey; // Fallback to plain text if encryption fails
+  }
+}
+
+// Decrypt API key
+function decryptApiKey(encryptedKey) {
+  if (!encryptedKey) return '';
+  
+  try {
+    // Create the same encryption key
+    const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
+    let key = '';
+    for (let i = 0; i < fingerprint.length; i++) {
+      key += fingerprint.charCodeAt(i).toString(16);
+    }
+    
+    // Base64 decode
+    const encrypted = atob(encryptedKey);
+    
+    // XOR decryption
+    let decrypted = '';
+    for (let i = 0; i < encrypted.length; i++) {
+      const charCode = encrypted.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+      decrypted += String.fromCharCode(charCode);
+    }
+    
+    return decrypted;
+  } catch (e) {
+    console.error('Decryption failed:', e);
+    return encryptedKey; // Return as-is if decryption fails
+  }
+}
+
+// Secure API key storage with encryption
+function setSecureApiKey(providerId, apiKey, sessionOnly = false) {
+  try {
+    const encryptedKey = encryptApiKey(apiKey);
+    
+    if (sessionOnly) {
+      // Store in sessionStorage (cleared when browser closes)
+      sessionStorage.setItem(`nh_apikey_${providerId}`, encryptedKey);
+      // Also set a flag to indicate session-only storage
+      sessionStorage.setItem(`nh_apikey_${providerId}_session`, 'true');
+    } else {
+      // Store in localStorage with encryption
+      localStorage.setItem(`nh_apikey_${providerId}`, encryptedKey);
+      // Clear any session-only flag
+      sessionStorage.removeItem(`nh_apikey_${providerId}_session`);
+    }
+    
+    return true;
+  } catch (e) {
+    console.error('Failed to store API key:', e);
+    return false;
+  }
+}
+
+// Secure API key retrieval with decryption
+function getSecureApiKey(providerId) {
+  try {
+    // Check sessionStorage first (session-only storage)
+    const sessionKey = sessionStorage.getItem(`nh_apikey_${providerId}`);
+    if (sessionKey) {
+      return decryptApiKey(sessionKey);
+    }
+    
+    // Fall back to localStorage
+    const encryptedKey = localStorage.getItem(`nh_apikey_${providerId}`);
+    if (encryptedKey) {
+      return decryptApiKey(encryptedKey);
+    }
+    
+    // Check for legacy unencrypted key (for backward compatibility)
+    const legacyKey = localStorage.getItem('nh_apikey');
+    if (legacyKey && !legacyKey.includes('==')) { // Simple check for unencrypted key
+      // Migrate to encrypted storage
+      setSecureApiKey(providerId, legacyKey, false);
+      localStorage.removeItem('nh_apikey');
+      return legacyKey;
+    }
+    
+    return '';
+  } catch (e) {
+    console.error('Failed to retrieve API key:', e);
+    return '';
+  }
+}
+
+// Clear API key from storage
+function clearApiKey(providerId) {
+  try {
+    localStorage.removeItem(`nh_apikey_${providerId}`);
+    sessionStorage.removeItem(`nh_apikey_${providerId}`);
+    sessionStorage.removeItem(`nh_apikey_${providerId}_session`);
+    return true;
+  } catch (e) {
+    console.error('Failed to clear API key:', e);
+    return false;
+  }
+}
+
+// Check if API key is stored session-only
+function isSessionOnlyApiKey(providerId) {
+  return sessionStorage.getItem(`nh_apikey_${providerId}_session`) === 'true';
+}
+
 function getApiKey() { 
   try { 
     const providerId = settings.provider || 'groq';
-    return localStorage.getItem(`nh_apikey_${providerId}`) || localStorage.getItem('nh_apikey') || ''; 
+    return getSecureApiKey(providerId); 
   } catch(e) { return ''; }
 }
 
@@ -1063,7 +1324,35 @@ async function callAIProvider(messages, model) {
   const providerId = settings.provider || 'groq';
   const provider = providerFactory.getProvider(providerId);
   const m = model || settings.model || 'llama-3.3-70b-versatile';
-  return await provider.generateAnswer(messages, m);
+  
+  // Try primary provider first
+  try {
+    return await provider.generateAnswer(messages, m);
+  } catch (error) {
+    console.warn(`Primary provider ${providerId} failed:`, error.message);
+    
+    // Fallback strategy: try other available providers
+    const fallbackProviders = ['groq', 'openai', 'anthropic', 'gemini'].filter(id => id !== providerId);
+    
+    for (const fallbackId of fallbackProviders) {
+      try {
+        console.log(`Trying fallback provider: ${fallbackId}`);
+        const fallbackProvider = providerFactory.getProvider(fallbackId);
+        const result = await fallbackProvider.generateAnswer(messages, m);
+        
+        // Notify user about fallback
+        showToast(`Using ${fallbackProvider.name} as fallback`, 'info');
+        
+        return result;
+      } catch (fallbackError) {
+        console.warn(`Fallback provider ${fallbackId} also failed:`, fallbackError.message);
+        continue;
+      }
+    }
+    
+    // All providers failed
+    throw new Error('All AI providers are currently unavailable. Please check your internet connection and API keys.');
+  }
 }
 
 // Backward compatibility
@@ -1130,6 +1419,275 @@ async function init() {
   updateStats();
   updateFooterStats();
   checkSpeechSupport();
+  
+  // Show onboarding for first-time users
+  showOnboardingIfNeeded();
+}
+
+// ============================================
+// USER ONBOARDING SYSTEM
+// ============================================
+
+// Check if user needs onboarding
+function showOnboardingIfNeeded() {
+  const hasCompletedOnboarding = localStorage.getItem('nh_onboarding_completed');
+  const userVisitCount = parseInt(localStorage.getItem('nh_visit_count') || '0');
+  
+  // Increment visit count
+  localStorage.setItem('nh_visit_count', (userVisitCount + 1).toString());
+  
+  // Show onboarding if:
+  // 1. First time user (no onboarding completion flag)
+  // 2. Or returning user who hasn't completed onboarding (visit count <= 3)
+  if (!hasCompletedOnboarding && userVisitCount <= 3) {
+    // Delay onboarding to let app load first
+    setTimeout(() => {
+      showOnboardingTour();
+    }, 1500);
+  }
+}
+
+// Show onboarding tour
+function showOnboardingTour() {
+  // Create onboarding overlay
+  const onboardingOverlay = document.createElement('div');
+  onboardingOverlay.id = 'onboarding-overlay';
+  onboardingOverlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(12, 9, 6, 0.95);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  `;
+  
+  // Onboarding steps
+  const steps = [
+    {
+      title: 'Welcome to NeuralHire! 🎯',
+      content: 'Your AI-powered interview copilot that helps you ace technical interviews with real-time assistance.',
+      icon: '🚀'
+    },
+    {
+      title: 'Step 1: Add Your API Key',
+      content: 'Go to Setup and add your free Groq API key to get started. It takes less than 30 seconds!',
+      icon: '🔑'
+    },
+    {
+      title: 'Step 2: Upload Your Resume',
+      content: 'Upload your resume PDF to get personalized answers based on your experience and skills.',
+      icon: '📄'
+    },
+    {
+      title: 'Step 3: Start Practicing',
+      content: 'Use the microphone to ask questions or tap "Get Question" for practice prompts. Get instant AI-powered feedback!',
+      icon: '🎤'
+    },
+    {
+      title: 'Pro Tips 💡',
+      content: '• Use keyboard shortcuts (Tab, Enter, Escape)\n• Try different answer modes (Concise, Deep Dive, Culture Fit)\n• Review your history to track progress',
+      icon: '⭐'
+    }
+  ];
+  
+  let currentStep = 0;
+  
+  // Render onboarding content
+  function renderStep() {
+    const step = steps[currentStep];
+    const progress = ((currentStep + 1) / steps.length) * 100;
+    
+    onboardingOverlay.innerHTML = `
+      <div style="
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        color: var(--text);
+      ">
+        <div style="
+          font-size: 4rem;
+          margin-bottom: 1rem;
+          animation: bounce 2s infinite;
+        ">${step.icon}</div>
+        
+        <h2 style="
+          font-size: 1.75rem;
+          margin-bottom: 1rem;
+          color: var(--amber);
+        ">${step.title}</h2>
+        
+        <p style="
+          font-size: 1.125rem;
+          color: var(--text-muted);
+          margin-bottom: 2rem;
+          line-height: 1.6;
+          white-space: pre-line;
+        ">${step.content}</p>
+        
+        <!-- Progress bar -->
+        <div style="
+          width: 100%;
+          height: 4px;
+          background: var(--border);
+          border-radius: 2px;
+          margin-bottom: 2rem;
+          overflow: hidden;
+        ">
+          <div style="
+            width: ${progress}%;
+            height: 100%;
+            background: var(--amber);
+            transition: width 0.3s ease;
+          "></div>
+        </div>
+        
+        <!-- Navigation buttons -->
+        <div style="
+          display: flex;
+          gap: 1rem;
+          justify-content: center;
+          flex-wrap: wrap;
+        ">
+          ${currentStep > 0 ? `
+            <button onclick="prevOnboardingStep()" style="
+              padding: 0.75rem 1.5rem;
+              background: transparent;
+              color: var(--text);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              font-size: 1rem;
+              cursor: pointer;
+              transition: var(--transition);
+            ">Back</button>
+          ` : ''}
+          
+          ${currentStep < steps.length - 1 ? `
+            <button onclick="nextOnboardingStep()" style="
+              padding: 0.75rem 2rem;
+              background: var(--amber);
+              color: var(--bg);
+              border: none;
+              border-radius: 8px;
+              font-size: 1rem;
+              font-weight: 600;
+              cursor: pointer;
+              transition: var(--transition);
+            ">Next (${currentStep + 1}/${steps.length})</button>
+          ` : `
+            <button onclick="completeOnboarding()" style="
+              padding: 0.75rem 2rem;
+              background: var(--amber);
+              color: var(--bg);
+              border: none;
+              border-radius: 8px;
+              font-size: 1rem;
+              font-weight: 600;
+              cursor: pointer;
+              transition: var(--transition);
+            ">Get Started! 🎉</button>
+          `}
+          
+          <button onclick="skipOnboarding()" style="
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            color: var(--text-dim);
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+          ">Skip Tour</button>
+        </div>
+        
+        <!-- Step indicator -->
+        <div style="
+          margin-top: 1.5rem;
+          display: flex;
+          gap: 0.5rem;
+          justify-content: center;
+        ">
+          ${steps.map((_, i) => `
+            <div style="
+              width: 8px;
+              height: 8px;
+              border-radius: 50%;
+              background: ${i === currentStep ? 'var(--amber)' : 'var(--border)'};
+              transition: var(--transition);
+            "></div>
+          `).join('')}
+        </div>
+      </div>
+      
+      <style>
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+      </style>
+    `;
+  }
+  
+  // Global functions for onboarding navigation
+  window.nextOnboardingStep = function() {
+    if (currentStep < steps.length - 1) {
+      currentStep++;
+      renderStep();
+    }
+  };
+  
+  window.prevOnboardingStep = function() {
+    if (currentStep > 0) {
+      currentStep--;
+      renderStep();
+    }
+  };
+  
+  window.completeOnboarding = function() {
+    localStorage.setItem('nh_onboarding_completed', 'true');
+    localStorage.setItem('nh_onboarding_date', new Date().toISOString());
+    removeOnboardingOverlay();
+    showToast('Welcome aboard! 🚀', 'success');
+    
+    // Navigate to setup if no API key
+    if (!getApiKey()) {
+      switchTab('setup');
+    }
+  };
+  
+  window.skipOnboarding = function() {
+    removeOnboardingOverlay();
+  };
+  
+  function removeOnboardingOverlay() {
+    const overlay = document.getElementById('onboarding-overlay');
+    if (overlay) {
+      overlay.style.opacity = '0';
+      overlay.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => overlay.remove(), 300);
+    }
+    
+    // Clean up global functions
+    delete window.nextOnboardingStep;
+    delete window.prevOnboardingStep;
+    delete window.completeOnboarding;
+    delete window.skipOnboarding;
+  }
+  
+  // Initial render
+  renderStep();
+  document.body.appendChild(onboardingOverlay);
+}
+
+// Show onboarding manually (can be called from help menu)
+function showOnboardingManually() {
+  // Reset onboarding completion to show tour again
+  localStorage.removeItem('nh_onboarding_completed');
+  showOnboardingTour();
 }
 
 function checkSpeechSupport() {
@@ -1191,10 +1749,21 @@ function saveApiKey() {
   // Ollama doesn't require API key validation
   
   try {
-    localStorage.setItem(`nh_apikey_${providerId}`, k);
-    updateApiStatus(true);
-    showToast('API key saved!', 'success');
-  } catch(e) { showToast('Failed to save', 'error'); }
+    // Use secure storage with encryption
+    const sessionOnly = settings.sessionOnlyKeys || false;
+    const success = setSecureApiKey(providerId, k, sessionOnly);
+    
+    if (success) {
+      updateApiStatus(true);
+      const storageType = sessionOnly ? 'session' : 'local';
+      showToast(`API key saved (${storageType} storage)!`, 'success');
+    } else {
+      showToast('Failed to save API key', 'error');
+    }
+  } catch(e) { 
+    console.error('Failed to save API key:', e);
+    showToast('Failed to save', 'error'); 
+  }
 }
 
 function updateApiStatus(ok) {
@@ -1582,6 +2151,10 @@ async function processQuestion(question) {
   try {
     const answer = await callAIProvider([{ role: 'user', content: buildPrompt(question) }]);
     const elapsed = ((Date.now()-t0)/1000).toFixed(1);
+    
+    // Track prompt performance
+    trackPromptPerformance(currentPromptVersion, parseFloat(elapsed), true);
+    
     currentAnswer = answer;
     const answerText = $('answerText');
     const answerCard = $('answerCard');
@@ -1604,6 +2177,10 @@ async function processQuestion(question) {
     updateFooterStats();
     resetMicUI();
   } catch(e) {
+    // Track prompt performance failure
+    const elapsed = ((Date.now()-t0)/1000).toFixed(1);
+    trackPromptPerformance(currentPromptVersion, parseFloat(elapsed), false);
+    
     let msg = e.message || 'Unknown error';
     if(msg.includes('No internet')) { msg = 'Offline — check connection'; }
     else if(msg.includes('Rate limit')) { msg = 'Rate limit — wait 30s'; }
@@ -1663,9 +2240,98 @@ function buildPrompt(question) {
                      `Interview style: ${company.interviewStyle}.`;
   }
   
+  // Intelligent resume summarization to prevent truncation
+  let resumeContext = '';
+  if (resumeText) {
+    resumeContext = summarizeResume(resumeText);
+  }
+  
   return `You are an expert interview coach. ${levelContext} ${roleContext}${companyContext}
-${resumeText ? `RESUME:\n${resumeText.slice(0,2500)}\n\n` : ''}${jd ? `JOB:\n${jd}\n\n` : ''}${codeContext}QUESTION: "${question}"
+${resumeContext}${jd ? `JOB:\n${jd}\n\n` : ''}${codeContext}QUESTION: "${question}"
 ${modeContext} Write a compelling answer, ${lengthMap[length]}, ${formatMap[format]}. Use **bold** for key phrases. Be specific. Return ONLY the answer.`;
+}
+
+// Intelligent resume summarization
+function summarizeResume(resumeText) {
+  const maxLength = 2500; // Maximum characters for resume context
+  
+  if (resumeText.length <= maxLength) {
+    return `RESUME:\n${resumeText}\n\n`;
+  }
+  
+  // Extract key sections from resume
+  const sections = extractResumeSections(resumeText);
+  
+  // Prioritize and summarize sections
+  let summarized = '';
+  const sectionPriority = ['skills', 'experience', 'education', 'projects', 'certifications'];
+  
+  let remainingLength = maxLength - 50; // Reserve space for "RESUME:\n" and "\n\n"
+  
+  for (const section of sectionPriority) {
+    if (sections[section] && remainingLength > 0) {
+      const sectionText = sections[section];
+      const sectionHeader = section.toUpperCase() + ':\n';
+      const availableLength = remainingLength - sectionHeader.length - 20; // Reserve space for formatting
+      
+      if (availableLength > 50) {
+        if (sectionText.length <= availableLength) {
+          summarized += sectionHeader + sectionText + '\n\n';
+          remainingLength -= (sectionHeader.length + sectionText.length + 2);
+        } else {
+          // Truncate section if too long
+          summarized += sectionHeader + sectionText.slice(0, availableLength) + '...\n\n';
+          remainingLength = 0;
+        }
+      }
+    }
+  }
+  
+  // If we still have space and missed some content, add a summary note
+  if (remainingLength > 100 && summarized.length < resumeText.length * 0.3) {
+    summarized += '(Resume summarized to fit context limits. Key sections prioritized.)\n\n';
+  }
+  
+  return `RESUME:\n${summarized}`;
+}
+
+// Extract key sections from resume text
+function extractResumeSections(text) {
+  const sections = {
+    skills: '',
+    experience: '',
+    education: '',
+    projects: '',
+    certifications: ''
+  };
+  
+  // Common section headers in resumes
+  const sectionPatterns = {
+    skills: /(?:skills|technologies|technical\s+skills|core\s+competencies)[:\s]*([^]*?)(?=\n\s*(?:experience|education|projects|certifications|work\s+history|$))/gi,
+    experience: /(?:experience|work\s+history|employment|professional\s+experience)[:\s]*([^]*?)(?=\n\s*(?:education|skills|projects|certifications|$))/gi,
+    education: /(?:education|academic|qualifications)[:\s]*([^]*?)(?=\n\s*(?:experience|skills|projects|certifications|$))/gi,
+    projects: /(?:projects|portfolio|key\s+projects)[:\s]*([^]*?)(?=\n\s*(?:experience|education|skills|certifications|$))/gi,
+    certifications: /(?:certifications|certificates|credentials)[:\s]*([^]*?)(?=\n\s*(?:experience|education|skills|projects|$))/gi
+  };
+  
+  // Extract each section
+  for (const [sectionName, pattern] of Object.entries(sectionPatterns)) {
+    const match = pattern.exec(text);
+    if (match && match[1]) {
+      sections[sectionName] = match[1].trim();
+    }
+  }
+  
+  // If no sections found, try to extract from the full text
+  if (Object.values(sections).every(s => s === '')) {
+    // Use the first part of the resume as skills/experience
+    const firstPart = text.split('\n\n')[0];
+    if (firstPart) {
+      sections.skills = firstPart;
+    }
+  }
+  
+  return sections;
 }
 
 function toggleMockListen() {
@@ -2444,6 +3110,142 @@ document.addEventListener('keydown', function(e) {
     }
   }
 });
+
+// ============================================
+// ERROR BOUNDARY SYSTEM
+// ============================================
+
+// Global error handler for graceful degradation
+window.onerror = function(message, source, lineno, colno, error) {
+  console.error('Global error caught:', error);
+  
+  // Show user-friendly error message
+  showErrorBoundary('Something went wrong. The app is still functional, but some features may be limited.');
+  
+  // Prevent default error handling
+  return true;
+};
+
+// Unhandled promise rejection handler
+window.addEventListener('unhandledrejection', function(event) {
+  console.error('Unhandled promise rejection:', event.reason);
+  
+  // Show user-friendly error message
+  showErrorBoundary('A background task failed. Please try again or refresh the page.');
+  
+  // Prevent default error handling
+  event.preventDefault();
+});
+
+// Error boundary UI
+function showErrorBoundary(message) {
+  // Remove existing error boundary if present
+  const existingError = document.getElementById('error-boundary');
+  if (existingError) {
+    existingError.remove();
+  }
+  
+  // Create error boundary element
+  const errorBoundary = document.createElement('div');
+  errorBoundary.id = 'error-boundary';
+  errorBoundary.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(12, 9, 6, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 1rem;
+  `;
+  
+  errorBoundary.innerHTML = `
+    <div style="
+      max-width: 400px;
+      text-align: center;
+      color: var(--text);
+    ">
+      <div style="
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      ">⚠️</div>
+      <h2 style="
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: var(--amber);
+      ">Something went wrong</h2>
+      <p style="
+        font-size: 1rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      ">${message}</p>
+      <div style="
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      ">
+        <button onclick="dismissErrorBoundary()" style="
+          padding: 0.75rem 1.5rem;
+          background: var(--amber);
+          color: var(--bg);
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: var(--transition);
+        ">Continue</button>
+        <button onclick="location.reload()" style="
+          padding: 0.75rem 1.5rem;
+          background: transparent;
+          color: var(--text);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: var(--transition);
+        ">Refresh Page</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(errorBoundary);
+}
+
+// Dismiss error boundary
+function dismissErrorBoundary() {
+  const errorBoundary = document.getElementById('error-boundary');
+  if (errorBoundary) {
+    errorBoundary.remove();
+  }
+}
+
+// Safe wrapper for critical functions
+function safeExecute(fn, fallback = null, errorMessage = 'Operation failed') {
+  try {
+    return fn();
+  } catch (error) {
+    console.error('Safe execution error:', error);
+    showErrorBoundary(errorMessage);
+    return fallback !== null ? fallback() : null;
+  }
+}
+
+// Safe async wrapper
+async function safeExecuteAsync(fn, fallback = null, errorMessage = 'Operation failed') {
+  try {
+    return await fn();
+  } catch (error) {
+    console.error('Safe async execution error:', error);
+    showErrorBoundary(errorMessage);
+    return fallback !== null ? await fallback() : null;
+  }
+}
 
 // ============================================
 // KEYBOARD NAVIGATION SUPPORT

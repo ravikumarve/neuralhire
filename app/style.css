@@ -2,7 +2,7 @@
   --bg: #0c0906;
   --surface: #111009;
   --panel: rgba(255,255,255,0.02);
-  --border: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.12);
   --amber: #fb923c;
   --amber-dim: rgba(251,146,60,0.15);
   --amber-glow: rgba(251,146,60,0.4);
@@ -10,8 +10,8 @@
   --rose-dim: rgba(239,68,68,0.12);
   --rose-glow: rgba(239,68,68,0.3);
   --text: #fafaf9;
-  --text-muted: #78716c;
-  --text-dim: #57534e;
+  --text-muted: #a8a29e;
+  --text-dim: #78716c;
   --success: #22c55e;
   --success-dim: rgba(34,197,94,0.15);
   --font-head: 'Outfit', sans-serif;
@@ -31,14 +31,16 @@
 
 html,body{
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 body{
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-head);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
   display: flex;
   flex-direction: column;
@@ -107,6 +109,11 @@ header {
   display: flex;
   align-items: center;
   gap: .5rem;
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  color: var(--text-muted);
+  letter-spacing: .5px;
+  margin-bottom: 1rem;
 }
 
 .nav-pills {
@@ -116,7 +123,7 @@ header {
 
 .nav-pill {
   font-family: var(--font-mono);
-  font-size: .625rem;
+  font-size: .75rem;
   font-weight: 400;
   padding: .375rem .625rem;
   border-radius: 100px;
@@ -159,14 +166,14 @@ header {
 
 .live-label {
   font-family: var(--font-mono);
-  font-size: .5625rem;
+  font-size: .75rem;
   color: var(--success);
   letter-spacing: .75px;
 }
 
 .model-badge {
   font-family: var(--font-mono);
-  font-size: .5625rem;
+  font-size: .75rem;
   color: var(--text-dim);
   padding: .375rem .625rem;
   border-radius: 100px;
@@ -201,7 +208,7 @@ header {
 
 .left-label {
   font-family: var(--font-mono);
-  font-size: .5625rem;
+  font-size: .75rem;
   color: var(--text-dim);
   letter-spacing: .75px;
   text-transform: uppercase;
@@ -211,7 +218,7 @@ header {
 .pill-select {
   width: 100%;
   padding: .5rem .75rem;
-  font-size: .8125rem;
+  font-size: 1rem;
   font-family: var(--font-head);
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.04);
@@ -274,7 +281,7 @@ header {
 
 .mic-hint {
   font-family: var(--font-mono);
-  font-size: .5rem;
+  font-size: .75rem;
   color: var(--text-dim);
   margin-top: .625rem;
   text-align: center;
@@ -308,7 +315,7 @@ header {
 
 .score-name {
   font-family: var(--font-mono);
-  font-size: .5rem;
+  font-size: .75rem;
   color: var(--text-dim);
   margin-top: .25rem;
   letter-spacing: .5px;
@@ -335,7 +342,7 @@ header {
   align-items: center;
   gap: .375rem;
   font-family: var(--font-mono);
-  font-size: .5625rem;
+  font-size: .75rem;
   color: var(--amber);
   letter-spacing: .75px;
   text-transform: uppercase;
@@ -413,7 +420,7 @@ header {
   align-items: center;
   gap: .5rem;
   font-family: var(--font-mono);
-  font-size: .5625rem;
+  font-size: .75rem;
   color: var(--text-muted);
   letter-spacing: .5px;
   margin-bottom: 1rem;
@@ -443,7 +450,7 @@ header {
 
 .meta-tag {
   font-family: var(--font-mono);
-  font-size: .5rem;
+  font-size: .75rem;
   color: var(--text-dim);
   padding: .25rem .5rem;
   border-radius: 4px;
@@ -464,7 +471,7 @@ header {
   padding: .875rem 1.25rem;
   border-radius: var(--radius-md);
   font-family: var(--font-head);
-  font-size: .875rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
@@ -514,7 +521,7 @@ header {
   color: var(--text-muted);
   cursor: pointer;
   transition: var(--transition);
-  font-size: .875rem;
+  font-size: 1rem;
 }
 
 .btn-icon:hover {
@@ -528,7 +535,7 @@ header {
   border-radius: var(--radius-md);
   padding: .875rem 1rem;
   font-family: var(--font-mono);
-  font-size: .75rem;
+  font-size: .875rem;
   color: var(--amber);
   display: none;
   word-break: break-word;
@@ -1383,8 +1390,17 @@ textarea {
 }
 
 @media (max-width: 480px) {
+  /* Prevent horizontal scroll */
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+  }
+  
   .app-body {
     flex-direction: column;
+    overflow-x: hidden;
+    width: 100%;
   }
   
   .left-panel {
@@ -1395,6 +1411,7 @@ textarea {
     border-bottom: 1px solid var(--border);
     padding: .75rem;
     gap: .5rem;
+    overflow-x: hidden;
   }
   
   .left-section {
@@ -1414,16 +1431,21 @@ textarea {
     display: flex;
     flex-direction: column;
     min-height: 60vh;
+    overflow-x: hidden;
+    width: 100%;
   }
   
   .answer-section {
     max-height: 50vh;
     min-height: 200px;
+    overflow-x: hidden;
   }
   
   .answer-text {
     font-size: .875rem;
     line-height: 1.7;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   
   footer {
@@ -1437,6 +1459,13 @@ textarea {
   }
   
   .footer-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  }
+  
+  .footer-actions .btn {
     width: 100%;
   }
 }
@@ -1454,6 +1483,44 @@ textarea {
   
   .answer-text {
     font-size: .8125rem;
+  }
+  
+  /* Prevent horizontal scroll on very small screens */
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .app-body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+  
+  .left-panel {
+    overflow-x: hidden;
+  }
+  
+  .right-panel {
+    overflow-x: hidden;
+  }
+  
+  /* Ensure buttons don't overflow */
+  .btn {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .footer-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  }
+  
+  .footer-actions .btn {
+    width: 100%;
   }
 }
 
@@ -1901,5 +1968,119 @@ v6.0: TIER CARDS (Premium Modal)
   }
   .premium-modal-tiers {
     max-width: 90%;
+  }
+}
+
+/* ============================================
+ * COMPREHENSIVE FOCUS STATES FOR ACCESSIBILITY
+ * ============================================ */
+
+/* Remove default outline and add custom focus styles */
+*:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* Remove outline when using mouse */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Add focus back when using keyboard */
+*:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* Button focus states */
+button:focus,
+.btn:focus,
+.btn-icon:focus,
+.timer-btn:focus,
+.mic-btn:focus,
+.pdf-clear:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.2);
+}
+
+/* Input and select focus states */
+input:focus,
+textarea:focus,
+select:focus,
+.pill-select:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+  border-color: var(--amber) !important;
+  box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.2);
+}
+
+/* Link focus states */
+a:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* Chip and interactive element focus states */
+.chip:focus,
+.history-item:focus,
+.answer-mode:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.2);
+}
+
+/* Tab focus states */
+.tab:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: -2px;
+  box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.2);
+}
+
+/* Panel focus states */
+.panel:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: -2px;
+}
+
+/* Skip link focus state */
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid var(--amber);
+  outline-offset: 0;
+}
+
+/* High contrast focus for better visibility */
+.keyboard-nav-active *:focus {
+  outline: 3px solid var(--amber) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 6px rgba(251, 146, 60, 0.3) !important;
+}
+
+/* Ensure focus states work on all interactive elements */
+[role="button"]:focus,
+[tabindex]:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* Remove focus ring on click but keep on keyboard navigation */
+button:focus:not(:focus-visible),
+.btn:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Add visible focus indicator for keyboard navigation */
+@media (prefers-reduced-motion: no-preference) {
+  *:focus {
+    transition: outline 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+  }
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *:focus {
+    transition: none;
   }
 }
