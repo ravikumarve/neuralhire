@@ -276,19 +276,19 @@
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('live')">LIVE</div>
-  <div class="tab" onclick="switchTab('mock')">MOCK</div>
-  <div class="tab" onclick="switchTab('history')">HISTORY</div>
-  <div class="tab" onclick="switchTab('setup')">SETUP</div>
+  <div class="tab active" onclick="switchTab('live')" role="tab" aria-selected="true" aria-controls="panel-live" tabindex="0">LIVE</div>
+  <div class="tab" onclick="switchTab('mock')" role="tab" aria-selected="false" aria-controls="panel-mock" tabindex="0">MOCK</div>
+  <div class="tab" onclick="switchTab('history')" role="tab" aria-selected="false" aria-controls="panel-history" tabindex="0">HISTORY</div>
+  <div class="tab" onclick="switchTab('setup')" role="tab" aria-selected="false" aria-controls="panel-setup" tabindex="0">SETUP</div>
 </div>
 
-<div class="panel" id="panel-live">
+<div class="panel" id="panel-live" role="tabpanel" aria-labelledby="tab-live" tabindex="0">
   <div class="app-body">
 
     <div class="left-panel">
       <div class="left-section">
-        <div class="left-label">Role</div>
-        <select class="pill-select" id="roleSelect" onchange="saveRole()">
+        <div class="left-label"><label for="roleSelect">Role</label></div>
+        <select class="pill-select" id="roleSelect" onchange="saveRole()" aria-label="Select your role">
           <option value="General">General</option>
           <option value="Frontend">Frontend</option>
           <option value="Backend">Backend</option>
@@ -299,8 +299,8 @@
       </div>
 
        <div class="left-section">
-        <div class="left-label">Level</div>
-        <select class="pill-select" id="levelSelect" onchange="saveLevel()">
+        <div class="left-label"><label for="levelSelect">Level</label></div>
+        <select class="pill-select" id="levelSelect" onchange="saveLevel()" aria-label="Select your experience level">
           <option value="Junior">Junior</option>
           <option value="Mid-level" selected>Mid-level</option>
           <option value="Senior">Senior</option>
@@ -308,8 +308,8 @@
       </div>
 
       <div class="left-section">
-        <div class="left-label">Company</div>
-        <select class="pill-select" id="companySelect" onchange="saveCompany()">
+        <div class="left-label"><label for="companySelect">Company</label></div>
+        <select class="pill-select" id="companySelect" onchange="saveCompany()" aria-label="Select target company type">
           <option value="General">General</option>
           <option value="Google">Google</option>
           <option value="Amazon">Amazon</option>
@@ -320,21 +320,21 @@
 
       <div class="left-section">
         <div class="mic-center">
-          <button class="mic-btn" id="micBtn" onclick="toggleListen()">MIC</button>
-          <div class="mic-hint" id="micLabel">Tap to listen</div>
+          <button class="mic-btn" id="micBtn" onclick="toggleListen()" aria-label="Toggle microphone listening" aria-pressed="false">MIC</button>
+          <div class="mic-hint" id="micLabel" role="status" aria-live="polite">Tap to listen</div>
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-        <div class="status-line" id="statusLine">Ready to start</div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Listening progress"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="status-line" id="statusLine" role="status" aria-live="polite">Ready to start</div>
       </div>
 
       <div class="left-section">
         <div class="score-pair">
-          <div class="score-card">
-            <div class="score-val" id="scoreCard1">0</div>
+          <div class="score-card" role="region" aria-label="Session score">
+            <div class="score-val" id="scoreCard1" aria-live="polite">0</div>
             <div class="score-name">SESSION</div>
           </div>
-          <div class="score-card">
-            <div class="score-val" id="scoreCard2">0</div>
+          <div class="score-card" role="region" aria-label="Average score">
+            <div class="score-val" id="scoreCard2" aria-live="polite">0</div>
             <div class="score-name">AVG</div>
           </div>
         </div>
@@ -355,34 +355,34 @@
           <div style="font-size:.5625rem;color:var(--text-dim);margin-top:.125rem">Time remaining</div>
         </div>
         <div style="display:flex;gap:.375rem">
-          <button class="timer-btn" onclick="toggleTimer()" id="timerToggleBtn">II</button>
-          <button class="timer-btn" onclick="resetTimer()">R</button>
+          <button class="timer-btn" onclick="toggleTimer()" id="timerToggleBtn" aria-label="Toggle timer pause/play" aria-pressed="false">II</button>
+          <button class="timer-btn" onclick="resetTimer()" aria-label="Reset timer">R</button>
         </div>
       </div>
 
-      <div class="transcript-box" id="transcriptBox"></div>
+      <div class="transcript-box" id="transcriptBox" role="log" aria-live="polite" aria-label="Voice transcript"></div>
 
-      <div class="q-section" id="qDisplay" style="display:none">
+      <div class="q-section" id="qDisplay" style="display:none" role="region" aria-label="Question display">
         <div class="q-tag">QUESTION</div>
         <div class="q-text" id="qText"></div>
       </div>
 
-      <div class="answer-modes" id="answerModes" style="display:none">
-        <div class="answer-mode active" data-mode="concise" onclick="setAnswerMode('concise')">CONCISE</div>
-        <div class="answer-mode" data-mode="deepdive" onclick="setAnswerMode('deepdive')">DEEP DIVE</div>
-        <div class="answer-mode" data-mode="culturefit" onclick="setAnswerMode('culturefit')">CULTURE FIT</div>
+      <div class="answer-modes" id="answerModes" style="display:none" role="group" aria-label="Answer mode selection">
+        <div class="answer-mode active" data-mode="concise" onclick="setAnswerMode('concise')" role="button" aria-pressed="true" tabindex="0">CONCISE</div>
+        <div class="answer-mode" data-mode="deepdive" onclick="setAnswerMode('deepdive')" role="button" aria-pressed="false" tabindex="0">DEEP DIVE</div>
+        <div class="answer-mode" data-mode="culturefit" onclick="setAnswerMode('culturefit')" role="button" aria-pressed="false" tabindex="0">CULTURE FIT</div>
       </div>
 
-      <div class="code-editor-section" id="codeEditor" style="display:none">
+      <div class="code-editor-section" id="codeEditor" style="display:none" role="region" aria-label="Code editor">
         <div class="code-tag">CODE EDITOR</div>
         <div class="code-editor-container" id="codeEditorContainer"></div>
         <div class="code-meta">
           <span class="meta-tag" id="codeLanguage">JavaScript</span>
-          <button class="btn-icon" onclick="copyCode()" title="Copy Code">COPY</button>
+          <button class="btn-icon" onclick="copyCode()" title="Copy Code" aria-label="Copy code to clipboard">COPY</button>
         </div>
       </div>
 
-      <div class="answer-section" id="answerCard">
+      <div class="answer-section" id="answerCard" role="region" aria-label="AI generated answer">
         <div class="answer-tag" id="answerTag">AI ANSWER</div>
         <div class="answer-text" id="answerText"></div>
         <div class="answer-meta">
@@ -391,10 +391,10 @@
         </div>
       </div>
 
-      <div class="action-row" id="answerActions" style="display:none">
-        <button class="btn-icon" onclick="copyAnswer()" title="Copy">COPY</button>
-        <button class="btn-icon" onclick="speakAnswer()" title="Read">READ</button>
-        <button class="btn-icon" onclick="clearAnswer()" title="Clear">CLR</button>
+      <div class="action-row" id="answerActions" style="display:none" role="group" aria-label="Answer actions">
+        <button class="btn-icon" onclick="copyAnswer()" title="Copy" aria-label="Copy answer to clipboard">COPY</button>
+        <button class="btn-icon" onclick="speakAnswer()" title="Read" aria-label="Read answer aloud">READ</button>
+        <button class="btn-icon" onclick="clearAnswer()" title="Clear" aria-label="Clear answer">CLR</button>
       </div>
 
       <div class="card" style="margin-top:auto">
@@ -430,30 +430,30 @@
       </div>
     </div>
     <div class="footer-actions">
-      <button class="btn btn-ghost" onclick="downloadScoreReport()" id="exportBtn">EXPORT</button>
-      <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn">NEXT</button>
+      <button class="btn btn-ghost" onclick="downloadScoreReport()" id="exportBtn" aria-label="Export session report">EXPORT</button>
+      <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn" aria-label="Generate next question">NEXT</button>
     </div>
   </footer>
 </div>
 
-<div class="panel" id="panel-mock">
+<div class="panel" id="panel-mock" role="tabpanel" aria-labelledby="tab-mock" tabindex="0">
   <div style="padding:1.25rem;display:flex;flex-direction:column;gap:1rem;flex:1">
     <div class="card">
       <div class="card-title">Company</div>
       <div class="chip-row" id="companyChips">
-        <div class="chip active" onclick="selectCompany(this,'General')">General</div>
-        <div class="chip" onclick="selectCompany(this,'Google')">Google</div>
-        <div class="chip" onclick="selectCompany(this,'Amazon')">Amazon</div>
-        <div class="chip" onclick="selectCompany(this,'Meta')">Meta</div>
-        <div class="chip" onclick="selectCompany(this,'Microsoft')">Microsoft</div>
-        <div class="chip" onclick="selectCompany(this,'Apple')">Apple</div>
-        <div class="chip" onclick="selectCompany(this,'Startup')">Startup</div>
+        <div class="chip active" onclick="selectCompany(this,'General')" role="button" aria-pressed="true" tabindex="0">General</div>
+        <div class="chip" onclick="selectCompany(this,'Google')" role="button" aria-pressed="false" tabindex="0">Google</div>
+        <div class="chip" onclick="selectCompany(this,'Amazon')" role="button" aria-pressed="false" tabindex="0">Amazon</div>
+        <div class="chip" onclick="selectCompany(this,'Meta')" role="button" aria-pressed="false" tabindex="0">Meta</div>
+        <div class="chip" onclick="selectCompany(this,'Microsoft')" role="button" aria-pressed="false" tabindex="0">Microsoft</div>
+        <div class="chip" onclick="selectCompany(this,'Apple')" role="button" aria-pressed="false" tabindex="0">Apple</div>
+        <div class="chip" onclick="selectCompany(this,'Startup')" role="button" aria-pressed="false" tabindex="0">Startup</div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">Question Type</div>
-      <select id="qType">
+      <div class="card-title"><label for="qType">Question Type</label></div>
+      <select id="qType" aria-label="Select question type">
         <option value="behavioral">Behavioral (STAR)</option>
         <option value="technical">Technical</option>
         <option value="system_design">System Design</option>
@@ -464,10 +464,10 @@
 
     <div class="card">
       <div class="card-title">Practice Question</div>
-      <div style="background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;min-height:80px" id="mockQuestion"><span style="color:var(--text-dim)">Press "Get Question" to begin</span></div>
+      <div style="background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;min-height:80px" id="mockQuestion" role="region" aria-live="polite" aria-label="Mock question display"><span style="color:var(--text-dim)">Press "Get Question" to begin</span></div>
       <div style="display:flex;gap:.5rem;margin-top:.75rem">
-        <button class="btn btn-primary" onclick="getMockQuestion()" id="getQBtn" style="flex:1">GET QUESTION</button>
-        <button class="btn btn-ghost" onclick="getMockQuestion()">NEXT</button>
+        <button class="btn btn-primary" onclick="getMockQuestion()" id="getQBtn" style="flex:1" aria-label="Get new practice question">GET QUESTION</button>
+        <button class="btn btn-ghost" onclick="getMockQuestion()" aria-label="Get next practice question">NEXT</button>
       </div>
     </div>
 
@@ -496,7 +496,7 @@
   </div>
 </div>
 
-<div class="panel" id="panel-history">
+<div class="panel" id="panel-history" role="tabpanel" aria-labelledby="tab-history" tabindex="0">
     <div style="padding:1.25rem">
         <div class="section-header">
             <div class="section-title">Session History</div>
@@ -512,7 +512,7 @@
     </div>
 </div>
 
-<div class="panel" id="panel-setup">
+<div class="panel" id="panel-setup" role="tabpanel" aria-labelledby="tab-setup" tabindex="0">
   <div style="padding:1.25rem;display:flex;flex-direction:column;gap:1rem;flex:1">
     <div class="info-box">
       <b>Groq API</b> — Fast, free tier available.<br>
@@ -520,35 +520,35 @@
     </div>
 
     <div class="card">
-      <div class="card-title">API Key</div>
+      <div class="card-title"><label for="apiKeyInput">API Key</label></div>
       <label style="font-size:.6875rem;color:var(--text-dim);margin-bottom:.5rem">Stored locally only</label>
       <div style="display:flex;gap:.5rem">
-        <input type="password" id="apiKeyInput" placeholder="gsk_..." style="flex:1">
-        <button class="btn btn-primary" onclick="saveApiKey()" style="width:auto;padding:.75rem 1rem">SAVE</button>
+        <input type="password" id="apiKeyInput" placeholder="gsk_..." style="flex:1" aria-label="Enter your API key" autocomplete="off">
+        <button class="btn btn-primary" onclick="saveApiKey()" style="width:auto;padding:.75rem 1rem" aria-label="Save API key">SAVE</button>
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">Resume (PDF)</div>
-      <div class="pdf-drop" id="pdfDrop">
-        <input type="file" accept=".pdf" id="pdfInput" onchange="handlePdfUpload(event)">
+      <div class="pdf-drop" id="pdfDrop" role="button" tabindex="0" aria-label="Upload resume PDF file">
+        <input type="file" accept=".pdf" id="pdfInput" onchange="handlePdfUpload(event)" aria-label="Select PDF file to upload">
         <div class="pdf-ico">PDF</div>
         <div class="pdf-text"><b>Upload resume PDF</b>AI personalizes answers</div>
       </div>
-      <div class="pdf-success" id="pdfSuccess">
+      <div class="pdf-success" id="pdfSuccess" role="status" aria-live="polite">
         <span style="font-size:1.25rem">OK</span>
         <span class="pdf-name" id="pdfName">resume.pdf</span>
-        <button class="pdf-clear" onclick="clearPdf()">X</button>
+        <button class="pdf-clear" onclick="clearPdf()" aria-label="Remove uploaded PDF">X</button>
       </div>
       <div id="pdfPreview" style="display:none;margin-top:.75rem">
-        <label>Extracted Text</label>
-        <textarea id="resumeText" rows="3" placeholder="Resume text..." style="font-size:.6875rem;color:var(--text-dim)"></textarea>
+        <label for="resumeText">Extracted Text</label>
+        <textarea id="resumeText" rows="3" placeholder="Resume text..." style="font-size:.6875rem;color:var(--text-dim)" aria-label="Extracted resume text"></textarea>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">AI Provider</div>
-      <select id="providerSelect" onchange="saveSettings()">
+      <div class="card-title"><label for="providerSelect">AI Provider</label></div>
+      <select id="providerSelect" onchange="saveSettings()" aria-label="Select AI provider">
         <option value="groq">Groq</option>
         <option value="openai">OpenAI</option>
         <option value="anthropic">Anthropic</option>
@@ -728,6 +728,52 @@ function safeClass(el, action, cls) { if(el) el.classList[action](cls); }
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
+// Retry utility with exponential backoff for transient failures
+async function retryWithBackoff(fn, maxRetries = 3, baseDelay = 1000) {
+  let lastError;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      
+      // Don't retry on authentication/authorization errors
+      if (error.message && (
+        error.message.includes('Invalid API key') ||
+        error.message.includes('API access denied') ||
+        error.message.includes('No internet connection') ||
+        error.message.includes('No API key')
+      )) {
+        throw error;
+      }
+      
+      // Don't retry on rate limit errors (429)
+      if (error.message && error.message.includes('Rate limit')) {
+        throw error;
+      }
+      
+      // Don't retry if this was the last attempt
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Calculate exponential backoff with jitter
+      const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+      
+      // Show retry message to user
+      if (attempt === 0) {
+        showToast('Connection issue, retrying...', 'warning');
+      }
+      
+      // Wait before retry
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  throw lastError;
+}
+
 // Provider Abstraction Layer
 class AIProvider {
   constructor(id, name, url, supportsStreaming = false) {
@@ -753,28 +799,30 @@ class GroqProvider extends AIProvider {
   }
 
 async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
-        if(!isOnline()) throw new Error('No internet connection');
-        const key = getApiKey();
-        if(!key) throw new Error('No API key — add your Groq key in Setup');
-        
-        const res = await fetch(this.url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-          body: JSON.stringify({ model, messages, temperature, max_tokens: maxTokens })
+        return await retryWithBackoff(async () => {
+          if(!isOnline()) throw new Error('No internet connection');
+          const key = getApiKey();
+          if(!key) throw new Error('No API key — add your Groq key in Setup');
+          
+          const res = await fetch(this.url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({ model, messages, temperature, max_tokens: maxTokens })
+          });
+          
+          if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
+          if(res.status === 401) throw new Error('Invalid API key');
+          if(res.status === 403) throw new Error('API access denied');
+          if(!res.ok) throw new Error(`API error ${res.status}`);
+          
+          const data = await res.json();
+          if(data.error) throw new Error(data.error.message || 'API error');
+          
+          const content = data.choices?.[0]?.message?.content;
+          if(!content) throw new Error('Empty response');
+          
+          return content.trim();
         });
-        
-        if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
-        if(res.status === 401) throw new Error('Invalid API key');
-        if(res.status === 403) throw new Error('API access denied');
-        if(!res.ok) throw new Error(`API error ${res.status}`);
-        
-        const data = await res.json();
-        if(data.error) throw new Error(data.error.message || 'API error');
-        
-        const content = data.choices?.[0]?.message?.content;
-        if(!content) throw new Error('Empty response');
-        
-        return content.trim();
       }
 
   getCostEstimate(tokens) {
@@ -789,28 +837,30 @@ class OpenAiProvider extends AIProvider {
   }
 
 async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
-        if(!isOnline()) throw new Error('No internet connection');
-        const key = getApiKey();
-        if(!key) throw new Error('No API key — add your OpenAI key in Setup');
-        
-        const res = await fetch(this.url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-          body: JSON.stringify({ model, messages, temperature, max_tokens: maxTokens })
+        return await retryWithBackoff(async () => {
+          if(!isOnline()) throw new Error('No internet connection');
+          const key = getApiKey();
+          if(!key) throw new Error('No API key — add your OpenAI key in Setup');
+          
+          const res = await fetch(this.url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({ model, messages, temperature, max_tokens: maxTokens })
+          });
+          
+          if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
+          if(res.status === 401) throw new Error('Invalid API key');
+          if(res.status === 403) throw new Error('API access denied');
+          if(!res.ok) throw new Error(`API error ${res.status}`);
+          
+          const data = await res.json();
+          if(data.error) throw new Error(data.error.message || 'API error');
+          
+          const content = data.choices?.[0]?.message?.content;
+          if(!content) throw new Error('Empty response');
+          
+          return content.trim();
         });
-        
-        if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
-        if(res.status === 401) throw new Error('Invalid API key');
-        if(res.status === 403) throw new Error('API access denied');
-        if(!res.ok) throw new Error(`API error ${res.status}`);
-        
-        const data = await res.json();
-        if(data.error) throw new Error(data.error.message || 'API error');
-        
-        const content = data.choices?.[0]?.message?.content;
-        if(!content) throw new Error('Empty response');
-        
-        return content.trim();
       }
 
   getCostEstimate(tokens) {
@@ -825,43 +875,45 @@ class AnthropicProvider extends AIProvider {
   }
 
 async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
-        if(!isOnline()) throw new Error('No internet connection');
-        const key = getApiKey();
-        if(!key) throw new Error('No API key — add your Anthropic key in Setup');
-        
-        // Convert OpenAI format to Anthropic format
-        const anthropicMessages = messages.map(msg => ({
-          role: msg.role === 'user' ? 'user' : 'assistant',
-          content: [{ type: 'text', text: msg.content }]
-        }));
-        
-        const res = await fetch(this.url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': key,
-            'anthropic-version': '2023-06-01'
-          },
-          body: JSON.stringify({
-            model: model || 'claude-3-sonnet-20240229',
-            messages: anthropicMessages,
-            max_tokens: maxTokens,
-            temperature: temperature
-          })
+        return await retryWithBackoff(async () => {
+          if(!isOnline()) throw new Error('No internet connection');
+          const key = getApiKey();
+          if(!key) throw new Error('No API key — add your Anthropic key in Setup');
+          
+          // Convert OpenAI format to Anthropic format
+          const anthropicMessages = messages.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'assistant',
+            content: [{ type: 'text', text: msg.content }]
+          }));
+          
+          const res = await fetch(this.url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': key,
+              'anthropic-version': '2023-06-01'
+            },
+            body: JSON.stringify({
+              model: model || 'claude-3-sonnet-20240229',
+              messages: anthropicMessages,
+              max_tokens: maxTokens,
+              temperature: temperature
+            })
+          });
+          
+          if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
+          if(res.status === 401) throw new Error('Invalid API key');
+          if(res.status === 403) throw new Error('API access denied');
+          if(!res.ok) throw new Error(`API error ${res.status}`);
+          
+          const data = await res.json();
+          if(data.error) throw new Error(data.error.message || 'API error');
+          
+          const content = data.content?.[0]?.text;
+          if(!content) throw new Error('Empty response');
+          
+          return content.trim();
         });
-        
-        if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
-        if(res.status === 401) throw new Error('Invalid API key');
-        if(res.status === 403) throw new Error('API access denied');
-        if(!res.ok) throw new Error(`API error ${res.status}`);
-        
-        const data = await res.json();
-        if(data.error) throw new Error(data.error.message || 'API error');
-        
-        const content = data.content?.[0]?.text;
-        if(!content) throw new Error('Empty response');
-        
-        return content.trim();
       }
 
   getCostEstimate(tokens) {
@@ -876,38 +928,40 @@ class GeminiProvider extends AIProvider {
   }
 
 async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
-        if(!isOnline()) throw new Error('No internet connection');
-        const key = getApiKey();
-        if(!key) throw new Error('No API key — add your Gemini key in Setup');
-        
-        // Convert OpenAI format to Gemini format
-        const lastMessage = messages[messages.length - 1];
-        const geminiContent = lastMessage.role === 'user' ? lastMessage.content : '';
-        
-        const res = await fetch(`${this.url}/${model || 'gemini-pro'}:generateContent?key=${key}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: geminiContent }] }],
-            generationConfig: {
-              temperature: temperature,
-              maxOutputTokens: maxTokens
-            }
-          })
+        return await retryWithBackoff(async () => {
+          if(!isOnline()) throw new Error('No internet connection');
+          const key = getApiKey();
+          if(!key) throw new Error('No API key — add your Gemini key in Setup');
+          
+          // Convert OpenAI format to Gemini format
+          const lastMessage = messages[messages.length - 1];
+          const geminiContent = lastMessage.role === 'user' ? lastMessage.content : '';
+          
+          const res = await fetch(`${this.url}/${model || 'gemini-pro'}:generateContent?key=${key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: geminiContent }] }],
+              generationConfig: {
+                temperature: temperature,
+                maxOutputTokens: maxTokens
+              }
+            })
+          });
+          
+          if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
+          if(res.status === 401) throw new Error('Invalid API key');
+          if(res.status === 403) throw new Error('API access denied');
+          if(!res.ok) throw new Error(`API error ${res.status}`);
+          
+          const data = await res.json();
+          if(data.error) throw new Error(data.error.message || 'API error');
+          
+          const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if(!content) throw new Error('Empty response');
+          
+          return content.trim();
         });
-        
-        if(res.status === 429) { showToast('Rate limit reached. Try again in 1 minute.', 'error'); return; }
-        if(res.status === 401) throw new Error('Invalid API key');
-        if(res.status === 403) throw new Error('API access denied');
-        if(!res.ok) throw new Error(`API error ${res.status}`);
-        
-        const data = await res.json();
-        if(data.error) throw new Error(data.error.message || 'API error');
-        
-        const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if(!content) throw new Error('Empty response');
-        
-        return content.trim();
       }
 
   getCostEstimate(tokens) {
@@ -922,34 +976,36 @@ class OllamaProvider extends AIProvider {
   }
 
   async generateAnswer(messages, model, temperature = 0.7, maxTokens = 1024) {
-    if(!isOnline()) throw new Error('No internet connection');
-    
-    // For Ollama, we don't need an API key, but we need to check if server is running
-    const lastMessage = messages[messages.length - 1];
-    const prompt = lastMessage.role === 'user' ? lastMessage.content : '';
-    
-    const res = await fetch(this.url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        model: model || 'llama2',
-        prompt: prompt,
-        temperature: temperature,
-        max_tokens: maxTokens,
-        stream: false
-      })
-    });
+    return await retryWithBackoff(async () => {
+      if(!isOnline()) throw new Error('No internet connection');
+      
+      // For Ollama, we don't need an API key, but we need to check if server is running
+      const lastMessage = messages[messages.length - 1];
+      const prompt = lastMessage.role === 'user' ? lastMessage.content : '';
+      
+      const res = await fetch(this.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          model: model || 'llama2',
+          prompt: prompt,
+          temperature: temperature,
+          max_tokens: maxTokens,
+          stream: false
+        })
+      });
 
-    if(res.status === 404) throw new Error('Ollama server not running — start with: ollama serve');
-    if(!res.ok) throw new Error(`Ollama error ${res.status}`);
-    
-    const data = await res.json();
-    if(data.error) throw new Error(data.error.message || 'Ollama error');
-    
-    const content = data.response;
-    if(!content) throw new Error('Empty response');
-    
-    return content.trim();
+      if(res.status === 404) throw new Error('Ollama server not running — start with: ollama serve');
+      if(!res.ok) throw new Error(`Ollama error ${res.status}`);
+      
+      const data = await res.json();
+      if(data.error) throw new Error(data.error.message || 'Ollama error');
+      
+      const content = data.response;
+      if(!content) throw new Error('Empty response');
+      
+      return content.trim();
+    });
   }
 
   getCostEstimate(tokens) {
@@ -2389,7 +2445,154 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
- if('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(function(){}); }
+// ============================================
+// KEYBOARD NAVIGATION SUPPORT
+// ============================================
+
+// Enhanced keyboard navigation for accessibility
+document.addEventListener('keydown', function(e) {
+  // Tab navigation enhancement - ensure focus is visible
+  if (e.key === 'Tab') {
+    document.body.classList.add('keyboard-nav-active');
+    // Remove the class after a short delay to allow focus styles to show
+    setTimeout(() => {
+      document.body.classList.remove('keyboard-nav-active');
+    }, 100);
+  }
+  
+  // Enter key to activate buttons and links
+  if (e.key === 'Enter') {
+    const focusedElement = document.activeElement;
+    if (focusedElement && (
+      focusedElement.getAttribute('role') === 'button' ||
+      focusedElement.classList.contains('chip') ||
+      focusedElement.classList.contains('history-item')
+    )) {
+      e.preventDefault();
+      focusedElement.click();
+    }
+  }
+  
+  // Escape to close modals and panels
+  if (e.key === 'Escape') {
+    // Close premium modals
+    const premiumModals = document.querySelectorAll('.premium-modal-overlay');
+    premiumModals.forEach(modal => modal.remove());
+    
+    // Close history modal
+    const histModal = $('histModal');
+    if (histModal && histModal.classList.contains('show')) {
+      histModal.classList.remove('show');
+    }
+    
+    // Stop listening if active
+    if (isListening) {
+      toggleListen();
+    }
+  }
+  
+  // Arrow key navigation for tabs
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    const activeTab = document.querySelector('.tab.active');
+    if (activeTab && document.activeElement === activeTab) {
+      e.preventDefault();
+      const tabs = Array.from(document.querySelectorAll('.tab'));
+      const currentIndex = tabs.indexOf(activeTab);
+      let nextIndex;
+      
+      if (e.key === 'ArrowRight') {
+        nextIndex = (currentIndex + 1) % tabs.length;
+      } else {
+        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      }
+      
+      tabs[nextIndex].focus();
+      tabs[nextIndex].click();
+    }
+  }
+  
+  // Space bar to toggle checkboxes and buttons
+  if (e.key === ' ' || e.code === 'Space') {
+    const focusedElement = document.activeElement;
+    if (focusedElement && (
+      focusedElement.getAttribute('role') === 'button' ||
+      focusedElement.classList.contains('chip') ||
+      focusedElement.type === 'checkbox'
+    )) {
+      e.preventDefault();
+      focusedElement.click();
+    }
+  }
+});
+
+// Ensure all interactive elements have proper focus styles
+const style = document.createElement('style');
+style.textContent = `
+  /* Keyboard navigation focus indicator */
+  .keyboard-nav-active *:focus {
+    outline: 2px solid var(--amber) !important;
+    outline-offset: 2px !important;
+  }
+  
+  /* Ensure all interactive elements are focusable */
+  button, [role="button"], a, input, select, textarea, .chip, .history-item {
+    &:focus {
+      outline: 2px solid var(--amber-dim);
+      outline-offset: 1px;
+    }
+  }
+  
+  /* Skip to main content link for keyboard users */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--amber);
+    color: var(--bg);
+    padding: 8px;
+    z-index: 10000;
+    transition: top 0.3s;
+  }
+  
+  .skip-link:focus {
+    top: 0;
+  }
+`;
+document.head.appendChild(style);
+
+// Add skip link for keyboard users
+const skipLink = document.createElement('a');
+skipLink.href = '#main-content';
+skipLink.className = 'skip-link';
+skipLink.textContent = 'Skip to main content';
+skipLink.setAttribute('aria-label', 'Skip to main content');
+document.body.insertBefore(skipLink, document.body.firstChild);
+
+// Ensure main content area has proper ID
+const mainContent = document.querySelector('main') || document.querySelector('.app-container');
+if (mainContent) {
+  mainContent.id = 'main-content';
+  mainContent.setAttribute('tabindex', '-1');
+}
+
+// Service Worker Registration with error handling
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(function(registration) {
+      console.log('Service Worker registered with scope:', registration.scope);
+    })
+    .catch(function(error) {
+      console.error('Service Worker registration failed:', error);
+      // Show user-friendly error message
+      if(error.name === 'SecurityError') {
+        showToast('PWA features disabled: HTTPS required', 'warning');
+      } else if(error.name === 'NotSupportedError') {
+        showToast('PWA not supported in this browser', 'warning');
+      } else {
+        showToast('Offline mode unavailable', 'warning');
+      }
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
   init();
