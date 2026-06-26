@@ -3,7 +3,6 @@ const urlsToCache = [
   './index.html',
   './manifest.json',
   './app/style.css',
-  './app/app.js',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
 ];
