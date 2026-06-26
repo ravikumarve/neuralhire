@@ -402,7 +402,7 @@
 <div class="print-report" id="printReport"></div>
 
 <!-- Single-file architecture: All JavaScript is inline below -->
-
+<script>
 let recognition = null, isListening = false;
 let mockRecognition = null, mockIsListening = false;
 let currentAnswer = '', currentQuestion = '', currentMockQ = '';
@@ -1132,6 +1132,7 @@ async function init() {
     const key = localStorage.getItem(`nh_apikey_${providerId}`) || localStorage.getItem('nh_apikey') || '';
     if(key) {
       const apiKeyInput = $('apiKeyInput');
+      const providerSelect = $('providerSelect');
       const modelSelect = $('modelSelect');
       const answerLength = $('answerLength');
       const answerFormat = $('answerFormat');
