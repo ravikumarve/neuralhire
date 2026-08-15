@@ -27,7 +27,11 @@
    <span class="live-label">LIVE SESSION</span>
   </div>
   <div class="model-badge" id="apiStatus">No Key</div>
-<span class="stealth-indicator" id="stealthIndicator">STEALTH</span>
+  <button class="stealth-toggle" id="stealthToggle" onclick="toggleStealthMode()" aria-label="Toggle Stealth Mode" title="Stealth Mode (Ctrl+Shift+D)" aria-pressed="false">
+   <span class="stealth-toggle-icon">🕶️</span>
+   <span class="stealth-toggle-label">Stealth</span>
+  </button>
+  <span class="stealth-indicator" id="stealthIndicator">STEALTH</span>
  </div>
  <div id="chromeBanner" style="display:none;background:var(--rose-dim);border:1px solid var(--rose);color:var(--rose);padding:.5rem .75rem;font-family:var(--font-mono);font-size:.625rem;text-align:center;position:absolute;top:100%;left:0;right:0;z-index:100">Use Chrome browser for voice features</div>
 </header>
@@ -2798,7 +2802,13 @@ function updatePremiumUI() {
   }
   var stealthIndicator = $('stealthIndicator');
   if (stealthIndicator) {
-    stealthIndicator.style.display = isPremiumUnlocked('selfHostKit') ? 'inline-flex' : 'none';
+    // Indicator only shows while stealth is active (CSS handles visibility)
+    stealthIndicator.style.display = '';
+  }
+  var stealthToggle = $('stealthToggle');
+  if (stealthToggle) {
+    stealthToggle.classList.toggle('active', stealthModeActive);
+    stealthToggle.setAttribute('aria-pressed', stealthModeActive ? 'true' : 'false');
   }
 }
 
@@ -2880,6 +2890,11 @@ function initStealthMode() {
       stealthModeActive = false;
       localStorage.removeItem('nh_stealth');
     }
+    var stealthToggle = $('stealthToggle');
+    if (stealthToggle) {
+      stealthToggle.classList.toggle('active', stealthModeActive);
+      stealthToggle.setAttribute('aria-pressed', stealthModeActive ? 'true' : 'false');
+    }
   } catch (e) {}
 }
 
@@ -2887,6 +2902,11 @@ function toggleStealthMode() {
   if (!isPremiumUnlocked('selfHostKit')) { showPremiumPrompt('selfHostKit'); return; }
   stealthModeActive = !stealthModeActive;
   document.body.classList.toggle('stealth-mode', stealthModeActive);
+  var stealthToggle = $('stealthToggle');
+  if (stealthToggle) {
+    stealthToggle.classList.toggle('active', stealthModeActive);
+    stealthToggle.setAttribute('aria-pressed', stealthModeActive ? 'true' : 'false');
+  }
   try { localStorage.setItem('nh_stealth', stealthModeActive ? 'true' : 'false'); } catch (e) {}
   showToast(stealthModeActive ? 'Stealth Mode ON' : 'Stealth Mode OFF', stealthModeActive ? '' : 'success');
 }

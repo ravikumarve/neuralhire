@@ -1398,6 +1398,14 @@ textarea {
     width: 100%;
     max-width: 100%;
   }
+
+  /* Compact stealth toggle on small screens — icon only */
+  .stealth-toggle-label {
+    display: none;
+  }
+  .stealth-toggle {
+    padding: .375rem .5rem;
+  }
   
   .app-body {
     flex-direction: column;
@@ -1790,6 +1798,41 @@ body.stealth-mode {
 
 .stealth-mode .stealth-indicator {
   display: inline-flex;
+}
+
+/* Stealth Mode UI toggle (v6.1) */
+.stealth-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  padding: 0.375rem 0.625rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+.stealth-toggle:hover {
+  border-color: rgba(204,122,0,0.4);
+  color: var(--text);
+}
+
+.stealth-toggle.active {
+  color: #cc7a00;
+  background: rgba(204,122,0,0.08);
+  border-color: rgba(204,122,0,0.3);
+}
+
+.stealth-mode .stealth-toggle {
+  color: #cc7a00;
+  background: rgba(204,122,0,0.08);
+  border-color: rgba(204,122,0,0.3);
 }
 
 /* ============================================

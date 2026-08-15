@@ -1,4 +1,4 @@
-const CACHE_NAME = 'neuralhire-v9';
+const CACHE_NAME = 'neuralhire-v10';
 const urlsToCache = [
   './index.html',
   './manifest.json',
