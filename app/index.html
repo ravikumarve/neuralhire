@@ -2802,12 +2802,19 @@ var stealthModeActive = false;
 
 function initStealthMode() {
   try {
-    stealthModeActive = localStorage.getItem('nh_stealth') === 'true';
-    if (stealthModeActive) document.body.classList.add('stealth-mode');
+    if (isPremiumUnlocked('selfHostKit')) {
+      stealthModeActive = localStorage.getItem('nh_stealth') === 'true';
+      if (stealthModeActive) document.body.classList.add('stealth-mode');
+    } else {
+      // Free users: ensure stealth is off and stale state cleared
+      stealthModeActive = false;
+      localStorage.removeItem('nh_stealth');
+    }
   } catch (e) {}
 }
 
 function toggleStealthMode() {
+  if (!isPremiumUnlocked('selfHostKit')) { showPremiumPrompt('selfHostKit'); return; }
   stealthModeActive = !stealthModeActive;
   document.body.classList.toggle('stealth-mode', stealthModeActive);
   try { localStorage.setItem('nh_stealth', stealthModeActive ? 'true' : 'false'); } catch (e) {}
@@ -2838,6 +2845,7 @@ var BRIDGE_STATEMENTS = [
 ];
 
 function generateBridgeStatement() {
+  if (!isPremiumUnlocked('selfHostKit')) { showPremiumPrompt('selfHostKit'); return; }
   var bridge = BRIDGE_STATEMENTS[Math.floor(Math.random() * BRIDGE_STATEMENTS.length)];
 
   // Immediate TTS output
